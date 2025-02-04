@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
     <meta
       name="description"
       content="Yutori Labs - Building cutting-edge solutions for complex problems"
@@ -17,11 +20,12 @@
       rel="stylesheet"
     />
 
-    <!-- Tailwind CSS (optional: can be used alongside custom CSS) -->
+    <!-- Tailwind CSS (optional: used for layout utilities) -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
     />
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -29,53 +33,58 @@
     <!-- Navigation -->
     <nav class="sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-center justify-between h-12">
+        <div class="flex items-center justify-center h-16">
+          <!-- Logo Container: flexbox centers the image responsively -->
           <div class="logo-container">
-            <img src="assets/logo_400px_wide.png" alt="Yutori Labs" class="nav-logo" />
+            <img
+              src="assets/logo_400px_wide.png"
+              alt="Yutori Labs"
+              class="logo"
+            />
           </div>
-          <!-- Navigation links can be added here if needed -->
         </div>
       </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section (no button per requirements) -->
     <section class="hero-section">
-      <div class="max-w-7xl mx-auto">
-        <h1 class="animate-in">Yutori Labs</h1>
-        <p class="animate-in" style="animation-delay: 0.2s">
+      <div class="max-w-7xl mx-auto text-center px-4">
+        <h1 class="hero-title">Yutori Labs</h1>
+        <p class="hero-subtitle">
           Building cutting-edge solutions for complex problems
         </p>
-        <a href="#projects" class="button animate-in" style="animation-delay: 0.4s">
-          Explore Projects
-        </a>
       </div>
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="py-8">
+    <section id="projects" class="projects-section">
       <div class="max-w-7xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-8">Projects</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 class="section-title">Projects</h2>
+        <div class="projects-grid">
           <!-- Project Card 1 -->
           <div class="project-card">
-            <h3>Health Span Protocol</h3>
-            <p>Short description goes here.</p>
-            <a href="#" class="button">View Project</a>
+            <h3 class="project-title">Health Span Protocol</h3>
+            <p class="project-description">
+              Short description goes here.
+            </p>
+            <a href="#" class="project-button">View Project</a>
           </div>
           <!-- Project Card 2 -->
           <div class="project-card">
-            <h3>Body Composition Calculator</h3>
-            <p>Short description goes here.</p>
-            <a href="#" class="button">View Project</a>
+            <h3 class="project-title">Body Composition Calculator</h3>
+            <p class="project-description">
+              Short description goes here.
+            </p>
+            <a href="#" class="project-button">View Project</a>
           </div>
-          <!-- Add more project cards as needed -->
+          <!-- Additional project cards can be added here -->
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-      <div class="max-w-7xl mx-auto">
+    <footer class="footer-section">
+      <div class="max-w-7xl mx-auto text-center px-4">
         <p>&copy; 2025 Yutori Labs. All rights reserved.</p>
       </div>
     </footer>
