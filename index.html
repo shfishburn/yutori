@@ -5,31 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yutori Labs - Development Projects</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-    <script src="https://cdn.tiny.cloud/1/t73mvp8to9aadjuuhtmmuz8da2asotpx3f81wmc4atkpgfz6/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    <link rel="stylesheet" href="styles.css">
-    <script src="editor.js" defer></script>
 </head>
 <body class="bg-gray-50">
     <nav class="bg-white shadow-lg">
-        <!-- Navigation content same as before -->
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-gray-800">Yutori Labs</span>
+                </div>
+                <div class="flex space-x-8">
+                    <a href="#" class="text-gray-800 hover:text-blue-600">Home</a>
+                    <a href="#projects" class="text-gray-800 hover:text-blue-600">Projects</a>
+                    <a href="#about" class="text-gray-800 hover:text-blue-600">About</a>
+                    <a href="#contact" class="text-gray-800 hover:text-blue-600">Contact</a>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <main>
-        <section id="editor" class="py-20 bg-gray-100">
+        <!-- Hero Section -->
+        <section class="py-20 bg-gray-100">
+            <div class="max-w-6xl mx-auto px-4 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                    Yutori Labs
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Building cutting-edge solutions for complex problems
+                </p>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-16">
             <div class="max-w-6xl mx-auto px-4">
-                <textarea id="content" class="w-full min-h-screen">
-                    <!-- Initial content -->
-                    <h1>Yutori Labs</h1>
-                    <p>Building cutting-edge solutions for complex problems</p>
-                    
-                    <h2>Projects</h2>
-                    <div class="project">
-                        <h3>AI Analytics Platform</h3>
-                        <p>Advanced analytics platform powered by machine learning algorithms.</p>
+                <h2 class="text-3xl font-bold text-center mb-12">Projects</h2>
+                <div class="space-y-8 max-w-2xl mx-auto">
+                    <!-- Project 1 -->
+                    <div class="border-b pb-6">
+                        <h3 class="text-xl font-semibold mb-2">AI Analytics Platform</h3>
+                        <p class="text-gray-600 mb-2">Advanced analytics platform powered by machine learning algorithms.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800">View Project →</a>
                     </div>
-                    
-                    <!-- More content -->
-                </textarea>
+
+                    <!-- Project 2 -->
+                    <div class="border-b pb-6">
+                        <h3 class="text-xl font-semibold mb-2">Quantum Computing Research</h3>
+                        <p class="text-gray-600 mb-2">Exploring quantum algorithms for optimization problems.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800">View Project →</a>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="border-b pb-6">
+                        <h3 class="text-xl font-semibold mb-2">Blockchain Solutions</h3>
+                        <p class="text-gray-600 mb-2">Secure and scalable blockchain infrastructure for enterprise.</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800">View Project →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-16 bg-gray-100">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-8">About</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        We are a team of passionate developers and researchers dedicated to pushing the boundaries of technology. Our mission is to create innovative solutions that make a positive impact on the world.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-16">
+            <div class="max-w-6xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-8">Contact</h2>
+                <div class="text-center">
+                    <p class="text-gray-600 mb-4">Email: <a href="mailto:info@yutorilabs.com" class="text-blue-600 hover:text-blue-800">info@yutorilabs.com</a></p>
+                    <p class="text-gray-600">GitHub: <a href="#" class="text-blue-600 hover:text-blue-800">github.com/yutorilabs</a></p>
+                </div>
             </div>
         </section>
     </main>
