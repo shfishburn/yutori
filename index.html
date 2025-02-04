@@ -10,13 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" />
     <style>
-      *, *::before, *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
       :root {
+        --container-width: 1200px;
+        --container-padding: 2rem;
         --primary-color: #cd6e44;
         --secondary-color: #e6a954;
         --text-color: #1f2937;
@@ -26,27 +22,19 @@
         --hover-color: #b85e3a;
       }
 
-      body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: var(--text-color);
-        background: var(--background);
-        line-height: 1.6;
-        letter-spacing: -0.011em;
+      /* Container Layout */
+      .container {
+        width: 100%;
+        max-width: var(--container-width);
+        margin: 0 auto;
+        padding: 0 var(--container-padding);
       }
 
-      /* Navigation & Logo */
+      /* Navigation */
       .nav-wrapper {
         background: var(--card-bg);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 1rem;
-      }
-
-      .logo-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        padding: 0 1rem;
+        padding: 1rem 0;
       }
 
       .logo {
@@ -58,17 +46,15 @@
       .hero-section {
         background: linear-gradient(100deg, var(--primary-color), var(--secondary-color));
         color: #fff;
-        padding: 4rem 1rem;
+        padding: 4rem 0;
       }
 
       .hero-content {
         max-width: 800px;
-        margin: 0 auto;
-        text-align: left;
       }
 
       .hero-title {
-        font-size: 3.5rem;
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
         font-weight: 700;
         line-height: 1.1;
         margin-bottom: 1rem;
@@ -76,7 +62,7 @@
       }
 
       .hero-subtitle {
-        font-size: 1.25rem;
+        font-size: clamp(1.125rem, 2vw, 1.25rem);
         font-weight: 300;
         max-width: 600px;
         opacity: 0.9;
@@ -84,16 +70,11 @@
 
       /* Projects Section */
       .projects-section {
-        padding: 4rem 1rem;
-      }
-
-      .section-wrapper {
-        max-width: 1200px;
-        margin: 0 auto;
+        padding: 4rem 0;
       }
 
       .section-title {
-        font-size: 2rem;
+        font-size: clamp(1.75rem, 3vw, 2rem);
         font-weight: 700;
         margin-bottom: 3rem;
         letter-spacing: -0.02em;
@@ -101,7 +82,7 @@
 
       .projects-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
         gap: 2rem;
       }
 
@@ -109,7 +90,7 @@
         background: var(--card-bg);
         border: 1px solid rgba(0, 0, 0, 0.08);
         border-radius: 1rem;
-        padding: 2rem;
+        padding: clamp(1.5rem, 3vw, 2rem);
         display: flex;
         flex-direction: column;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -122,7 +103,7 @@
       }
 
       .project-title {
-        font-size: 1.5rem;
+        font-size: clamp(1.25rem, 2vw, 1.5rem);
         font-weight: 600;
         margin-bottom: 1rem;
         letter-spacing: -0.02em;
@@ -132,7 +113,7 @@
         flex-grow: 1;
         margin-bottom: 1.5rem;
         color: var(--light-text);
-        font-size: 1.rem;
+        font-size: 1rem;
         line-height: 1.6;
       }
 
@@ -146,6 +127,7 @@
         text-decoration: none;
         transition: all 0.2s ease;
         text-align: center;
+        width: 100%;
       }
 
       .project-button:hover {
@@ -157,57 +139,42 @@
       .footer-section {
         background: #1f2937;
         color: #fff;
-        padding: 2rem 1rem;
+        padding: 2rem 0;
       }
 
       .footer-content {
-        max-width: 1200px;
-        margin: 0 auto;
         opacity: 0.8;
         font-size: 0.9375rem;
       }
 
       /* Responsive Adjustments */
       @media (max-width: 768px) {
-        .hero-title {
-          font-size: 2.5rem;
-        }
-
-        .hero-subtitle {
-          font-size: 1.125rem;
-        }
-
-        .section-title {
-          font-size: 1.75rem;
-          text-align: center;
-        }
-
-        .project-card {
-          padding: 1.5rem;
+        :root {
+          --container-padding: 1rem;
         }
       }
     </style>
   </head>
   <body>
-    <nav>
-      <div class="nav-wrapper">
-        <div class="logo-container">
-          <img src="assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
-        </div>
+    <nav class="nav-wrapper">
+      <div class="container">
+        <img src="assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
       </div>
     </nav>
 
     <section class="hero-section">
-      <div class="hero-content">
-        <h1 class="hero-title">R&D</h1>
-        <p class="hero-subtitle">
-          Building cutting-edge solutions for complex problems
-        </p>
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title">R&D</h1>
+          <p class="hero-subtitle">
+            Building cutting-edge solutions for complex problems
+          </p>
+        </div>
       </div>
     </section>
 
     <section id="projects" class="projects-section">
-      <div class="section-wrapper">
+      <div class="container">
         <h2 class="section-title">Projects</h2>
         <div class="projects-grid">
           <div class="project-card">
@@ -230,8 +197,10 @@
     </section>
 
     <footer class="footer-section">
-      <div class="footer-content">
-        <p>&copy; 2025 Yutori Labs. All rights reserved.</p>
+      <div class="container">
+        <div class="footer-content">
+          <p>&copy; 2025 Yutori Labs. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   </body>
