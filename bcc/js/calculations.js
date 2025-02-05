@@ -1,93 +1,94 @@
-// calculations.js
 const calculatorCalculations = {
   calculate() {
     try {
-      // Determine input mode and unit
-      const isKg = document.getElementById('radioKg').checked;
-      let M0 = 0, F0 = 0;
+      const state = calculatorState.getState();
+      const isKg = state.unit === 'kg';
+      const toKg = (value) => isKg ? value : value / 2.20462;
+      const toLbs = (value) => isKg ? value * 2.20462 : value;
 
-      // Composition calculation
-      const radioLeanFat = document.getElementById('radioLeanFat');
-      if (radioLeanFat.checked) {
-        M0 = parseFloat(document.getElementById('leanMassInput').value) || 0;
-        F0 = parseFloat(document.getElementById('fatMassInput').value) || 0;
-        if (isKg) { 
-          M0 *= 2.20462; 
-          F0 *= 2.20462; 
-        }
+      // Composition calculations
+      let leanMassKg, fatMassKg;
+      if (state.inputMode === 'leanFat') {
+        leanMassKg = toKg(parseFloat(state.leanMass));
+        fatMassKg = toKg(parseFloat(state.fatMass));
       } else {
-        let w = parseFloat(document.getElementById('totalWeightInput').value) || 0;
-        let bf = parseFloat(document.getElementById('bodyFatPctInput').value) || 0;
-        if (isKg) w *= 2.20462;
-        F0 = (bf / 100) * w;
-        M0 = w - F0;
+        const totalWeightKg = toKg(parseFloat(state.totalWeight));
+        const bodyFatPct = parseFloat(state.bodyFatPct);
+        fatMassKg = totalWeightKg * (bodyFatPct / 100);
+        leanMassKg = totalWeightKg - fatMassKg;
       }
 
-      // Current composition
-      const cWeight = M0 + F0;
-      const currentBF = (F0 / cWeight) * 100;
+      // BMR & TDEE calculations
+      let BMR, TDEE;
+      if (state.knownMetrics) {
+        BMR = parseFloat(state.measuredBMR);
+        TDEE = parseFloat(state.measuredTDEE);
+      } else {
+        BMR = 370 + (21.6 * leanMassKg);
+        TDEE = state.activeEnergy ? 
+          BMR + parseFloat(state.activeEnergy) :
+          BMR * parseFloat(state.activityLevel);
+      }
 
-      // BMR calculation
-      const LMkg = M0 / 2.20462;
-      const BMR = 370 + (21.6 * LMkg);
-
-      // Activity and TDEE
-      const activityFactor = parseFloat(document.getElementById('activityLevelSelect').value) || 1.55;
-      const TDEE = BMR * activityFactor;
-
-      // Daily adjustment
-      let dailyAdj = parseFloat(document.getElementById('dailyAdjustmentInput').value) || 0;
-      const weightGoal = document.querySelector('input[name="weightGoal"]:checked')?.value;
-      if (weightGoal === "maintain") dailyAdj = 0;
-
-      // Final calories
-      let finalCals = TDEE + dailyAdj;
+      // Final calories with adjustment
+      let finalCals = TDEE;
+      if (state.weightGoal !== 'maintain') {
+        finalCals += parseFloat(state.dailyAdjustment || 0);
+      }
       finalCals = Math.max(finalCals, 1200);
 
-      // Macro calculation
-      const approach = document.querySelector('input[name="dietaryApproach"]:checked')?.value || "balanced";
-      const macros = this.computeMacros(finalCals, approach);
+      // Macro calculations
+      let proteinMultiplier = state.weightGoal === 'lose' ? 2.2 : 
+                             state.weightGoal === 'gain' ? 2.0 : 1.6;
+      
+      if (state.age > 60) {
+        proteinMultiplier = Math.max(proteinMultiplier, 2.0);
+      }
 
-      // Goal range calculation
-      const fatRangeCategory = document.getElementById('fatGoalCategorySelect').value;
-      const leanMassChangePercent = parseFloat(document.getElementById('leanMassChangeInput').value) || 0;
+      const maxProteinGrams = leanMassKg * 2.5;
+      const proteinGrams = Math.min(
+        Math.round(leanMassKg * proteinMultiplier),
+        maxProteinGrams
+      );
+      const proteinCals = proteinGrams * 4;
 
-      // Prepare results object
+      const baseCarbPercent = state.insulinResistance ? 0.20 :
+                             state.dietaryApproach === 'high-protein' ? 0.30 :
+                             state.dietaryApproach === 'low-carb' ? 0.10 : 0.40;
+      
+      const carbCals = (finalCals - proteinCals) * baseCarbPercent;
+      const carbGrams = Math.round(carbCals / 4);
+
+      const fatCals = finalCals - proteinCals - carbCals;
+      const fatGrams = Math.round(fatCals / 9);
+
+      const totalWeightKg = leanMassKg + fatMassKg;
+      const currentBF = (fatMassKg / totalWeightKg) * 100;
+
       return {
-        currentWeight: cWeight,
-        currentLean: M0,
-        currentFat: F0,
+        currentWeight: toLbs(totalWeightKg),
+        currentLean: toLbs(leanMassKg),
+        currentFat: toLbs(fatMassKg),
         currentBF: currentBF.toFixed(1),
         currentBFCategory: this.getBFCategory(currentBF / 100),
         bmr: Math.round(BMR),
         tdee: Math.round(TDEE),
         finalCals: Math.round(finalCals),
-        macros: macros,
-        weightGoal: weightGoal,
-        dietaryApproach: approach,
-        activityFactor: activityFactor,
-        dailyAdjustment: dailyAdj,
-        leanMassChangePercent: leanMassChangePercent,
-        fatRangeCategory: fatRangeCategory
+        macros: {
+          proteinGrams,
+          carbsGrams: carbGrams,
+          fatGrams
+        },
+        percentages: {
+          protein: Math.round((proteinCals / finalCals) * 100),
+          carbs: Math.round((carbCals / finalCals) * 100),
+          fat: Math.round((fatCals / finalCals) * 100)
+        }
       };
     } catch (error) {
       console.error('Calculation error:', error);
       return null;
     }
-  },
-
-  computeMacros(finalCals, approach) {
-    const fractions = {
-      "balanced": { carbs: 0.33, protein: 0.33, fat: 0.34 },
-      "low-carb": { carbs: 0.10, protein: 0.35, fat: 0.55 },
-      "high-protein": { carbs: 0.30, protein: 0.40, fat: 0.30 }
-    }[approach] || { carbs: 0.33, protein: 0.33, fat: 0.34 };
-
-    return {
-      carbsGrams: Math.round(finalCals * fractions.carbs / 4),
-      proteinGrams: Math.round(finalCals * fractions.protein / 4),
-      fatGrams: Math.round(finalCals * fractions.fat / 9)
-    };
   },
 
   getBFCategory(r) {

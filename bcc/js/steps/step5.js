@@ -1,9 +1,5 @@
-// step5.js
 const step5 = {
   attachListeners(root) {
-    console.log('Attaching listeners to step 5');
-    
-    // New Scenario / Reset button
     const resetButton = root.querySelector('[data-action="reset"]');
     if (resetButton) {
       resetButton.addEventListener('click', () => {
@@ -12,24 +8,33 @@ const step5 = {
       });
     }
 
-    // Additional step 5 specific listeners can be added here
-    const newScenarioBtn = root.querySelector('#newScenarioBtn');
-    if (newScenarioBtn) {
-      newScenarioBtn.addEventListener('click', () => {
-        calculatorState.reset();
-        calculatorUI.updateDisplay();
-      });
+    const shareButton = root.querySelector('#shareResults');
+    if (shareButton) {
+      shareButton.addEventListener('click', this.handleShare);
     }
+  },
 
-    // Disclaimer link
-    const disclaimerLink = root.querySelector('#disclaimerLink');
-    if (disclaimerLink) {
-      disclaimerLink.addEventListener('click', () => {
-        const disclaimerModal = document.getElementById('disclaimerModal');
-        if (disclaimerModal) {
-          disclaimerModal.style.display = 'block';
-        }
-      });
+  handleShare() {
+    const results = calculatorState.get('results');
+    if (!results) return;
+
+    const text = `Body Composition Results:
+Weight: ${results.currentWeight.toFixed(1)} ${calculatorState.get('unit')}
+Body Fat: ${results.currentBF}%
+Daily Calories: ${results.finalCals}
+Protein: ${results.macros.proteinGrams}g
+Carbs: ${results.macros.carbsGrams}g
+Fat: ${results.macros.fatGrams}g`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'My Body Composition Results',
+        text: text
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(text)
+        .then(() => alert('Results copied to clipboard!'))
+        .catch(console.error);
     }
   }
 };

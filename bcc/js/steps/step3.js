@@ -1,67 +1,63 @@
-// step3.js
 const step3 = {
   attachListeners() {
-    // Handle lean mass input
-    const leanMassInput = document.querySelector('input[name="leanMass"]');
-    if (leanMassInput) {
-      leanMassInput.addEventListener('input', this.handleNumberInput.bind(this, 'leanMass'));
+    const knownMetricsCheck = document.querySelector('input[name="knownMetrics"]');
+    if (knownMetricsCheck) {
+      knownMetricsCheck.addEventListener('change', this.handleKnownMetricsChange);
     }
 
-    // Handle fat mass input
-    const fatMassInput = document.querySelector('input[name="fatMass"]');
-    if (fatMassInput) {
-      fatMassInput.addEventListener('input', this.handleNumberInput.bind(this, 'fatMass'));
+    if (calculatorState.get('inputMode') === 'leanFat') {
+      this.attachLeanFatListeners();
+    } else {
+      this.attachTotalBFListeners();
     }
 
-    // Handle total weight input
+    const insulinResistanceCheck = document.querySelector('input[name="insulinResistance"]');
+    if (insulinResistanceCheck) {
+      insulinResistanceCheck.addEventListener('change', this.handleInsRChange);
+    }
+  },
+
+  handleKnownMetricsChange(e) {
+    calculatorState.update('knownMetrics', e.target.checked);
+    calculatorUI.updateDisplay();
+  },
+
+  attachLeanFatListeners() {
+    ['leanMass', 'fatMass'].forEach(field => {
+      const input = document.querySelector(`input[name="${field}"]`);
+      if (input) {
+        input.addEventListener('input', (e) => {
+          let value = e.target.value.replace(/[^\d.]/g, '');
+          const parts = value.split('.');
+          if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+          if (value !== '' && parseFloat(value) > 500) value = '500';
+          calculatorState.update(field, value);
+        });
+      }
+    });
+  },
+
+  attachTotalBFListeners() {
     const weightInput = document.querySelector('input[name="totalWeight"]');
     if (weightInput) {
-      weightInput.addEventListener('input', this.handleNumberInput.bind(this, 'totalWeight'));
+      weightInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/[^\d.]/g, '');
+        if (value !== '' && parseFloat(value) > 1000) value = '1000';
+        calculatorState.update('totalWeight', value);
+      });
     }
 
-    // Handle body fat percentage input
     const bfInput = document.querySelector('input[name="bodyFatPct"]');
     if (bfInput) {
-      bfInput.addEventListener('input', this.handleBFInput);
+      bfInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/[^\d.]/g, '');
+        if (value !== '' && parseFloat(value) > 100) value = '100';
+        calculatorState.update('bodyFatPct', value);
+      });
     }
   },
 
-  handleNumberInput(field, e) {
-    let value = e.target.value;
-    // Allow decimal points and numbers only
-    value = value.replace(/[^\d.]/g, '');
-    
-    // Ensure only one decimal point
-    const parts = value.split('.');
-    if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-    
-    // Ensure reasonable values based on field
-    if (value !== '') {
-      const numValue = parseFloat(value);
-      if (numValue < 0) value = '0';
-      if (field === 'totalWeight' && numValue > 1000) value = '1000';
-      if ((field === 'leanMass' || field === 'fatMass') && numValue > 500) value = '500';
-    }
-    
-    calculatorState.update(field, value);
-  },
-
-  handleBFInput(e) {
-    let value = e.target.value;
-    // Allow decimal points and numbers only
-    value = value.replace(/[^\d.]/g, '');
-    
-    // Ensure only one decimal point
-    const parts = value.split('.');
-    if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-    
-    // Constrain to valid percentage range
-    if (value !== '') {
-      const numValue = parseFloat(value);
-      if (numValue < 0) value = '0';
-      if (numValue > 100) value = '100';
-    }
-    
-    calculatorState.update('bodyFatPct', value);
+  handleInsRChange(e) {
+    calculatorState.update('insulinResistance', e.target.checked);
   }
 };
