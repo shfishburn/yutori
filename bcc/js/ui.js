@@ -26,21 +26,45 @@ const calculatorUI = {
       console.error('Initialization error:', error);
     }
   },
-  updateDisplay() {
-    try {
-      const currentStep = calculatorState.get('currentStep');
-      console.log('Rendering step:', currentStep);
-      this.root.innerHTML = calculatorTemplates[`step${currentStep}`]();
-      this.attachStepListeners(currentStep);
-    } catch (error) {
-      console.error('Error updating display:', error);
-      this.root.innerHTML = `
-        <div class="error-message">
-          <p>An error occurred while rendering the calculator.</p>
-          <p>${error.message}</p>
-        </div>
-      `;
+  
+  attachEventListeners() {
+    if (!this.root) return;
+
+    this.root.addEventListener('click', (e) => {
+      if (e.target.matches('[data-action]')) {
+        const action = e.target.dataset.action;
+        this.handleAction(action);
+      }
+    });
+
+    this.root.addEventListener('change', (e) => {
+      if (e.target.matches('input, select')) {
+        const { name, value, type } = e.target;
+        
+        // Handle different input types
+        switch(type) {
+          case 'radio':
+            if (e.target.checked) {
+              calculatorState.update(name, value);
+            }
+            break;
+          case 'number':
+            calculatorState.update(name, parseFloat(value));
+            break;
+          default:
+            calculatorState.update(name, value);
+        }
+      }
+    });
+  },
+
+  attachStepListeners(step) {
+    // Dynamically attach step-specific listeners if needed
+    const stepModule = window[`step${step}`];
+    if (stepModule && typeof stepModule.attachListeners === 'function') {
+      stepModule.attachListeners(this.root);
     }
   },
-  // ... rest of the existing code remains the same ...
+
+  // ... rest of the methods remain the same
 };
