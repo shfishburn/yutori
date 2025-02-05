@@ -1,4 +1,4 @@
-// ui.js 2-5-25 9:21 AM 
+// ui.js
 const calculatorUI = {
   root: null,
 
