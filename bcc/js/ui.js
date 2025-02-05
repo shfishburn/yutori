@@ -2,7 +2,6 @@
 const calculatorUI = {
   root: null,
 
-
   attachStepListeners(currentStep) {
     const stepModule = window[`step${currentStep}`];
     if (stepModule?.attachListeners) {
