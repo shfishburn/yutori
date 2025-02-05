@@ -1,4 +1,4 @@
-// main.js 2-5-25 9:21 AM
+// main.js
 document.addEventListener('DOMContentLoaded', function() {
   calculatorUI.init();
 });
