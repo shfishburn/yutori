@@ -2,52 +2,52 @@
 const calculatorState = {
   data: {
     currentStep: 1,
-    inputMode: 'weightBF',
-    unit: 'lbs',
-    gender: 'female',
-    age: '',
-    leanMass: '',
-    fatMass: '',
-    totalWeight: '',
-    bodyFatPct: '',
-    weightGoal: '',
-    dietaryApproach: '',
-    activityLevel: '1.55',
-    dailyAdjustment: '',
-    leanMassChange: '',
-    fatGoalCategory: 'excellent'
+    // ... existing state properties
   },
 
-  // Update state and trigger UI update
   update(key, value) {
-    this.data[key] = value;
-    calculatorUI.updateDisplay();
+    try {
+      if (!(key in this.data)) {
+        throw new Error(`Invalid state key: ${key}`);
+      }
+
+      // Type checking for critical values
+      switch(key) {
+        case 'currentStep':
+          if (!Number.isInteger(Number(value)) || value < 1 || value > 5) {
+            throw new Error('Invalid step number');
+          }
+          break;
+        case 'age':
+        case 'leanMass':
+        case 'fatMass':
+        case 'totalWeight':
+        case 'bodyFatPct':
+        case 'dailyAdjustment':
+        case 'leanMassChange':
+          if (value !== '' && isNaN(Number(value))) {
+            throw new Error(`Invalid numeric value for ${key}`);
+          }
+          break;
+      }
+
+      this.data[key] = value;
+      calculatorUI.updateDisplay();
+    } catch (error) {
+      console.error('State update error:', error);
+      calculatorUI.showError('system', `System Error: ${error.message}`);
+    }
   },
 
-  // Get current state
   get(key) {
-    return this.data[key];
-  },
-
-  // Reset state
-  reset() {
-    Object.assign(this.data, {
-      currentStep: 1,
-      inputMode: 'weightBF',
-      unit: 'lbs',
-      gender: 'female',
-      age: '',
-      leanMass: '',
-      fatMass: '',
-      totalWeight: '',
-      bodyFatPct: '',
-      weightGoal: '',
-      dietaryApproach: '',
-      activityLevel: '1.55',
-      dailyAdjustment: '',
-      leanMassChange: '',
-      fatGoalCategory: 'excellent'
-    });
-    calculatorUI.updateDisplay();
+    try {
+      if (!(key in this.data)) {
+        throw new Error(`Invalid state key: ${key}`);
+      }
+      return this.data[key];
+    } catch (error) {
+      console.error('State get error:', error);
+      return null;
+    }
   }
 };
