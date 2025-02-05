@@ -1,5 +1,5 @@
 // main.js
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize the calculator UI
+  // Replace the existing initialization logic with this
   calculatorUI.init();
 });

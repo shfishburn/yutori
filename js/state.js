@@ -1,53 +1,70 @@
 // state.js
-const calculatorState = {
-  data: {
-    currentStep: 1,
-    // ... existing state properties
-  },
-
-  update(key, value) {
-    try {
-      if (!(key in this.data)) {
-        throw new Error(`Invalid state key: ${key}`);
-      }
-
-      // Type checking for critical values
-      switch(key) {
-        case 'currentStep':
-          if (!Number.isInteger(Number(value)) || value < 1 || value > 5) {
-            throw new Error('Invalid step number');
-          }
-          break;
-        case 'age':
-        case 'leanMass':
-        case 'fatMass':
-        case 'totalWeight':
-        case 'bodyFatPct':
-        case 'dailyAdjustment':
-        case 'leanMassChange':
-          if (value !== '' && isNaN(Number(value))) {
-            throw new Error(`Invalid numeric value for ${key}`);
-          }
-          break;
-      }
-
-      this.data[key] = value;
-      calculatorUI.updateDisplay();
-    } catch (error) {
-      console.error('State update error:', error);
-      calculatorUI.showError('system', `System Error: ${error.message}`);
-    }
-  },
-
-  get(key) {
-    try {
-      if (!(key in this.data)) {
-        throw new Error(`Invalid state key: ${key}`);
-      }
-      return this.data[key];
-    } catch (error) {
-      console.error('State get error:', error);
-      return null;
-    }
+class CalculatorState {
+  constructor() {
+    // Initialize default state
+    this.state = {
+      // Navigation
+      currentStep: 1,
+      
+      // Step 1
+      inputMode: 'leanFat',
+      unit: 'lbs',
+      
+      // Step 2
+      age: 30,
+      gender: 'male',
+      
+      // Step 3
+      leanMass: null,
+      fatMass: null,
+      totalWeight: null,
+      bodyFatPct: null,
+      
+      // Step 4
+      weightGoal: 'maintain',
+      dietaryApproach: 'balanced',
+      activityLevel: '1.375',
+      dailyAdjustment: 0,
+      leanMassChange: null,
+      fatGoalCategory: 'good',
+      
+      // Calculation results
+      results: null
+    };
   }
-};
+
+  // Get a specific state value
+  get(key) {
+    return this.state[key];
+  }
+
+  // Set a specific state value
+  set(key, value) {
+    this.state[key] = value;
+    return this;
+  }
+
+  // Update multiple state values at once
+  update(key, value) {
+    if (typeof key === 'object') {
+      this.state = { ...this.state, ...key };
+    } else {
+      this.state[key] = value;
+    }
+    return this;
+  }
+
+  // Reset state to initial values
+  reset() {
+    this.state = new CalculatorState().state;
+    return this;
+  }
+
+  // Get the entire state
+  getState() {
+    return { ...this.state };
+  }
+}
+
+// Global state instance
+const calculatorState = new CalculatorState();
