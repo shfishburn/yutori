@@ -1,7 +1,5 @@
-// state.js
 class CalculatorState {
   constructor() {
-    // Initialize default state
     this.state = {
       // Navigation
       currentStep: 1,
@@ -19,52 +17,47 @@ class CalculatorState {
       fatMass: null,
       totalWeight: null,
       bodyFatPct: null,
+      measuredBMR: null,
+      measuredTDEE: null,
+      knownMetrics: false,
+      insulinResistance: false,
       
       // Step 4
       weightGoal: 'maintain',
       dietaryApproach: 'balanced',
       activityLevel: '1.375',
+      activeEnergy: null,
       dailyAdjustment: 0,
-      leanMassChange: null,
-      fatGoalCategory: 'good',
       
-      // Calculation results
+      // Results
       results: null
     };
   }
 
-  // Get a specific state value
-  get(key) {
-    return this.state[key];
+  get(key) { 
+    return this.state[key]; 
   }
 
-  // Set a specific state value
-  set(key, value) {
-    this.state[key] = value;
-    return this;
+  set(key, value) { 
+    this.state[key] = value; 
+    return this; 
   }
 
-  // Update multiple state values at once
-  update(key, value) {
-    if (typeof key === 'object') {
-      this.state = { ...this.state, ...key };
-    } else {
-      this.state[key] = value;
+  update(updates) {
+    if (typeof updates === 'object') {
+      Object.assign(this.state, updates);
     }
     return this;
   }
 
-  // Reset state to initial values
   reset() {
     this.state = new CalculatorState().state;
     return this;
   }
 
-  // Get the entire state
-  getState() {
-    return { ...this.state };
+  getState() { 
+    return { ...this.state }; 
   }
 }
 
-// Global state instance
 const calculatorState = new CalculatorState();
