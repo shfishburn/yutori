@@ -1,7 +1,27 @@
 // ui.js
 const calculatorUI = {
   root: null,
-  
+
+
+  attachStepListeners(currentStep) {
+    const stepModule = window[`step${currentStep}`];
+    if (stepModule?.attachListeners) {
+      stepModule.attachListeners(this.root);
+    }
+  },
+
+  init() {
+    this.root = document.getElementById('calculatorRoot');
+    if (!this.root) {
+      console.error('Calculator root element not found');
+      return;
+    }
+    this.attachEventListeners();
+    this.updateDisplay();
+  },
+};
+
+
   init() {
     this.root = document.getElementById('calculatorRoot');
     if (!this.root) {
