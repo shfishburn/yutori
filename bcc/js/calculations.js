@@ -1,131 +1,117 @@
-const calculatorCalculations = {
-  calculate() {
-    try {
-      const state = calculatorState.getState();
-      console.log('Starting calculation with state:', state);  // Debug log
+// templates.js - Step 1 Template
+step1: () => `
+  <h2 class="project-title">Step 1: Mode & Units</h2>
+  <div class="form-group">
+    <div class="input-row">
+      <label class="radio-label">
+        <input type="radio" name="inputMode" value="leanFat" 
+          ${calculatorState.get('inputMode') === 'leanFat' ? 'checked' : ''}>
+        <span>Lean/Fat mass</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="inputMode" value="weightBF" 
+          ${calculatorState.get('inputMode') === 'weightBF' ? 'checked' : ''}>
+        <span>Weight + BF%</span>
+      </label>
+    </div>
+    <div class="input-row">
+      <label class="radio-label">
+        <input type="radio" name="unit" value="lbs" 
+          ${calculatorState.get('unit') === 'lbs' ? 'checked' : ''}>
+        <span>lbs</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="unit" value="kg" 
+          ${calculatorState.get('unit') === 'kg' ? 'checked' : ''}>
+        <span>kg</span>
+      </label>
+    </div>
+  </div>
+  <div class="button-row">
+    <button type="button" class="project-button" data-action="next">Next</button>
+  </div>
+`
 
-      const isKg = state.unit === 'kg';
-      const toKg = (value) => isKg ? value : value / 2.20462;
-      const toLbs = (value) => isKg ? value * 2.20462 : value;
+// step1.js - Add more robust unit conversion
+const step1 = {
+  attachListeners(root) {
+    root.querySelectorAll('input[name="unit"]').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const newUnit = e.target.value;
+        const oldUnit = calculatorState.get('unit');
+        
+        // Conversion factors
+        const conversionFactors = {
+          'lbs_to_kg': 0.453592,
+          'kg_to_lbs': 2.20462
+        };
 
-      // Composition calculations
-      let leanMassKg, fatMassKg;
-      if (state.inputMode === 'leanFat') {
-        leanMassKg = toKg(parseFloat(state.leanMass || 0));
-        fatMassKg = toKg(parseFloat(state.fatMass || 0));
-        console.log('Lean/Fat input:', { leanMassKg, fatMassKg });  // Debug log
-      } else {
-        const totalWeightKg = toKg(parseFloat(state.totalWeight || 0));
-        const bodyFatPct = parseFloat(state.bodyFatPct || 0);
-        fatMassKg = totalWeightKg * (bodyFatPct / 100);
-        leanMassKg = totalWeightKg - fatMassKg;
-        console.log('Total/BF input:', { totalWeightKg, bodyFatPct, leanMassKg, fatMassKg });  // Debug log
-      }
-
-      // Validate essential values
-      if (leanMassKg <= 0 || isNaN(leanMassKg)) {
-        console.error('Invalid lean mass:', leanMassKg);
-        return null;
-      }
-
-      // BMR & TDEE calculations
-      let BMR, TDEE;
-      if (state.knownMetrics) {
-        BMR = parseFloat(state.measuredBMR);
-        TDEE = parseFloat(state.measuredTDEE);
-      } else {
-        BMR = 370 + (21.6 * leanMassKg);
-        TDEE = state.activeEnergy ?
-          BMR + parseFloat(state.activeEnergy) :
-          BMR * parseFloat(state.activityLevel || 1.2);
-      }
-
-      console.log('Energy calculations:', { BMR, TDEE });  // Debug log
-
-      // Final calories with adjustment
-      let finalCals = TDEE;
-      if (state.weightGoal !== 'maintain') {
-        finalCals += parseFloat(state.dailyAdjustment || 0);
-      }
-      finalCals = Math.max(finalCals, 1200);
-
-      // Macro calculations
-      let proteinMultiplier = state.weightGoal === 'lose' ? 2.2 :
-                             state.weightGoal === 'gain' ? 2.0 : 1.6;
-
-      if (state.age > 60) {
-        proteinMultiplier = Math.max(proteinMultiplier, 2.0);
-      }
-
-      const maxProteinGrams = leanMassKg * 2.5;
-      const proteinGrams = Math.min(
-        Math.round(leanMassKg * proteinMultiplier),
-        maxProteinGrams
-      );
-      const proteinCals = proteinGrams * 4;
-
-      const baseCarbPercent = state.insulinResistance ? 0.20 :
-                             state.dietaryApproach === 'high-protein' ? 0.30 :
-                             state.dietaryApproach === 'low-carb' ? 0.10 : 0.40;
-
-      const carbCals = (finalCals - proteinCals) * baseCarbPercent;
-      const carbGrams = Math.round(carbCals / 4);
-
-      const fatCals = finalCals - proteinCals - carbCals;
-      const fatGrams = Math.round(fatCals / 9);
-
-      console.log('Macro calculations:', {  // Debug log
-        proteinGrams,
-        carbGrams,
-        fatGrams,
-        proteinCals,
-        carbCals,
-        fatCals
-      });
-
-      const totalWeightKg = leanMassKg + fatMassKg;
-      const currentBF = (fatMassKg / totalWeightKg) * 100;
-
-      const results = {
-        currentWeight: Number(toLbs(totalWeightKg).toFixed(1)),
-        currentLean: Number(toLbs(leanMassKg).toFixed(1)),
-        currentFat: Number(toLbs(fatMassKg).toFixed(1)),
-        currentBF: Number(currentBF.toFixed(1)),
-        currentBFCategory: this.getBFCategory(currentBF / 100),
-        bmr: Math.round(BMR),
-        tdee: Math.round(TDEE),
-        finalCals: Math.round(finalCals),
-        macros: {
-          proteinGrams,
-          carbsGrams: carbGrams,
-          fatGrams
-        },
-        percentages: {
-          protein: Math.round((proteinCals / finalCals) * 100),
-          carbs: Math.round((carbCals / finalCals) * 100),
-          fat: Math.round((fatCals / finalCals) * 100)
+        // Conversion logic for different input modes
+        if (calculatorState.get('inputMode') === 'leanFat') {
+          ['leanMass', 'fatMass'].forEach(field => {
+            const currentValue = calculatorState.get(field);
+            if (currentValue) {
+              const convertedValue = oldUnit === 'lbs' 
+                ? currentValue * conversionFactors.lbs_to_kg
+                : currentValue * conversionFactors.kg_to_lbs;
+              
+              calculatorState.update(field, Number(convertedValue.toFixed(2)));
+            }
+          });
+        } else {
+          ['totalWeight', 'bodyFatPct'].forEach(field => {
+            const currentValue = calculatorState.get(field);
+            if (currentValue && field !== 'bodyFatPct') {
+              const convertedValue = oldUnit === 'lbs'
+                ? currentValue * conversionFactors.lbs_to_kg
+                : currentValue * conversionFactors.kg_to_lbs;
+              
+              calculatorState.update(field, Number(convertedValue.toFixed(2)));
+            }
+          });
         }
-      };
 
-      console.log('Final results:', results);  // Debug log
-      return results;
-
-    } catch (error) {
-      console.error('Calculation error:', error);
-      return null;
-    }
-  },
-
-  getBFCategory(r) {
-    const p = r * 100;
-    if (p < 10) return "Dangerously Low";
-    if (p < 15) return "Excellent";
-    if (p < 20) return "Good";
-    if (p < 25) return "Fair";
-    if (p < 30) return "Poor";
-    return "Dangerously High";
+        // Update unit in state
+        calculatorState.update('unit', newUnit);
+        
+        // Trigger display update to reflect changes
+        calculatorUI.updateDisplay();
+      });
+    });
   }
 };
 
-// Explicitly attach to window
-window.calculatorCalculations = calculatorCalculations;
+// templates.js - Step 3 Template
+step3: () => {
+  const isLeanFatMode = calculatorState.get('inputMode') === 'leanFat';
+  const unit = calculatorState.get('unit');
+  
+  return `
+    <h2 class="project-title">Step 3: Composition</h2>
+    <div class="form-group" id="leanFatInputs" style="display: ${isLeanFatMode ? 'block' : 'none'}">
+      <label class="input-label">LEAN MASS (${unit})</label>
+      <input type="number" name="leanMass" 
+        value="${calculatorState.get('leanMass') || ''}" 
+        class="form-input" step="0.1">
+      <label class="input-label">FAT MASS (${unit})</label>
+      <input type="number" name="fatMass" 
+        value="${calculatorState.get('fatMass') || ''}" 
+        class="form-input" step="0.1">
+    </div>
+    <div class="form-group" id="weightBFInputs" style="display: ${isLeanFatMode ? 'none' : 'block'}">
+      <label class="input-label">TOTAL WEIGHT (${unit})</label>
+      <input type="number" name="totalWeight" 
+        value="${calculatorState.get('totalWeight') || ''}" 
+        class="form-input" step="0.1">
+      <label class="input-label">BODY FAT (%)</label>
+      <input type="number" name="bodyFatPct" 
+        step="0.1" 
+        value="${calculatorState.get('bodyFatPct') || ''}" 
+        class="form-input">
+    </div>
+    <div class="button-row">
+      <button type="button" class="project-button secondary" data-action="prev">Back</button>
+      <button type="button" class="project-button" data-action="next">Next</button>
+    </div>
+  `;
+}
