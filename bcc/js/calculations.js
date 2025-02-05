@@ -2,6 +2,8 @@ const calculatorCalculations = {
   calculate() {
     try {
       const state = calculatorState.getState();
+      console.log('Starting calculation with state:', state);  // Debug log
+
       const isKg = state.unit === 'kg';
       const toKg = (value) => isKg ? value : value / 2.20462;
       const toLbs = (value) => isKg ? value * 2.20462 : value;
@@ -9,13 +11,21 @@ const calculatorCalculations = {
       // Composition calculations
       let leanMassKg, fatMassKg;
       if (state.inputMode === 'leanFat') {
-        leanMassKg = toKg(parseFloat(state.leanMass));
-        fatMassKg = toKg(parseFloat(state.fatMass));
+        leanMassKg = toKg(parseFloat(state.leanMass || 0));
+        fatMassKg = toKg(parseFloat(state.fatMass || 0));
+        console.log('Lean/Fat input:', { leanMassKg, fatMassKg });  // Debug log
       } else {
-        const totalWeightKg = toKg(parseFloat(state.totalWeight));
-        const bodyFatPct = parseFloat(state.bodyFatPct);
+        const totalWeightKg = toKg(parseFloat(state.totalWeight || 0));
+        const bodyFatPct = parseFloat(state.bodyFatPct || 0);
         fatMassKg = totalWeightKg * (bodyFatPct / 100);
         leanMassKg = totalWeightKg - fatMassKg;
+        console.log('Total/BF input:', { totalWeightKg, bodyFatPct, leanMassKg, fatMassKg });  // Debug log
+      }
+
+      // Validate essential values
+      if (leanMassKg <= 0 || isNaN(leanMassKg)) {
+        console.error('Invalid lean mass:', leanMassKg);
+        return null;
       }
 
       // BMR & TDEE calculations
@@ -27,8 +37,10 @@ const calculatorCalculations = {
         BMR = 370 + (21.6 * leanMassKg);
         TDEE = state.activeEnergy ?
           BMR + parseFloat(state.activeEnergy) :
-          BMR * parseFloat(state.activityLevel);
+          BMR * parseFloat(state.activityLevel || 1.2);
       }
+
+      console.log('Energy calculations:', { BMR, TDEE });  // Debug log
 
       // Final calories with adjustment
       let finalCals = TDEE;
@@ -62,32 +74,40 @@ const calculatorCalculations = {
       const fatCals = finalCals - proteinCals - carbCals;
       const fatGrams = Math.round(fatCals / 9);
 
+      console.log('Macro calculations:', {  // Debug log
+        proteinGrams,
+        carbGrams,
+        fatGrams,
+        proteinCals,
+        carbCals,
+        fatCals
+      });
+
       const totalWeightKg = leanMassKg + fatMassKg;
       const currentBF = (fatMassKg / totalWeightKg) * 100;
 
-      // Make sure all values are defined
       const results = {
-        currentWeight: toLbs(totalWeightKg) || 0,
-        currentLean: toLbs(leanMassKg) || 0,
-        currentFat: toLbs(fatMassKg) || 0,
-        currentBF: currentBF || 0,
+        currentWeight: Number(toLbs(totalWeightKg).toFixed(1)),
+        currentLean: Number(toLbs(leanMassKg).toFixed(1)),
+        currentFat: Number(toLbs(fatMassKg).toFixed(1)),
+        currentBF: Number(currentBF.toFixed(1)),
         currentBFCategory: this.getBFCategory(currentBF / 100),
-        bmr: Math.round(BMR) || 0,
-        tdee: Math.round(TDEE) || 0,
-        finalCals: Math.round(finalCals) || 0,
+        bmr: Math.round(BMR),
+        tdee: Math.round(TDEE),
+        finalCals: Math.round(finalCals),
         macros: {
-          proteinGrams: proteinGrams || 0,
-          carbsGrams: carbGrams || 0,
-          fatGrams: fatGrams || 0
+          proteinGrams,
+          carbsGrams: carbGrams,
+          fatGrams
         },
         percentages: {
-          protein: Math.round((proteinCals / finalCals) * 100) || 0,
-          carbs: Math.round((carbCals / finalCals) * 100) || 0,
-          fat: Math.round((fatCals / finalCals) * 100) || 0
+          protein: Math.round((proteinCals / finalCals) * 100),
+          carbs: Math.round((carbCals / finalCals) * 100),
+          fat: Math.round((fatCals / finalCals) * 100)
         }
       };
 
-      console.log('Calculation results:', results);  // Add debugging
+      console.log('Final results:', results);  // Debug log
       return results;
 
     } catch (error) {
