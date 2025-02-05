@@ -103,11 +103,10 @@ const calculatorUI = {
           try {
             this.root.classList.add('calculating');
             const results = calculatorCalculations.calculate();
+            console.log('Calculation results:', results); // Add debugging
             if (results) {
-              calculatorState.update({
-                currentStep: 5,
-                results: results
-              });
+              calculatorState.set('results', results);
+              calculatorState.set('currentStep', 5);
               this.updateDisplay();
             } else {
               this.showError('general', 'Calculation failed. Please check inputs.');

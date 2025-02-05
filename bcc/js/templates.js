@@ -160,42 +160,56 @@ const calculatorTemplates = {
     </div>
   `,
 
-  step5: (results) => `
-    <div class="wizard-step">
-      <h2>Results</h2>
-      <div class="results-grid">
-        <div class="result-card">
-          <h3>Current Composition</h3>
-          <div class="result-content">
-            <p>Weight: ${results.currentWeight.toFixed(1)} ${calculatorState.get('unit')}</p>
-            <p>Lean Mass: ${results.currentLean.toFixed(1)} ${calculatorState.get('unit')}</p>
-            <p>Body Fat: ${results.currentBF}%</p>
-            <p>Category: ${results.currentBFCategory}</p>
+  step5: (results) => {
+    if (!results) {
+      return `
+        <div class="wizard-step">
+          <h2>Error</h2>
+          <p>Failed to calculate results. Please try again.</p>
+          <div class="button-row">
+            <button class="project-button" data-action="reset">Start Over</button>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="wizard-step">
+        <h2>Results</h2>
+        <div class="results-grid">
+          <div class="result-card">
+            <h3>Current Composition</h3>
+            <div class="result-content">
+              <p>Weight: ${(results.currentWeight || 0).toFixed(1)} ${calculatorState.get('unit')}</p>
+              <p>Lean Mass: ${(results.currentLean || 0).toFixed(1)} ${calculatorState.get('unit')}</p>
+              <p>Body Fat: ${(results.currentBF || 0).toFixed(1)}%</p>
+              <p>Category: ${results.currentBFCategory || 'N/A'}</p>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <h3>Energy Requirements</h3>
+            <div class="result-content">
+              <p>BMR: ${results.bmr || 0} calories</p>
+              <p>TDEE: ${results.tdee || 0} calories</p>
+              <p>Target: ${results.finalCals || 0} calories</p>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <h3>Macro Targets</h3>
+            <div class="result-content">
+              <p>Protein: ${results.macros?.proteinGrams || 0}g (${results.percentages?.protein || 0}%)</p>
+              <p>Carbs: ${results.macros?.carbsGrams || 0}g (${results.percentages?.carbs || 0}%)</p>
+              <p>Fat: ${results.macros?.fatGrams || 0}g (${results.percentages?.fat || 0}%)</p>
+            </div>
           </div>
         </div>
 
-        <div class="result-card">
-          <h3>Energy Requirements</h3>
-          <div class="result-content">
-            <p>BMR: ${results.bmr} calories</p>
-            <p>TDEE: ${results.tdee} calories</p>
-            <p>Target: ${results.finalCals} calories</p>
-          </div>
-        </div>
-
-        <div class="result-card">
-          <h3>Macro Targets</h3>
-          <div class="result-content">
-            <p>Protein: ${results.macros.proteinGrams}g (${results.percentages.protein}%)</p>
-            <p>Carbs: ${results.macros.carbsGrams}g (${results.percentages.carbs}%)</p>
-            <p>Fat: ${results.macros.fatGrams}g (${results.percentages.fat}%)</p>
-          </div>
+        <div class="button-row">
+          <button class="project-button" data-action="reset">New Calculation</button>
         </div>
       </div>
-
-      <div class="button-row">
-        <button class="project-button" data-action="reset">New Calculation</button>
-      </div>
-    </div>
-  `
+    `;
+  }
 };

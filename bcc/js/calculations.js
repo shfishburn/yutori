@@ -25,7 +25,7 @@ const calculatorCalculations = {
         TDEE = parseFloat(state.measuredTDEE);
       } else {
         BMR = 370 + (21.6 * leanMassKg);
-        TDEE = state.activeEnergy ? 
+        TDEE = state.activeEnergy ?
           BMR + parseFloat(state.activeEnergy) :
           BMR * parseFloat(state.activityLevel);
       }
@@ -38,9 +38,9 @@ const calculatorCalculations = {
       finalCals = Math.max(finalCals, 1200);
 
       // Macro calculations
-      let proteinMultiplier = state.weightGoal === 'lose' ? 2.2 : 
+      let proteinMultiplier = state.weightGoal === 'lose' ? 2.2 :
                              state.weightGoal === 'gain' ? 2.0 : 1.6;
-      
+
       if (state.age > 60) {
         proteinMultiplier = Math.max(proteinMultiplier, 2.0);
       }
@@ -55,7 +55,7 @@ const calculatorCalculations = {
       const baseCarbPercent = state.insulinResistance ? 0.20 :
                              state.dietaryApproach === 'high-protein' ? 0.30 :
                              state.dietaryApproach === 'low-carb' ? 0.10 : 0.40;
-      
+
       const carbCals = (finalCals - proteinCals) * baseCarbPercent;
       const carbGrams = Math.round(carbCals / 4);
 
@@ -65,26 +65,31 @@ const calculatorCalculations = {
       const totalWeightKg = leanMassKg + fatMassKg;
       const currentBF = (fatMassKg / totalWeightKg) * 100;
 
-      return {
-        currentWeight: toLbs(totalWeightKg),
-        currentLean: toLbs(leanMassKg),
-        currentFat: toLbs(fatMassKg),
-        currentBF: currentBF.toFixed(1),
+      // Make sure all values are defined
+      const results = {
+        currentWeight: toLbs(totalWeightKg) || 0,
+        currentLean: toLbs(leanMassKg) || 0,
+        currentFat: toLbs(fatMassKg) || 0,
+        currentBF: currentBF || 0,
         currentBFCategory: this.getBFCategory(currentBF / 100),
-        bmr: Math.round(BMR),
-        tdee: Math.round(TDEE),
-        finalCals: Math.round(finalCals),
+        bmr: Math.round(BMR) || 0,
+        tdee: Math.round(TDEE) || 0,
+        finalCals: Math.round(finalCals) || 0,
         macros: {
-          proteinGrams,
-          carbsGrams: carbGrams,
-          fatGrams
+          proteinGrams: proteinGrams || 0,
+          carbsGrams: carbGrams || 0,
+          fatGrams: fatGrams || 0
         },
         percentages: {
-          protein: Math.round((proteinCals / finalCals) * 100),
-          carbs: Math.round((carbCals / finalCals) * 100),
-          fat: Math.round((fatCals / finalCals) * 100)
+          protein: Math.round((proteinCals / finalCals) * 100) || 0,
+          carbs: Math.round((carbCals / finalCals) * 100) || 0,
+          fat: Math.round((fatCals / finalCals) * 100) || 0
         }
       };
+
+      console.log('Calculation results:', results);  // Add debugging
+      return results;
+
     } catch (error) {
       console.error('Calculation error:', error);
       return null;
@@ -101,3 +106,6 @@ const calculatorCalculations = {
     return "Dangerously High";
   }
 };
+
+// Explicitly attach to window
+window.calculatorCalculations = calculatorCalculations;
