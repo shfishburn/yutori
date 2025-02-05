@@ -17,7 +17,7 @@
         <img src="../assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
       </div>
     </nav>
-    
+
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
@@ -48,7 +48,7 @@
     <!-- Calculator JavaScript Files -->
     <script src="js/state.js"></script>
     <script src="js/templates.js"></script>
-    <script src="js/validators.js"></script>  
+    <script src="js/validators.js"></script>
     <script src="js/calculations.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/steps/step1.js"></script>
@@ -56,10 +56,12 @@
     <script src="js/steps/step3.js"></script>
     <script src="js/steps/step4.js"></script>
     <script src="js/steps/step5.js"></script>
-    <script>
-      calculatorUI.init();
-   </script>
-    
+    <!-- <script src="js/main.js"></script> -->
 
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        calculatorUI.init();
+      });
+    </script>
   </body>
 </html>

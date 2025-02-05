@@ -1,12 +1,6 @@
 const calculatorUI = {
   root: null,
-
-  attachStepListeners(currentStep) {
-    const stepModule = window[`step${currentStep}`];
-    if (stepModule?.attachListeners) {
-      stepModule.attachListeners(this.root);
-    }
-  },
+  initialized: false,
 
   init() {
     console.log('Initializing calculator UI');
@@ -15,7 +9,10 @@ const calculatorUI = {
       console.error('Calculator root element not found');
       return;
     }
-    this.attachEventListeners();
+    if (!this.initialized) {
+      this.attachEventListeners();
+      this.initialized = true;
+    }
     this.updateDisplay();
   },
 
@@ -24,8 +21,22 @@ const calculatorUI = {
       const currentStep = calculatorState.get('currentStep');
       console.log('Rendering step:', currentStep);
       const state = calculatorState.getState();
-      this.root.innerHTML = calculatorTemplates[`step${currentStep}`](state);
-      this.attachStepListeners(currentStep);
+
+      // Get the template function for the current step
+      const templateFn = calculatorTemplates[`step${currentStep}`];
+      if (!templateFn) {
+        console.error('Template not found for step:', currentStep);
+        return;
+      }
+
+      // Clear existing content and set new HTML
+      this.root.innerHTML = templateFn(state);
+
+      // Attach any step-specific listeners
+      const stepModule = window[`step${currentStep}`];
+      if (stepModule?.attachListeners) {
+        stepModule.attachListeners(this.root);
+      }
     } catch (error) {
       console.error('Error updating display:', error);
       this.root.innerHTML = `<div class="error-message"><p>Error: ${error.message}</p></div>`;
@@ -35,37 +46,41 @@ const calculatorUI = {
   attachEventListeners() {
     if (!this.root) return;
 
+    // Use event delegation for buttons
     this.root.addEventListener('click', (e) => {
-      if (e.target.matches('[data-action]')) {
-        const action = e.target.dataset.action;
+      const button = e.target.closest('[data-action]');
+      if (button) {
+        const action = button.dataset.action;
         this.handleAction(action);
       }
     });
 
+    // Use event delegation for form inputs
     this.root.addEventListener('change', (e) => {
-      if (e.target.matches('input, select')) {
-        const { name, value, type, checked } = e.target;
-        
+      const input = e.target;
+      if (input.matches('input, select')) {
+        const { name, value, type, checked } = input;
+
         switch(type) {
           case 'checkbox':
-            calculatorState.update(name, checked);
+            calculatorState.set(name, checked);
             if (name === 'knownMetrics') {
               this.updateDisplay();
             }
             break;
           case 'radio':
             if (checked) {
-              calculatorState.update(name, value);
+              calculatorState.set(name, value);
               if (['inputMode', 'unit'].includes(name)) {
                 this.updateDisplay();
               }
             }
             break;
           case 'number':
-            calculatorState.update(name, parseFloat(value));
+            calculatorState.set(name, parseFloat(value));
             break;
           default:
-            calculatorState.update(name, value);
+            calculatorState.set(name, value);
         }
       }
     });
@@ -75,12 +90,12 @@ const calculatorUI = {
     switch(action) {
       case 'next':
         if (this.validateCurrentStep()) {
-          calculatorState.update('currentStep', calculatorState.get('currentStep') + 1);
+          calculatorState.set('currentStep', calculatorState.get('currentStep') + 1);
           this.updateDisplay();
         }
         break;
       case 'prev':
-        calculatorState.update('currentStep', calculatorState.get('currentStep') - 1);
+        calculatorState.set('currentStep', calculatorState.get('currentStep') - 1);
         this.updateDisplay();
         break;
       case 'calculate':
@@ -121,7 +136,7 @@ const calculatorUI = {
     const errorDiv = document.createElement('div');
     errorDiv.className = `error-message ${fieldName === 'general' ? 'general-error' : ''}`;
     errorDiv.textContent = message;
-    
+
     if (fieldName === 'general') {
       this.root.insertBefore(errorDiv, this.root.firstChild);
     } else {
@@ -142,3 +157,6 @@ const calculatorUI = {
     });
   }
 };
+
+// Explicitly attach to window
+window.calculatorUI = calculatorUI;
