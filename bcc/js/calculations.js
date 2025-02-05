@@ -2,137 +2,101 @@
 const calculatorCalculations = {
   calculate() {
     try {
-      const inputMode = calculatorState.get('inputMode');
-      let leanMass, fatMass, currentWeight, currentBF;
+      // Determine input mode and unit
+      const isKg = document.getElementById('radioKg').checked;
+      let M0 = 0, F0 = 0;
 
-      // Validate activity level first
-      const activityLevel = calculatorState.get('activityLevel');
-      if (!activityLevel) {
-        throw new Error('Activity level is required');
-      }
-
-      // Handle different input modes
-      if (inputMode === 'leanFat') {
-        leanMass = parseFloat(calculatorState.get('leanMass'));
-        fatMass = parseFloat(calculatorState.get('fatMass'));
-        
-        // Validate lean and fat mass
-        if (!leanMass || leanMass <= 0) {
-          throw new Error('Lean mass must be greater than 0');
+      // Composition calculation
+      const radioLeanFat = document.getElementById('radioLeanFat');
+      if (radioLeanFat.checked) {
+        M0 = parseFloat(document.getElementById('leanMassInput').value) || 0;
+        F0 = parseFloat(document.getElementById('fatMassInput').value) || 0;
+        if (isKg) { 
+          M0 *= 2.20462; 
+          F0 *= 2.20462; 
         }
-        if (fatMass < 0) {
-          throw new Error('Fat mass cannot be negative');
-        }
-        if (leanMass + fatMass > 1000) {
-          throw new Error('Total weight exceeds reasonable limits');
-        }
-
-        currentWeight = leanMass + fatMass;
-        currentBF = (fatMass / currentWeight) * 100;
       } else {
-        // Weight + BF% mode
-        const totalWeight = parseFloat(calculatorState.get('totalWeight'));
-        const bodyFatPct = parseFloat(calculatorState.get('bodyFatPct'));
-
-        // Validate total weight and body fat percentage
-        if (!totalWeight || totalWeight <= 0) {
-          throw new Error('Total weight must be greater than 0');
-        }
-        if (!bodyFatPct || bodyFatPct < 0 || bodyFatPct > 100) {
-          throw new Error('Body fat percentage must be between 0 and 100');
-        }
-
-        currentWeight = totalWeight;
-        fatMass = currentWeight * (bodyFatPct / 100);
-        leanMass = currentWeight - fatMass;
-        currentBF = bodyFatPct;
+        let w = parseFloat(document.getElementById('totalWeightInput').value) || 0;
+        let bf = parseFloat(document.getElementById('bodyFatPctInput').value) || 0;
+        if (isKg) w *= 2.20462;
+        F0 = (bf / 100) * w;
+        M0 = w - F0;
       }
 
-      // Body fat percentage sanity check
-      if (currentBF > 100) {
-        throw new Error('Body fat percentage calculation error');
-      }
+      // Current composition
+      const cWeight = M0 + F0;
+      const currentBF = (F0 / cWeight) * 100;
 
-      // Calculate BMR
-      const bmr = this.calculateBMR(leanMass);
-      if (bmr < 500 || bmr > 5000) {
-        throw new Error('BMR calculation outside reasonable range');
-      }
+      // BMR calculation
+      const LMkg = M0 / 2.20462;
+      const BMR = 370 + (21.6 * LMkg);
 
-      // Additional calculations (placeholder - replace with your actual logic)
-      const tdee = this.calculateTDEE(bmr);
-      const { protein, carbs, fat } = this.calculateMacros(currentWeight, leanMass);
+      // Activity and TDEE
+      const activityFactor = parseFloat(document.getElementById('activityLevelSelect').value) || 1.55;
+      const TDEE = BMR * activityFactor;
 
+      // Daily adjustment
+      let dailyAdj = parseFloat(document.getElementById('dailyAdjustmentInput').value) || 0;
+      const weightGoal = document.querySelector('input[name="weightGoal"]:checked')?.value;
+      if (weightGoal === "maintain") dailyAdj = 0;
+
+      // Final calories
+      let finalCals = TDEE + dailyAdj;
+      finalCals = Math.max(finalCals, 1200);
+
+      // Macro calculation
+      const approach = document.querySelector('input[name="dietaryApproach"]:checked')?.value || "balanced";
+      const macros = this.computeMacros(finalCals, approach);
+
+      // Goal range calculation
+      const fatRangeCategory = document.getElementById('fatGoalCategorySelect').value;
+      const leanMassChangePercent = parseFloat(document.getElementById('leanMassChangeInput').value) || 0;
+
+      // Prepare results object
       return {
-        currentWeight: currentWeight.toFixed(1),
-        currentLean: leanMass.toFixed(1),
-        currentFat: fatMass.toFixed(1),
+        currentWeight: cWeight,
+        currentLean: M0,
+        currentFat: F0,
         currentBF: currentBF.toFixed(1),
-        bmr: bmr.toFixed(0),
-        tdee: tdee.toFixed(0),
-        protein: protein.toFixed(0),
-        carbs: carbs.toFixed(0),
-        fat: fat.toFixed(0),
-        // Add other relevant result fields
-        goalLabel: calculatorState.get('weightGoal'),
-        approachLabel: calculatorState.get('dietaryApproach'),
-        activityLabel: this.getActivityLabel(calculatorState.get('activityLevel'))
+        currentBFCategory: this.getBFCategory(currentBF / 100),
+        bmr: Math.round(BMR),
+        tdee: Math.round(TDEE),
+        finalCals: Math.round(finalCals),
+        macros: macros,
+        weightGoal: weightGoal,
+        dietaryApproach: approach,
+        activityFactor: activityFactor,
+        dailyAdjustment: dailyAdj,
+        leanMassChangePercent: leanMassChangePercent,
+        fatRangeCategory: fatRangeCategory
       };
     } catch (error) {
       console.error('Calculation error:', error);
-      calculatorUI.showError('calculation', `Calculation Error: ${error.message}`);
       return null;
     }
   },
 
-  calculateBMR(leanMass) {
-    // Implement your BMR calculation logic
-    // This is a placeholder - replace with your actual formula
-    return leanMass * 22;
-  },
+  computeMacros(finalCals, approach) {
+    const fractions = {
+      "balanced": { carbs: 0.33, protein: 0.33, fat: 0.34 },
+      "low-carb": { carbs: 0.10, protein: 0.35, fat: 0.55 },
+      "high-protein": { carbs: 0.30, protein: 0.40, fat: 0.30 }
+    }[approach] || { carbs: 0.33, protein: 0.33, fat: 0.34 };
 
-  calculateTDEE(bmr) {
-    const activityLevel = parseFloat(calculatorState.get('activityLevel'));
-    return bmr * activityLevel;
-  },
-
-  calculateMacros(currentWeight, leanMass) {
-    // Implement your macro calculation logic
-    // This is a placeholder - replace with your actual macro calculation
     return {
-      protein: leanMass * 2.2,  // 2.2g per kg of lean mass
-      carbs: currentWeight * 2,  // Adjust as needed
-      fat: currentWeight * 0.5   // Adjust as needed
+      carbsGrams: Math.round(finalCals * fractions.carbs / 4),
+      proteinGrams: Math.round(finalCals * fractions.protein / 4),
+      fatGrams: Math.round(finalCals * fractions.fat / 9)
     };
   },
 
-  getActivityLabel(activityLevel) {
-    const activityLabels = {
-      '1.2': 'Sedentary',
-      '1.375': 'Light Activity',
-      '1.55': 'Moderate Activity',
-      '1.725': 'Very Active',
-      '1.9': 'Extremely Active'
-    };
-    return activityLabels[activityLevel] || 'Unknown';
-  },
-
-  getLeanFatMass() {
-    const inputMode = calculatorState.get('inputMode');
-    
-    if (inputMode === 'leanFat') {
-      return {
-        leanMass: parseFloat(calculatorState.get('leanMass')),
-        fatMass: parseFloat(calculatorState.get('fatMass'))
-      };
-    } else {
-      const totalWeight = parseFloat(calculatorState.get('totalWeight'));
-      const bodyFatPct = parseFloat(calculatorState.get('bodyFatPct'));
-      
-      const fatMass = totalWeight * (bodyFatPct / 100);
-      const leanMass = totalWeight - fatMass;
-      
-      return { leanMass, fatMass };
-    }
+  getBFCategory(r) {
+    const p = r * 100;
+    if (p < 10) return "Dangerously Low";
+    if (p < 15) return "Excellent";
+    if (p < 20) return "Good";
+    if (p < 25) return "Fair";
+    if (p < 30) return "Poor";
+    return "Dangerously High";
   }
 };

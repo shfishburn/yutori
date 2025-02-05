@@ -1,33 +1,35 @@
 // step5.js
 const step5 = {
-  attachListeners() {
-    // Handle reset button
-    const resetButton = document.querySelector('button[data-action="reset"]');
+  attachListeners(root) {
+    console.log('Attaching listeners to step 5');
+    
+    // New Scenario / Reset button
+    const resetButton = root.querySelector('[data-action="reset"]');
     if (resetButton) {
-      resetButton.addEventListener('click', this.handleReset);
+      resetButton.addEventListener('click', () => {
+        calculatorState.reset();
+        calculatorUI.updateDisplay();
+      });
     }
-  },
 
-  handleReset() {
-    calculatorState.reset();
-  },
-
-  // Helper methods for formatting display values
-  formatResult(value, type) {
-    switch(type) {
-      case 'percentage':
-        return value + '%';
-      case 'calories':
-        return value.toLocaleString() + ' kcal';
-      case 'weight':
-        const unit = calculatorState.get('unit');
-        return `${parseFloat(value).toFixed(1)} ${unit}`;
-      default:
-        return value;
+    // Additional step 5 specific listeners can be added here
+    const newScenarioBtn = root.querySelector('#newScenarioBtn');
+    if (newScenarioBtn) {
+      newScenarioBtn.addEventListener('click', () => {
+        calculatorState.reset();
+        calculatorUI.updateDisplay();
+      });
     }
-  },
 
-  formatRange(low, high, type) {
-    return `${this.formatResult(low, type)} - ${this.formatResult(high, type)}`;
+    // Disclaimer link
+    const disclaimerLink = root.querySelector('#disclaimerLink');
+    if (disclaimerLink) {
+      disclaimerLink.addEventListener('click', () => {
+        const disclaimerModal = document.getElementById('disclaimerModal');
+        if (disclaimerModal) {
+          disclaimerModal.style.display = 'block';
+        }
+      });
+    }
   }
 };

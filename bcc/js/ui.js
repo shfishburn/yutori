@@ -94,13 +94,23 @@ const calculatorUI = {
         break;
       case 'calculate':
         if (this.validateCurrentStep()) {
-          const results = calculatorCalculations.calculate();
-          if (results) {
-            calculatorState.update({
-              currentStep: 5,
-              results: results
-            });
-            this.updateDisplay();
+          try {
+            const results = calculatorCalculations.calculate();
+            console.log('Calculation results:', results);
+            
+            if (results) {
+              calculatorState.update({
+                currentStep: 5,
+                results: results
+              });
+              this.updateDisplay();
+            } else {
+              console.error('Calculation returned null');
+              this.showError('general', 'Unable to complete calculation. Please check your inputs.');
+            }
+          } catch (error) {
+            console.error('Calculation error:', error);
+            this.showError('general', `Calculation failed: ${error.message}`);
           }
         }
         break;

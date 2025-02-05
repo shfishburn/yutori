@@ -154,41 +154,32 @@ const calculatorTemplates = {
         <div class="result-card">
           <h3>Settings</h3>
           <div class="result-content">
-            <p><strong>Goal:</strong> ${results.goalLabel}</p>
-            <p><strong>Approach:</strong> ${results.approachLabel}</p>
-            <p><strong>Activity:</strong> ${results.activityLabel}</p>
+            <p><strong>Goal:</strong> ${results.weightGoal === 'lose' ? 'Lose Weight' : results.weightGoal === 'gain' ? 'Gain Lean Mass' : 'Maintain'}</p>
+            <p><strong>Approach:</strong> ${results.dietaryApproach}</p>
+            <p><strong>Activity:</strong> ${results.activityFactor}</p>
             <p><strong>Daily +/-:</strong> ${results.dailyAdjustment}</p>
-            <p><strong>Lean Goal %:</strong> ${results.leanGoalPct}</p>
+            <p><strong>Lean Goal %:</strong> ${results.leanMassChangePercent}%</p>
+            <p><strong>Fat% Goal Range:</strong> ${results.fatRangeCategory}</p>
           </div>
         </div>
         <div class="result-card">
           <h3>Current</h3>
           <div class="result-content">
-            <p><strong>Weight:</strong> ${results.currentWeight}</p>
-            <p><strong>Fat Mass:</strong> ${results.currentFat}</p>
-            <p><strong>Lean Mass:</strong> ${results.currentLean}</p>
-            <p><strong>BF%:</strong> ${results.currentBF}</p>
+            <p><strong>Weight:</strong> ${results.currentWeight} lbs</p>
+            <p><strong>Fat Mass:</strong> ${results.currentFat} lbs (${results.currentBF}%)</p>
+            <p><strong>Lean Mass:</strong> ${results.currentLean} lbs</p>
           </div>
         </div>
         <div class="result-card">
-          <h3>Goal Range</h3>
+          <h3>Calories & Macros</h3>
           <div class="result-content">
-            <p><strong>Weight:</strong> ${results.goalWeight}</p>
-            <p><strong>Fat Mass:</strong> ${results.goalFat}</p>
-            <p><strong>Lean Mass:</strong> ${results.goalLean}</p>
-            <p><strong>BF%:</strong> ${results.goalBF}</p>
+            <p><strong>BMR:</strong> ${results.bmr} cals</p>
+            <p><strong>TDEE:</strong> ${results.tdee} cals</p>
+            <p><strong>Final Cals:</strong> ${results.finalCals} cals</p>
+            <p><strong>Protein:</strong> ${results.macros.proteinGrams}g</p>
+            <p><strong>Carbs:</strong> ${results.macros.carbsGrams}g</p>
+            <p><strong>Fat:</strong> ${results.macros.fatGrams}g</p>
           </div>
-        </div>
-      </div>
-      <div class="result-card">
-        <h3>Calories & Macros</h3>
-        <div class="result-content">
-          <p><strong>BMR:</strong> ${results.bmr}</p>
-          <p><strong>TDEE:</strong> ${results.tdee}</p>
-          <p><strong>Final Cals:</strong> ${results.finalCals}</p>
-          <p><strong>Protein:</strong> ${results.protein}</p>
-          <p><strong>Carbs:</strong> ${results.carbs}</p>
-          <p><strong>Fat:</strong> ${results.fat}</p>
         </div>
       </div>
       <div class="button-row">
