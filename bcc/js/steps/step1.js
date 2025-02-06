@@ -1,48 +1,49 @@
-const step1 = {
+// step1.js
+const step1Module = {
   attachListeners(root) {
     if (!root) return;
-    
+
+    // Input mode listeners
     root.querySelectorAll('input[name="inputMode"]').forEach(input => {
-      input.addEventListener('change', this.handleModeChange);
+      input.addEventListener('change', (e) => {
+        const newMode = e.target.value;
+        calculatorState.update({
+          inputMode: newMode,
+          // Reset composition fields when mode changes
+          leanMass: null,
+          fatMass: null,
+          totalWeight: null,
+          bodyFatPct: null
+        });
+        calculatorUI.updateDisplay();
+      });
     });
-    
+
+    // Unit conversion listeners
     root.querySelectorAll('input[name="unit"]').forEach(input => {
-      input.addEventListener('change', this.handleUnitChange);
-    });
-  },
+      input.addEventListener('change', (e) => {
+        const newUnit = e.target.value;
+        const oldUnit = calculatorState.get('unit');
+        
+        const convertValue = (value) => {
+          if (value === null || value === undefined) return null;
+          return newUnit === 'kg' 
+            ? Number((value * 0.453592).toFixed(2))
+            : Number((value * 2.20462).toFixed(2));
+        };
 
-  handleModeChange(e) {
-    calculatorState.update('inputMode', e.target.value);
-    calculatorState.update({
-      leanMass: '',
-      fatMass: '',
-      totalWeight: '',
-      bodyFatPct: ''
-    });
-    calculatorUI.updateDisplay();
-  },
+        const updates = { unit: newUnit };
+        
+        if (calculatorState.get('inputMode') === 'leanFat') {
+          updates.leanMass = convertValue(calculatorState.get('leanMass'));
+          updates.fatMass = convertValue(calculatorState.get('fatMass'));
+        } else {
+          updates.totalWeight = convertValue(calculatorState.get('totalWeight'));
+        }
 
-  handleUnitChange(e) {
-    const newUnit = e.target.value;
-    const oldUnit = calculatorState.get('unit');
-    const conversionFactor = newUnit === 'kg' ? 0.453592 : 2.20462;
-    
-    if (calculatorState.get('inputMode') === 'leanFat') {
-      const leanMass = parseFloat(calculatorState.get('leanMass'));
-      const fatMass = parseFloat(calculatorState.get('fatMass'));
-      
-      calculatorState.update({
-        leanMass: leanMass ? (leanMass * conversionFactor).toFixed(1) : '',
-        fatMass: fatMass ? (fatMass * conversionFactor).toFixed(1) : '',
-        unit: newUnit
+        calculatorState.update(updates);
+        calculatorUI.updateDisplay();
       });
-    } else {
-      const totalWeight = parseFloat(calculatorState.get('totalWeight'));
-      calculatorState.update({
-        totalWeight: totalWeight ? (totalWeight * conversionFactor).toFixed(1) : '',
-        unit: newUnit
-      });
-    }
-    calculatorUI.updateDisplay();
+    });
   }
 };

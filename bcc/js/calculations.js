@@ -1,117 +1,59 @@
-// templates.js - Step 1 Template
-step1: () => `
-  <h2 class="project-title">Step 1: Mode & Units</h2>
-  <div class="form-group">
-    <div class="input-row">
-      <label class="radio-label">
-        <input type="radio" name="inputMode" value="leanFat" 
-          ${calculatorState.get('inputMode') === 'leanFat' ? 'checked' : ''}>
-        <span>Lean/Fat mass</span>
-      </label>
-      <label class="radio-label">
-        <input type="radio" name="inputMode" value="weightBF" 
-          ${calculatorState.get('inputMode') === 'weightBF' ? 'checked' : ''}>
-        <span>Weight + BF%</span>
-      </label>
-    </div>
-    <div class="input-row">
-      <label class="radio-label">
-        <input type="radio" name="unit" value="lbs" 
-          ${calculatorState.get('unit') === 'lbs' ? 'checked' : ''}>
-        <span>lbs</span>
-      </label>
-      <label class="radio-label">
-        <input type="radio" name="unit" value="kg" 
-          ${calculatorState.get('unit') === 'kg' ? 'checked' : ''}>
-        <span>kg</span>
-      </label>
-    </div>
-  </div>
-  <div class="button-row">
-    <button type="button" class="project-button" data-action="next">Next</button>
-  </div>
-`
+// calculations.js
+const calculatorCalculations = {
+  calculate() {
+    try {
+      const state = calculatorState.getState();
+      
+      // Determine composition
+      const inputMode = state.inputMode;
+      let leanMass, fatMass, totalWeight, bodyFatPct;
 
-// step1.js - Add more robust unit conversion
-const step1 = {
-  attachListeners(root) {
-    root.querySelectorAll('input[name="unit"]').forEach(input => {
-      input.addEventListener('change', (e) => {
-        const newUnit = e.target.value;
-        const oldUnit = calculatorState.get('unit');
-        
-        // Conversion factors
-        const conversionFactors = {
-          'lbs_to_kg': 0.453592,
-          'kg_to_lbs': 2.20462
-        };
+      if (inputMode === 'leanFat') {
+        leanMass = state.leanMass;
+        fatMass = state.fatMass;
+        totalWeight = leanMass + fatMass;
+        bodyFatPct = (fatMass / totalWeight) * 100;
+      } else {
+        totalWeight = state.totalWeight;
+        bodyFatPct = state.bodyFatPct;
+        fatMass = totalWeight * (bodyFatPct / 100);
+        leanMass = totalWeight - fatMass;
+      }
 
-        // Conversion logic for different input modes
-        if (calculatorState.get('inputMode') === 'leanFat') {
-          ['leanMass', 'fatMass'].forEach(field => {
-            const currentValue = calculatorState.get(field);
-            if (currentValue) {
-              const convertedValue = oldUnit === 'lbs' 
-                ? currentValue * conversionFactors.lbs_to_kg
-                : currentValue * conversionFactors.kg_to_lbs;
-              
-              calculatorState.update(field, Number(convertedValue.toFixed(2)));
-            }
-          });
-        } else {
-          ['totalWeight', 'bodyFatPct'].forEach(field => {
-            const currentValue = calculatorState.get(field);
-            if (currentValue && field !== 'bodyFatPct') {
-              const convertedValue = oldUnit === 'lbs'
-                ? currentValue * conversionFactors.lbs_to_kg
-                : currentValue * conversionFactors.kg_to_lbs;
-              
-              calculatorState.update(field, Number(convertedValue.toFixed(2)));
-            }
-          });
+      // BMR Calculation
+      const leanMassKg = leanMass / 2.20462;
+      const bmr = 370 + (21.6 * leanMassKg);
+      
+      // TDEE Calculation
+      const activityMultiplier = parseFloat(state.activityLevel || 1.55);
+      const tdee = bmr * activityMultiplier;
+      
+      // Final Calories
+      const dailyAdjustment = parseFloat(state.dailyAdjustment || 0);
+      const finalCals = tdee + dailyAdjustment;
+
+      // Macro Calculations
+      const proteinGrams = leanMassKg * 2.0;  // 2g per kg of lean mass
+      const carbGrams = (finalCals * 0.3) / 4;
+      const fatGrams = (finalCals * 0.3) / 9;
+
+      return {
+        currentWeight: totalWeight.toFixed(1),
+        leanMass: leanMass.toFixed(1),
+        fatMass: fatMass.toFixed(1),
+        bodyFatPct: bodyFatPct.toFixed(1),
+        bmr: bmr.toFixed(0),
+        tdee: tdee.toFixed(0),
+        finalCals: finalCals.toFixed(0),
+        macros: {
+          protein: proteinGrams.toFixed(0),
+          carbs: carbGrams.toFixed(0),
+          fat: fatGrams.toFixed(0)
         }
-
-        // Update unit in state
-        calculatorState.update('unit', newUnit);
-        
-        // Trigger display update to reflect changes
-        calculatorUI.updateDisplay();
-      });
-    });
+      };
+    } catch (error) {
+      console.error('Calculation error:', error);
+      return null;
+    }
   }
 };
-
-// templates.js - Step 3 Template
-step3: () => {
-  const isLeanFatMode = calculatorState.get('inputMode') === 'leanFat';
-  const unit = calculatorState.get('unit');
-  
-  return `
-    <h2 class="project-title">Step 3: Composition</h2>
-    <div class="form-group" id="leanFatInputs" style="display: ${isLeanFatMode ? 'block' : 'none'}">
-      <label class="input-label">LEAN MASS (${unit})</label>
-      <input type="number" name="leanMass" 
-        value="${calculatorState.get('leanMass') || ''}" 
-        class="form-input" step="0.1">
-      <label class="input-label">FAT MASS (${unit})</label>
-      <input type="number" name="fatMass" 
-        value="${calculatorState.get('fatMass') || ''}" 
-        class="form-input" step="0.1">
-    </div>
-    <div class="form-group" id="weightBFInputs" style="display: ${isLeanFatMode ? 'none' : 'block'}">
-      <label class="input-label">TOTAL WEIGHT (${unit})</label>
-      <input type="number" name="totalWeight" 
-        value="${calculatorState.get('totalWeight') || ''}" 
-        class="form-input" step="0.1">
-      <label class="input-label">BODY FAT (%)</label>
-      <input type="number" name="bodyFatPct" 
-        step="0.1" 
-        value="${calculatorState.get('bodyFatPct') || ''}" 
-        class="form-input">
-    </div>
-    <div class="button-row">
-      <button type="button" class="project-button secondary" data-action="prev">Back</button>
-      <button type="button" class="project-button" data-action="next">Next</button>
-    </div>
-  `;
-}

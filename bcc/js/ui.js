@@ -16,13 +16,11 @@ const calculatorUI = {
     this.updateDisplay();
   },
 
-  // In calculatorUI
   updateDisplay() {
     try {
       const currentStep = calculatorState.get('currentStep');
       console.log('Rendering step:', currentStep);
       const state = calculatorState.getState();
-      console.log('State for template:', state); // Debug log
 
       // Get the template function for the current step
       const templateFn = calculatorTemplates[`step${currentStep}`];
@@ -31,7 +29,7 @@ const calculatorUI = {
         return;
       }
 
-      // Pass the full state to the template
+      // Clear existing content and set new HTML
       this.root.innerHTML = templateFn(state);
 
       // Attach any step-specific listeners
@@ -104,16 +102,11 @@ const calculatorUI = {
         if (this.validateCurrentStep()) {
           try {
             this.root.classList.add('calculating');
-            console.log('Current state before calculation:', calculatorState.getState());  // Debug log
             const results = calculatorCalculations.calculate();
-            console.log('Raw calculation results:', results);  // Debug log
-
+            console.log('Calculation results:', results); // Add debugging
             if (results) {
-              calculatorState.update({
-                currentStep: 5,
-                results: results
-              });
-              console.log('Updated state after calculation:', calculatorState.getState());  // Debug log
+              calculatorState.set('results', results);
+              calculatorState.set('currentStep', 5);
               this.updateDisplay();
             } else {
               this.showError('general', 'Calculation failed. Please check inputs.');
