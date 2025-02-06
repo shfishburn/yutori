@@ -13,6 +13,18 @@
       "handle": "filesystem"
     },
     {
+      "src": "/src/js/(.*)",
+      "dest": "/src/js/$1"
+    },
+    {
+      "src": "/src/styles/(.*)",
+      "dest": "/src/styles/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/$1"
     }
