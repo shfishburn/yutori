@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Added shrink-to-fit and description for consistency -->
+    <!-- Responsive viewport and description -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <meta name="description" content="Yutori Labs - Body Composition Calculator V1" />
     <title>Body Composition Calculator V1</title>
@@ -10,9 +10,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- Global styles -->
     <link rel="stylesheet" href="../styles.css" />
+    <!-- Calculator specific styles -->
     <link rel="stylesheet" href="calc-styles.css" />
+    <!-- Chart.js for rendering charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <nav class="nav-wrapper">
@@ -148,86 +153,75 @@
           </div>
         </div>
     
- <!-- Step 5: Results (Improved Layout) -->
-<div class="wizard-step" id="step5">
-  <div class="max-w-4xl mx-auto p-4">
-    <h2 class="text-3xl font-bold text-center mb-6">Your Results</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Settings Card -->
-      <div class="bg-white shadow rounded p-4">
-        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Settings</h3>
-        <ul class="space-y-1 text-sm">
-          <li><strong>Goal:</strong> <span id="summaryWeightGoal">--</span></li>
-          <li><strong>Dietary Approach:</strong> <span id="summaryDietApproach">--</span></li>
-          <li><strong>Activity:</strong> <span id="summaryActivityLevel">--</span></li>
-          <li><strong>Daily Calorie Adjustment:</strong> <span id="summaryDailyAdj">--</span></li>
-          <li><strong>Lean Goal:</strong> <span id="summaryLeanGoalPct">--</span></li>
-        </ul>
-      </div>
-
-      <!-- Current Composition Card -->
-      <div class="bg-white shadow rounded p-4">
-        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Current Composition</h3>
-        <ul class="space-y-1 text-sm">
-          <li><strong>Weight:</strong> <span id="currentWeightSpan">--</span></li>
-          <li><strong>Fat Mass:</strong> <span id="currentFatSpan">--</span></li>
-          <li><strong>Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
-          <li><strong>BF%:</strong> <span id="currentBFpctSpan">--</span></li>
-          <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
-        </ul>
-      </div>
-
-      <!-- Goal Range Card -->
-      <div class="bg-white shadow rounded p-4">
-        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Goal Range</h3>
-        <ul class="space-y-1 text-sm">
-          <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
-          <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
-          <li><strong>Lean Mass:</strong> <span id="goalLeanSpan">--</span></li>
-          <li><strong>BF%:</strong> <span id="goalBFpctSpan">--</span></li>
-          <li><strong>Category:</strong> <span id="goalBFcatSpan">--</span></li>
-        </ul>
-      </div>
-
-      <!-- Calories & Macros Card (spanning two columns on medium screens) -->
-      <div class="bg-white shadow rounded p-4 md:col-span-2">
-        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Calories &amp; Macros</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p><strong>BMR:</strong> <span id="bmrSpan">--</span></p>
-            <p><strong>TDEE:</strong> <span id="tdeeSpan">--</span></p>
-            <p>
-              <strong>Final Cals:</strong>
-              <span id="finalCalsSpan">--</span>
-              (<span id="deficitOrSurplusLine">--</span>)
-            </p>
-          </div>
-          <div>
-            <p><strong>Carbs:</strong> <span id="carbsSpan">--</span></p>
-            <p><strong>Protein:</strong> <span id="proteinSpan">--</span></p>
-            <p><strong>Fat:</strong> <span id="fatSpan">--</span></p>
+        <!-- Step 5: Results (Improved Layout with Forecast Charts) -->
+        <div class="wizard-step" id="step5">
+          <div class="max-w-4xl mx-auto p-4">
+            <h2 class="text-3xl font-bold text-center mb-6">Your Results</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Settings Card -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold border-b pb-2 mb-2">Settings</h3>
+                <ul class="space-y-1 text-sm">
+                  <li><strong>Goal:</strong> <span id="summaryWeightGoal">--</span></li>
+                  <li><strong>Dietary Approach:</strong> <span id="summaryDietApproach">--</span></li>
+                  <li><strong>Activity:</strong> <span id="summaryActivityLevel">--</span></li>
+                  <li><strong>Daily Calorie Adjustment:</strong> <span id="summaryDailyAdj">--</span></li>
+                </ul>
+              </div>
+    
+              <!-- Current Composition Card -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold border-b pb-2 mb-2">Current Composition</h3>
+                <ul class="space-y-1 text-sm">
+                  <li><strong>Weight:</strong> <span id="currentWeightSpan">--</span></li>
+                  <li><strong>Fat Mass:</strong> <span id="currentFatSpan">--</span></li>
+                  <li><strong>Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
+                  <li><strong>BF%:</strong> <span id="currentBFpctSpan">--</span></li>
+                  <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
+                </ul>
+              </div>
+    
+              <!-- Goal Range Card -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold border-b pb-2 mb-2">Goal Range</h3>
+                <ul class="space-y-1 text-sm">
+                  <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
+                  <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
+                  <li><strong>Lean Mass:</strong> <span id="goalLeanSpan">--</span></li>
+                  <li><strong>BF%:</strong> <span id="goalBFpctSpan">--</span></li>
+                  <li><strong>Category:</strong> <span id="goalBFcatSpan">--</span></li>
+                </ul>
+              </div>
+    
+              <!-- Forecast Charts Card (spanning two columns on medium screens) -->
+              <div class="bg-white shadow rounded p-4 md:col-span-2">
+                <h3 class="text-xl font-semibold border-b pb-2 mb-2">Forecast Charts</h3>
+                <div class="grid grid-cols-1 gap-4">
+                  <canvas id="calorieChart" class="w-full h-64"></canvas>
+                  <canvas id="macroChart" class="w-full h-64"></canvas>
+                  <canvas id="weightChart" class="w-full h-64"></canvas>
+                </div>
+                <p class="mt-4 text-sm">
+                  This series of charts shows how your daily calorie target, macronutrient needs, and weight are projected to change over time. As you lose weight, your TDEE decreases due to metabolic adaptation and the system dynamically adjusts your calorie and nutrient targets. Please note these projections are based on current metabolic research and individual results may vary.
+                </p>
+                <p class="mt-2 text-xs text-gray-500">
+                  Disclaimer: This calculator is for informational purposes only. Consult a healthcare professional before making any major changes to your diet or exercise program.
+                </p>
+              </div>
+            </div>
+    
+            <!-- Bottom Buttons -->
+            <div class="mt-6 text-center">
+              <button class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn">New Scenario</button>
+              <button class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">Disclaimer</button>
+            </div>
           </div>
         </div>
-        <p class="mt-2 italic text-sm" id="macroHealthComment">--</p>
+    
       </div>
-
-      <!-- Time-to-Goal Card -->
-      <div class="bg-white shadow rounded p-4">
-        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Time to Mid-Goal</h3>
-        <p class="text-sm" id="timeToGoalText">--</p>
-      </div>
-    </div>
-
-    <!-- Bottom Buttons -->
-    <div class="mt-6 text-center">
-      <button class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn">New Scenario</button>
-      <button class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">Disclaimer</button>
-    </div>
-  </div>
-</div>
-
     </section>
-
+    
+    <!-- Modals -->
     <div class="modal-overlay" id="weightGoalModal">
       <div class="modal-content">
         <h3>Weight Goal</h3>
@@ -311,28 +305,16 @@
             console.error("fmtWeight expects a number; received:", typeof weight);
             return "";
           }
-          if (isKg) {
-            let kg = weight / 2.20462;
-            return kg.toFixed(2) + " kg";
-          } else {
-            return weight.toFixed(2) + " lbs";
-          }
+          return isKg ? (weight / 2.20462).toFixed(2) + " kg" : weight.toFixed(2) + " lbs";
         }
     
         function getBFCat(ratio) {
-          if (ratio < 0.1) {
-            return "Very Low";
-          } else if (ratio < 0.15) {
-            return "Excellent";
-          } else if (ratio < 0.2) {
-            return "Good";
-          } else if (ratio < 0.25) {
-            return "Fair";
-          } else if (ratio < 0.3) {
-            return "Poor";
-          } else {
-            return "Very High";
-          }
+          if (ratio < 0.1) return "Very Low";
+          if (ratio < 0.15) return "Excellent";
+          if (ratio < 0.2) return "Good";
+          if (ratio < 0.25) return "Fair";
+          if (ratio < 0.3) return "Poor";
+          return "Very High";
         }
     
         function computeMacros(finalCals, approach) {
@@ -358,46 +340,132 @@
         }
     
         function getAdvice(netDiff) {
-          if (netDiff < 0) {
-            return "Calorie deficit: aiming for weight loss.";
-          } else if (netDiff > 0) {
-            return "Calorie surplus: aiming for weight gain.";
-          } else {
-            return "Calorie maintenance.";
-          }
+          if (netDiff < 0) return "Calorie deficit: aiming for weight loss.";
+          if (netDiff > 0) return "Calorie surplus: aiming for weight gain.";
+          return "Calorie maintenance.";
         }
     
-        // --- New Time-to–Mid–Goal Calculation Function ---
-        // This function calculates the expected target date for reaching the midpoint between current weight and goal weight.
+        // --- New Time-to-Mid-Goal Calculation ---
         function timeToGoal(cWeight, goalWeight, finalCals, TDEE, isKg) {
-          // For weight loss, netDiff = TDEE - finalCals (positive if deficit)
-          let netDiff = TDEE - finalCals;
+          let netDiff = TDEE - finalCals; 
           let absNetDiff = Math.abs(netDiff);
           if (absNetDiff === 0) {
-            document.getElementById("timeToGoalText").textContent = "No calorie change – mid-goal date cannot be determined.";
+            document.getElementById("timeToGoalText").textContent = "No calorie change – time cannot be determined.";
             return;
           }
-          // Estimate weekly weight change (3500 cal per lb)
-          let weeklyChange = (absNetDiff * 7) / 3500; // in lbs per week
+          let weightDiff = Math.abs(cWeight - goalWeight);
+          let weeklyChange = (absNetDiff * 7) / 3500;
           if (weeklyChange === 0) {
             document.getElementById("timeToGoalText").textContent = "Insufficient deficit for measurable weight change.";
             return;
           }
-          // Compute the midpoint weight
-          let midWeight = (cWeight + goalWeight) / 2;
-          // Calculate the absolute weight difference from current weight to midWeight
-          let weightDiff = Math.abs(midWeight - cWeight);
-          // Estimate number of weeks needed to cover half the difference
-          let weeks = weightDiff / weeklyChange;
-          // Now, add that many days to today's date
-          let today = new Date();
-          let daysToAdd = Math.round(weeks * 7);
-          let targetDate = new Date();
-          targetDate.setDate(today.getDate() + daysToAdd);
-          // Format the expected date nicely
-          let options = { year: 'numeric', month: 'short', day: 'numeric' };
-          let formattedDate = targetDate.toLocaleDateString(undefined, options);
-          document.getElementById("timeToGoalText").textContent = formattedDate;
+          let weeks = (weightDiff / 2) / weeklyChange;
+          weeks = Math.round(weeks * 10) / 10;
+          document.getElementById("timeToGoalText").textContent = weeks + " weeks to mid-goal";
+        }
+    
+        // --- Chart Variables (to hold Chart.js instances) ---
+        let calorieChart, macroChart, weightChart;
+    
+        // --- Function to render forecast charts ---
+        function renderForecastCharts(weeklyData) {
+          try {
+            // Prepare datasets
+            const weeks = weeklyData.map(point => point.week);
+            const calorieTargets = weeklyData.map(point => Math.round(point.calorieTarget));
+            const weights = weeklyData.map(point => Math.round(point.weight));
+            const proteins = weeklyData.map(point => point.macros.protein);
+            const carbs = weeklyData.map(point => point.macros.carbs);
+            const fats = weeklyData.map(point => point.macros.fat);
+    
+            // Dynamic Calorie Forecast Chart
+            if (calorieChart) calorieChart.destroy();
+            const ctxCal = document.getElementById("calorieChart").getContext("2d");
+            calorieChart = new Chart(ctxCal, {
+              type: "line",
+              data: {
+                labels: weeks,
+                datasets: [{
+                  label: "Daily Calorie Target",
+                  data: calorieTargets,
+                  borderColor: "rgb(75, 192, 192)",
+                  fill: false
+                }]
+              },
+              options: {
+                responsive: true,
+                title: { display: true, text: "Calorie Forecast" },
+                scales: {
+                  x: { title: { display: true, text: "Weeks" } },
+                  y: { title: { display: true, text: "Calories" } }
+                }
+              }
+            });
+    
+            // Macronutrient Trajectory Chart
+            if (macroChart) macroChart.destroy();
+            const ctxMacro = document.getElementById("macroChart").getContext("2d");
+            macroChart = new Chart(ctxMacro, {
+              type: "line",
+              data: {
+                labels: weeks,
+                datasets: [
+                  {
+                    label: "Protein (g)",
+                    data: proteins,
+                    borderColor: "rgb(255, 99, 132)",
+                    fill: false
+                  },
+                  {
+                    label: "Carbs (g)",
+                    data: carbs,
+                    borderColor: "rgb(54, 162, 235)",
+                    fill: false
+                  },
+                  {
+                    label: "Fat (g)",
+                    data: fats,
+                    borderColor: "rgb(255, 205, 86)",
+                    fill: false
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                title: { display: true, text: "Macronutrient Trajectory" },
+                scales: {
+                  x: { title: { display: true, text: "Weeks" } },
+                  y: { title: { display: true, text: "Grams" } }
+                }
+              }
+            });
+    
+            // Weight Loss Trajectory Chart
+            if (weightChart) weightChart.destroy();
+            const ctxWeight = document.getElementById("weightChart").getContext("2d");
+            weightChart = new Chart(ctxWeight, {
+              type: "line",
+              data: {
+                labels: weeks,
+                datasets: [{
+                  label: "Predicted Weight (lbs)",
+                  data: weights,
+                  borderColor: "rgb(153, 102, 255)",
+                  fill: false
+                }]
+              },
+              options: {
+                responsive: true,
+                title: { display: true, text: "Weight Loss Trajectory" },
+                scales: {
+                  x: { title: { display: true, text: "Weeks" } },
+                  y: { title: { display: true, text: "Weight (lbs)" } }
+                }
+              }
+            });
+          } catch (error) {
+            console.error("Error rendering charts:", error);
+          }
         }
     
         // --- Steps & Navigation ---
@@ -482,7 +550,6 @@
                 return false;
               }
             }
-            return true;
           }
           return true;
         }
@@ -498,7 +565,7 @@
           inputEl.insertAdjacentElement("afterend", e);
         }
     
-        // --- On Calculate ---
+        // --- On Calculate Button ---
         document.getElementById("calculateButton").addEventListener("click", () => {
           clearErrors(steps[3]);
           let wg = document.querySelector('input[name="weightGoal"]:checked');
@@ -520,7 +587,7 @@
           showStep(4);
         });
     
-        // --- Final Calculation & Results ---
+        // --- Final Calculation, Update UI, and Render Charts ---
         function doFinalCalculation() {
           const isKg = document.getElementById("radioKg").checked;
           let M0 = 0, F0 = 0;
@@ -546,33 +613,63 @@
           document.getElementById("currentBFpctSpan").textContent = (F0 / cWeight * 100).toFixed(1) + "%";
           document.getElementById("currentBFcatSpan").textContent = getBFCat(F0 / cWeight);
     
-          // --- Compute Goal Range ---
-          const fatGoalSelect = document.getElementById("fatGoalCategorySelect");
-          const fatGoalRanges = {
-            dangerouslyLow: 0.10,
-            excellent: 0.15,
-            good: 0.20,
-            fair: 0.25,
-            poor: 0.30,
-            dangerouslyHigh: 0.35
+          // --- Compute Goal Range with Low-High Values ---
+          const fatRangeLookup = {
+            dangerouslyLow: { pLow: 0.08, pHigh: 0.10 },
+            excellent: { pLow: 0.10, pHigh: 0.15 },
+            good: { pLow: 0.15, pHigh: 0.20 },
+            fair: { pLow: 0.20, pHigh: 0.25 },
+            poor: { pLow: 0.25, pHigh: 0.30 },
+            dangerouslyHigh: { pLow: 0.30, pHigh: 0.35 }
           };
-          let targetBF = fatGoalRanges[fatGoalSelect.value] || 0.15;
-          let goalWeight = M0 / (1 - targetBF);
-          let goalFat = goalWeight - M0;
-          let goalBFpct = (goalFat / goalWeight) * 100;
-          let goalBFCat = getBFCat(goalFat / goalWeight);
-          document.getElementById("goalWeightSpan").textContent = fmtWeight(goalWeight, isKg);
-          document.getElementById("goalFatSpan").textContent = fmtWeight(goalFat, isKg) + " (" + goalBFpct.toFixed(1) + "%)";
+          let catKey = document.getElementById("fatGoalCategorySelect").value;
+          let range = fatRangeLookup[catKey] || { pLow: 0.10, pHigh: 0.15 };
+          const goalWeightLow = M0 / (1 - range.pLow);
+          const goalWeightHigh = M0 / (1 - range.pHigh);
+          const goalFatLow = goalWeightLow - M0;
+          const goalFatHigh = goalWeightHigh - M0;
+          const goalBFpctLow = (goalFatLow / goalWeightLow) * 100;
+          const goalBFpctHigh = (goalFatHigh / goalWeightHigh) * 100;
+    
+          document.getElementById("goalWeightSpan").textContent =
+            fmtWeight(goalWeightLow, isKg) + "–" + fmtWeight(goalWeightHigh, isKg);
+          document.getElementById("goalFatSpan").textContent =
+            fmtWeight(goalFatLow, isKg) + "–" + fmtWeight(goalFatHigh, isKg);
           document.getElementById("goalLeanSpan").textContent = fmtWeight(M0, isKg);
-          document.getElementById("goalBFpctSpan").textContent = goalBFpct.toFixed(1) + "%";
-          document.getElementById("goalBFcatSpan").textContent = goalBFCat;
+          document.getElementById("goalBFpctSpan").textContent =
+            goalBFpctLow.toFixed(1) + "%–" + goalBFpctHigh.toFixed(1) + "%";
+          document.getElementById("goalBFcatSpan").textContent = catKey;
     
           // --- Summary Settings ---
           const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
           const deficitVal = document.getElementById("dailyAdjustmentSelect").value;
-          const leanGoalInfo = leanLossLookup[dietary][deficitVal];
-          document.getElementById("summaryLeanGoalPct").textContent =
-            leanGoalInfo.lean + "% lean loss, " + leanGoalInfo.fat + "% fat loss";
+          const leanLossLookup = {
+            balanced: {
+              "-250": { fat: 90, lean: 10 },
+              "-500": { fat: 85, lean: 15 },
+              "-750": { fat: 80, lean: 20 },
+              "-1000": { fat: 75, lean: 25 }
+            },
+            "low-carb": {
+              "-250": { fat: 87, lean: 13 },
+              "-500": { fat: 82, lean: 18 },
+              "-750": { fat: 78, lean: 22 },
+              "-1000": { fat: 72, lean: 28 }
+            },
+            "high-protein": {
+              "-250": { fat: 95, lean: 5 },
+              "-500": { fat: 92, lean: 8 },
+              "-750": { fat: 88, lean: 12 },
+              "-1000": { fat: 85, lean: 15 }
+            }
+          };
+          const leanInfo = leanLossLookup[dietary] ? leanLossLookup[dietary][deficitVal] : null;
+          if (leanInfo) {
+            document.getElementById("summaryLeanGoalPct").textContent =
+              leanInfo.lean + "% lean loss, " + leanInfo.fat + "% fat loss";
+          } else {
+            document.getElementById("summaryLeanGoalPct").textContent = "--";
+          }
           document.getElementById("summaryWeightGoal").textContent = "Lose Weight";
           document.getElementById("summaryDietApproach").textContent = dietary;
           const af = parseFloat(document.getElementById("activityLevelSelect").value) || 1.55;
@@ -600,31 +697,254 @@
           document.getElementById("fatSpan").textContent = macros.fatGrams + " g";
           document.getElementById("macroHealthComment").textContent = getAdvice(netDiff);
     
-          // --- Compute Time to Mid-Goal (Expected Date) ---
-          timeToGoal(cWeight, goalWeight, finalCals, TDEE, isKg);
+          // --- Run Simulation for Forecast Charts ---
+          // Here, we simulate weekly changes using a relative deficit and metabolic adaptation.
+          // Using an evidence-based BMR formula: BMR = 370 + 21.6 * (LeanMass in kg)
+          // TDEE is computed as BMR * activity factor.
+          // A constant relative deficit (e.g., 30%) is applied, with metabolic adaptation reducing TDEE 3–6% per week (capped at ~20–25%).
+          // The simulation returns weekly forecast data.
+          let simulationData = simulateMetabolicAdaptation({
+            initialWeight: cWeight,
+            isKg: false,
+            bodyFatPct: (F0 / cWeight) * 100,
+            leanMass: M0,
+            age: parseInt(document.getElementById("ageInput").value) || 30,
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            activityMultiplier: af,
+            weightGoal: "lose",
+            deficitFraction: Math.abs(parseFloat(document.getElementById("dailyAdjustmentSelect").value)) / TDEE,
+            dietaryApproach: dietary,
+            carbTolerance: "Unsure",
+            targetBFRange: { min: 15, max: 20 },
+            forecastWeeks: 16,
+            adaptationFactor: 0.04,
+            adaptationCap: 0.20
+          });
+          if (simulationData && simulationData.weeklyData) {
+            // Render the forecast charts using Chart.js
+            renderForecastCharts(simulationData.weeklyData);
+            console.log("Simulation Result:", simulationData);
+          } else {
+            console.error("No simulation data available.");
+          }
         }
     
-        const leanLossLookup = {
-          balanced: {
-            "-250": { fat: 90, lean: 10 },
-            "-500": { fat: 85, lean: 15 },
-            "-750": { fat: 80, lean: 20 },
-            "-1000": { fat: 75, lean: 25 }
-          },
-          "low-carb": {
-            "-250": { fat: 87, lean: 13 },
-            "-500": { fat: 82, lean: 18 },
-            "-750": { fat: 78, lean: 22 },
-            "-1000": { fat: 72, lean: 28 }
-          },
-          "high-protein": {
-            "-250": { fat: 95, lean: 5 },
-            "-500": { fat: 92, lean: 8 },
-            "-750": { fat: 88, lean: 12 },
-            "-1000": { fat: 85, lean: 15 }
-          }
-        };
+        // --- Simulation Function ---
+        function simulateMetabolicAdaptation(params) {
+          try {
+            if (typeof params !== "object") throw new Error("Input parameters must be provided in an object.");
+            const {
+              initialWeight,
+              isKg,
+              bodyFatPct,
+              leanMass,
+              age,
+              gender,
+              activityMultiplier,
+              weightGoal,
+              deficitFraction,
+              dietaryApproach,
+              carbTolerance,
+              targetBFRange,
+              forecastWeeks,
+              adaptationFactor = 0.04,
+              adaptationCap = 0.20
+            } = params;
+            if (!initialWeight || initialWeight <= 0) throw new Error("Initial weight must be a positive number.");
+            if (bodyFatPct < 0 || bodyFatPct > 100) throw new Error("Body fat percentage must be between 0 and 100.");
+            if (!age || age <= 0) throw new Error("Age must be a positive number.");
+            if (!activityMultiplier || activityMultiplier < 1) throw new Error("Activity multiplier must be >= 1.");
+            if (!["lose", "maintain", "gain"].includes(weightGoal)) throw new Error("Invalid weight goal.");
+            if (typeof deficitFraction !== "number") throw new Error("Deficit fraction must be a number.");
+            if (!["balanced", "low-carb", "high-protein"].includes(dietaryApproach)) throw new Error("Invalid dietary approach.");
+            if (!targetBFRange || typeof targetBFRange.min !== "number" || typeof targetBFRange.max !== "number")
+              throw new Error("Target body fat range must be provided as an object with min and max.");
+            if (!forecastWeeks || forecastWeeks <= 0) throw new Error("Forecast period must be at least 1 week.");
     
+            const lbsToKg = (lbs) => lbs / 2.20462;
+            const kgToLbs = (kg) => kg * 2.20462;
+    
+            let currentWeight = initialWeight;
+            let currentLeanMass = leanMass && leanMass > 0 ? leanMass : currentWeight * (1 - (bodyFatPct / 100));
+            const leanMassKg = isKg ? currentLeanMass : lbsToKg(currentLeanMass);
+            const baselineBMR = 370 + 21.6 * leanMassKg;
+            const baselineTDEE = baselineBMR * activityMultiplier;
+            let initialCalTarget = weightGoal === "lose" ? baselineTDEE * (1 - deficitFraction) :
+                                    weightGoal === "gain" ? baselineTDEE * (1 + Math.abs(deficitFraction)) :
+                                    baselineTDEE;
+            const minCal = gender === "male" ? 1500 : 1200;
+            if (initialCalTarget < minCal) initialCalTarget = minCal;
+    
+            let leanLossPercent;
+            switch (dietaryApproach) {
+              case "high-protein":
+                leanLossPercent = 0.10;
+                break;
+              case "balanced":
+                leanLossPercent = 0.15;
+                break;
+              case "low-carb":
+                leanLossPercent = 0.20;
+                break;
+              default:
+                leanLossPercent = 0.15;
+            }
+            let proteinMultiplier = weightGoal === "lose" ? (age < 60 ? 2.2 : (gender === "male" ? 2.5 : 2.6)) : 2.0;
+            let carbPercent = carbTolerance === "Low" ? 0.20 : 0.35;
+    
+            const weeklyData = [];
+            let cumulativeAdaptation = 0;
+            let currentBMR = baselineBMR;
+            let currentTDEE = baselineTDEE;
+            let currentCalTarget = initialCalTarget;
+    
+            for (let week = 1; week <= forecastWeeks; week++) {
+              const dailyCalDiff = currentTDEE - currentCalTarget;
+              const weeklyCalDiff = dailyCalDiff * 7;
+              const weightChange = weeklyCalDiff / 3500;
+              let leanMassChange = weightGoal === "lose" ? weightChange * leanLossPercent :
+                                   weightGoal === "gain" ? -weightChange * 0.50 : 0;
+              currentWeight = currentWeight - weightChange;
+              currentLeanMass = currentLeanMass - leanMassChange;
+              if (currentWeight < 0) currentWeight = 0;
+              if (currentLeanMass < 0) currentLeanMass = 0;
+              const updatedLeanKg = isKg ? currentLeanMass : lbsToKg(currentLeanMass);
+              currentBMR = 370 + 21.6 * updatedLeanKg;
+              cumulativeAdaptation += adaptationFactor;
+              if (cumulativeAdaptation > adaptationCap) cumulativeAdaptation = adaptationCap;
+              currentTDEE = baselineTDEE * (1 - cumulativeAdaptation);
+              currentCalTarget = weightGoal === "lose" ? currentTDEE * (1 - deficitFraction) :
+                                 weightGoal === "gain" ? currentTDEE * (1 + Math.abs(deficitFraction)) :
+                                 currentTDEE;
+              if (currentCalTarget < minCal) currentCalTarget = minCal;
+    
+              const proteinGrams = Math.max(updatedLeanKg * proteinMultiplier, (0.30 * currentCalTarget) / 4);
+              const carbGrams = (currentCalTarget * carbPercent) / 4;
+              const fatGrams = (currentCalTarget - (proteinGrams * 4 + carbGrams * 4)) / 9;
+    
+              weeklyData.push({
+                week,
+                weight: currentWeight,
+                calorieTarget: currentCalTarget,
+                macros: {
+                  protein: Math.round(proteinGrams),
+                  carbs: Math.round(carbGrams),
+                  fat: Math.round(fatGrams)
+                }
+              });
+            }
+    
+            return {
+              weeklyData,
+              disclaimer: "This calculator is for informational purposes only. Consult a healthcare professional before making any major changes to your diet or exercise program."
+            };
+          } catch (error) {
+            console.error("Simulation error:", error);
+            return null;
+          }
+        }
+    
+        // --- Render Forecast Charts ---
+        function renderForecastCharts(weeklyData) {
+          try {
+            const weeks = weeklyData.map(pt => pt.week);
+            const calorieTargets = weeklyData.map(pt => Math.round(pt.calorieTarget));
+            const weights = weeklyData.map(pt => Math.round(pt.weight));
+            const proteins = weeklyData.map(pt => pt.macros.protein);
+            const carbs = weeklyData.map(pt => pt.macros.carbs);
+            const fats = weeklyData.map(pt => pt.macros.fat);
+    
+            // Calorie Forecast Chart
+            if (window.calorieChart) window.calorieChart.destroy();
+            const ctxCal = document.getElementById("calorieChart").getContext("2d");
+            window.calorieChart = new Chart(ctxCal, {
+              type: "line",
+              data: {
+                labels: weeks,
+                datasets: [{
+                  label: "Daily Calorie Target",
+                  data: calorieTargets,
+                  borderColor: "rgb(75, 192, 192)",
+                  fill: false
+                }]
+              },
+              options: {
+                responsive: true,
+                title: { display: true, text: "Calorie Forecast" },
+                scales: {
+                  x: { title: { display: true, text: "Weeks" } },
+                  y: { title: { display: true, text: "Calories" } }
+                }
+              }
+            });
+    
+            // Macronutrient Trajectory Chart
+            if (window.macroChart) window.macroChart.destroy();
+            const ctxMacro = document.getElementById("macroChart").getContext("2d");
+            window.macroChart = new Chart(ctxMacro, {
+              type: "line",
+              data: {
+                labels: weeks,
+                datasets: [
+                  {
+                    label: "Protein (g)",
+                    data: proteins,
+                    borderColor: "rgb(255, 99, 132)",
+                    fill: false
+                  },
+                  {
+                    label: "Carbs (g)",
+                    data: carbs,
+                    borderColor: "rgb(54, 162, 235)",
+                    fill: false
+                  },
+                  {
+                    label: "Fat (g)",
+                    data: fats,
+                    borderColor: "rgb(255, 205, 86)",
+                    fill: false
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                title: { display: true, text: "Macronutrient Trajectory" },
+                scales: {
+                  x: { title: { display: true, text: "Weeks" } },
+                  y: { title: { display: true, text: "Grams" } }
+                }
+              }
+            });
+    
+            // Weight Loss Trajectory Chart
+            if (window.weightChart) window.weightChart.destroy();
+            const ctxWeight = document.getElementById("weightChart").getContext("2d");
+            window.weightChart = new Chart(ctxWeight, {
+              type: "line",
+              data: {
+                labels: weeks,
+                datasets: [{
+                  label: "Predicted Weight (lbs)",
+                  data: weights,
+                  borderColor: "rgb(153, 102, 255)",
+                  fill: false
+                }]
+              },
+              options: {
+                responsive: true,
+                title: { display: true, text: "Weight Loss Trajectory" },
+                scales: {
+                  x: { title: { display: true, text: "Weeks" } },
+                  y: { title: { display: true, text: "Weight (lbs)" } }
+                }
+              }
+            });
+          } catch (error) {
+            console.error("Error rendering charts:", error);
+          }
+        }
+    
+        // --- New Scenario Button ---
         document.getElementById("newScenarioBtn").addEventListener("click", () => {
           steps.forEach((s) => (s.style.display = "none"));
           document.querySelectorAll('input[type="number"]').forEach((inp) => (inp.value = ""));
@@ -636,6 +956,7 @@
           showStep(0);
         });
     
+        // --- Modal Handling ---
         document.querySelectorAll("[data-open-modal]").forEach((a) => {
           a.addEventListener("click", (e) => {
             e.preventDefault();
@@ -652,10 +973,32 @@
         document.getElementById("disclaimerLink").addEventListener("click", () => {
           document.getElementById("disclaimerModal").style.display = "block";
         });
+    
+        // --- Unit Test: Log Simulation Result ---
+        try {
+          const testSim = simulateMetabolicAdaptation({
+            initialWeight: 250,
+            isKg: false,
+            bodyFatPct: 30,
+            age: 45,
+            gender: "male",
+            activityMultiplier: 1.55,
+            weightGoal: "lose",
+            deficitFraction: 0.30,
+            dietaryApproach: "balanced",
+            carbTolerance: "Unsure",
+            targetBFRange: { min: 15, max: 20 },
+            forecastWeeks: 16,
+            adaptationFactor: 0.04,
+            adaptationCap: 0.20
+          });
+          console.log("Unit Test Simulation Result:", testSim);
+        } catch (error) {
+          console.error("Unit Test Simulation Error:", error);
+        }
+    
       })();
     </script>
-    
-    
     
     <footer class="footer-section">
       <div class="container">
@@ -664,6 +1007,5 @@
         </div>
       </div>
     </footer>
-      </body>
-    </html>
-    
+  </body>
+</html>
