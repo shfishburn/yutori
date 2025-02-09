@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Responsive viewport and description -->
+    <!-- Added shrink-to-fit and description for consistency -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <meta name="description" content="Yutori Labs - Body Composition Calculator V1" />
     <title>Body Composition Calculator V1</title>
@@ -10,13 +10,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <!-- Tailwind CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
-    <!-- Global styles -->
     <link rel="stylesheet" href="../styles.css" />
-    <!-- Calculator specific styles -->
     <link rel="stylesheet" href="calc-styles.css" />
-    <!-- Chart.js for rendering charts -->
+    <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
@@ -153,7 +150,7 @@
           </div>
         </div>
     
-        <!-- Step 5: Results (Improved Layout with Forecast Charts) -->
+        <!-- Step 5: Results (with Forecast Charts) -->
         <div class="wizard-step" id="step5">
           <div class="max-w-4xl mx-auto p-4">
             <h2 class="text-3xl font-bold text-center mb-6">Your Results</h2>
@@ -166,6 +163,7 @@
                   <li><strong>Dietary Approach:</strong> <span id="summaryDietApproach">--</span></li>
                   <li><strong>Activity:</strong> <span id="summaryActivityLevel">--</span></li>
                   <li><strong>Daily Calorie Adjustment:</strong> <span id="summaryDailyAdj">--</span></li>
+                  <li><strong>Lean Goal:</strong> <span id="summaryLeanGoalPct">--</span></li>
                 </ul>
               </div>
     
@@ -202,11 +200,17 @@
                   <canvas id="weightChart" class="w-full h-64"></canvas>
                 </div>
                 <p class="mt-4 text-sm">
-                  This series of charts shows how your daily calorie target, macronutrient needs, and weight are projected to change over time. As you lose weight, your TDEE decreases due to metabolic adaptation and the system dynamically adjusts your calorie and nutrient targets. Please note these projections are based on current metabolic research and individual results may vary.
+                  These charts show your projected daily calorie target, macronutrient needs, and weight loss trajectory over time. As you lose weight, your metabolism adapts, and your targets adjust accordingly.
                 </p>
                 <p class="mt-2 text-xs text-gray-500">
-                  Disclaimer: This calculator is for informational purposes only. Consult a healthcare professional before making any major changes to your diet or exercise program.
+                  Disclaimer: These projections are estimates based on current research and individual results may vary. Consult a healthcare professional for personalized advice.
                 </p>
+              </div>
+    
+              <!-- Time-to-Goal Card -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold border-b pb-2 mb-2">Time to Mid-Goal</h3>
+                <p class="text-sm" id="timeToGoalText">--</p>
               </div>
             </div>
     
@@ -225,7 +229,7 @@
     <div class="modal-overlay" id="weightGoalModal">
       <div class="modal-content">
         <h3>Weight Goal</h3>
-        <p>Lose, Maintain, or Gain Lean Mass. Adjusts your final daily cals.</p>
+        <p>Lose, Maintain, or Gain Lean Mass. Adjusts your final daily calories.</p>
         <button class="close-modal-btn" data-close-modal="weightGoalModal">Exit</button>
       </div>
     </div>
@@ -299,6 +303,16 @@
       (function () {
         "use strict";
     
+        // --- Helper: setTextContent with defensive check ---
+        function setTextContent(id, value) {
+          const el = document.getElementById(id);
+          if (!el) {
+            console.error(`Element with id '${id}' not found.`);
+            return;
+          }
+          el.textContent = value;
+        }
+    
         // --- Helper Functions ---
         function fmtWeight(weight, isKg) {
           if (typeof weight !== "number") {
@@ -347,38 +361,35 @@
     
         // --- New Time-to-Mid-Goal Calculation ---
         function timeToGoal(cWeight, goalWeight, finalCals, TDEE, isKg) {
-          let netDiff = TDEE - finalCals; 
+          let netDiff = TDEE - finalCals;
           let absNetDiff = Math.abs(netDiff);
           if (absNetDiff === 0) {
-            document.getElementById("timeToGoalText").textContent = "No calorie change – time cannot be determined.";
+            setTextContent("timeToGoalText", "No calorie change – time cannot be determined.");
             return;
           }
           let weightDiff = Math.abs(cWeight - goalWeight);
           let weeklyChange = (absNetDiff * 7) / 3500;
           if (weeklyChange === 0) {
-            document.getElementById("timeToGoalText").textContent = "Insufficient deficit for measurable weight change.";
+            setTextContent("timeToGoalText", "Insufficient deficit for measurable weight change.");
             return;
           }
           let weeks = (weightDiff / 2) / weeklyChange;
           weeks = Math.round(weeks * 10) / 10;
-          document.getElementById("timeToGoalText").textContent = weeks + " weeks to mid-goal";
+          setTextContent("timeToGoalText", weeks + " weeks to mid-goal");
         }
     
-        // --- Chart Variables (to hold Chart.js instances) ---
+        // --- Chart Rendering ---
         let calorieChart, macroChart, weightChart;
-    
-        // --- Function to render forecast charts ---
         function renderForecastCharts(weeklyData) {
           try {
-            // Prepare datasets
-            const weeks = weeklyData.map(point => point.week);
-            const calorieTargets = weeklyData.map(point => Math.round(point.calorieTarget));
-            const weights = weeklyData.map(point => Math.round(point.weight));
-            const proteins = weeklyData.map(point => point.macros.protein);
-            const carbs = weeklyData.map(point => point.macros.carbs);
-            const fats = weeklyData.map(point => point.macros.fat);
+            const weeks = weeklyData.map(pt => pt.week);
+            const calorieTargets = weeklyData.map(pt => Math.round(pt.calorieTarget));
+            const weights = weeklyData.map(pt => Math.round(pt.weight));
+            const proteins = weeklyData.map(pt => pt.macros.protein);
+            const carbs = weeklyData.map(pt => pt.macros.carbs);
+            const fats = weeklyData.map(pt => pt.macros.fat);
     
-            // Dynamic Calorie Forecast Chart
+            // Calorie Forecast Chart
             if (calorieChart) calorieChart.destroy();
             const ctxCal = document.getElementById("calorieChart").getContext("2d");
             calorieChart = new Chart(ctxCal, {
@@ -394,7 +405,7 @@
               },
               options: {
                 responsive: true,
-                title: { display: true, text: "Calorie Forecast" },
+                plugins: { title: { display: true, text: "Calorie Forecast" } },
                 scales: {
                   x: { title: { display: true, text: "Weeks" } },
                   y: { title: { display: true, text: "Calories" } }
@@ -410,29 +421,14 @@
               data: {
                 labels: weeks,
                 datasets: [
-                  {
-                    label: "Protein (g)",
-                    data: proteins,
-                    borderColor: "rgb(255, 99, 132)",
-                    fill: false
-                  },
-                  {
-                    label: "Carbs (g)",
-                    data: carbs,
-                    borderColor: "rgb(54, 162, 235)",
-                    fill: false
-                  },
-                  {
-                    label: "Fat (g)",
-                    data: fats,
-                    borderColor: "rgb(255, 205, 86)",
-                    fill: false
-                  }
+                  { label: "Protein (g)", data: proteins, borderColor: "rgb(255, 99, 132)", fill: false },
+                  { label: "Carbs (g)", data: carbs, borderColor: "rgb(54, 162, 235)", fill: false },
+                  { label: "Fat (g)", data: fats, borderColor: "rgb(255, 205, 86)", fill: false }
                 ]
               },
               options: {
                 responsive: true,
-                title: { display: true, text: "Macronutrient Trajectory" },
+                plugins: { title: { display: true, text: "Macronutrient Trajectory" } },
                 scales: {
                   x: { title: { display: true, text: "Weeks" } },
                   y: { title: { display: true, text: "Grams" } }
@@ -456,7 +452,7 @@
               },
               options: {
                 responsive: true,
-                title: { display: true, text: "Weight Loss Trajectory" },
+                plugins: { title: { display: true, text: "Weight Loss Trajectory" } },
                 scales: {
                   x: { title: { display: true, text: "Weeks" } },
                   y: { title: { display: true, text: "Weight (lbs)" } }
@@ -468,34 +464,31 @@
           }
         }
     
-        // --- Steps & Navigation ---
+        // --- Navigation & UI Handling ---
         const steps = Array.from(document.querySelectorAll(".wizard-step"));
         let currentStepIndex = 0;
         function showStep(index) {
-          steps.forEach((s, i) => (s.style.display = i === index ? "block" : "none"));
+          steps.forEach((s, i) => s.style.display = i === index ? "block" : "none");
           currentStepIndex = index;
         }
         document.querySelectorAll("[data-next-step]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            if (!validateCurrentStep()) return;
-            showStep(currentStepIndex + 1);
-          });
+          btn.addEventListener("click", () => { if (!validateCurrentStep()) return; showStep(currentStepIndex + 1); });
         });
         document.querySelectorAll("[data-prev-step]").forEach((btn) => {
           btn.addEventListener("click", () => showStep(currentStepIndex - 1));
         });
     
-        // --- Toggle between LeanFat and WeightBF sections ---
+        // --- Toggle between LeanFat and WeightBF ---
         const radioLeanFat = document.getElementById("radioLeanFat");
         const radioWeightBF = document.getElementById("radioWeightBF");
         function updateModeUI() {
           document.getElementById("leanFatSection").style.display = radioLeanFat.checked ? "block" : "none";
           document.getElementById("weightBFSection").style.display = radioWeightBF.checked ? "block" : "none";
         }
-        [radioLeanFat, radioWeightBF].forEach((r) => r.addEventListener("change", updateModeUI));
+        [radioLeanFat, radioWeightBF].forEach(r => r.addEventListener("change", updateModeUI));
         updateModeUI();
     
-        // --- Update the Calorie Adjustment Dropdown ---
+        // --- Calorie Adjustment Dropdown ---
         const weightGoalRadios = document.getElementsByName("weightGoal");
         const dailyAdjustmentSelect = document.getElementById("dailyAdjustmentSelect");
         function updateCalorieDropdown() {
@@ -508,15 +501,13 @@
           dailyAdjustmentSelect.innerHTML = optionsHTML;
         }
         updateCalorieDropdown();
-        Array.from(weightGoalRadios).forEach((radio) => {
-          radio.addEventListener("change", updateCalorieDropdown);
-        });
+        Array.from(weightGoalRadios).forEach(r => r.addEventListener("change", updateCalorieDropdown));
     
         // --- Basic Validation ---
         function validateCurrentStep() {
           clearErrors(steps[currentStepIndex]);
           if (currentStepIndex === 1) {
-            let ageVal = parseInt(document.getElementById("ageInput").value || "", 10);
+            const ageVal = parseInt(document.getElementById("ageInput").value || "", 10);
             if (isNaN(ageVal) || ageVal < 20 || ageVal > 69) {
               showError(document.getElementById("ageInput"), "Age must be 20-69");
               return false;
@@ -524,8 +515,8 @@
           }
           if (currentStepIndex === 2) {
             if (radioLeanFat.checked) {
-              let l = parseFloat(document.getElementById("leanMassInput").value);
-              let f = parseFloat(document.getElementById("fatMassInput").value);
+              const l = parseFloat(document.getElementById("leanMassInput").value);
+              const f = parseFloat(document.getElementById("fatMassInput").value);
               if (isNaN(l) || l <= 0) {
                 showError(document.getElementById("leanMassInput"), "Invalid lean mass");
                 return false;
@@ -539,8 +530,8 @@
                 return false;
               }
             } else {
-              let w = parseFloat(document.getElementById("totalWeightInput").value);
-              let bf = parseFloat(document.getElementById("bodyFatPctInput").value);
+              const w = parseFloat(document.getElementById("totalWeightInput").value);
+              const bf = parseFloat(document.getElementById("bodyFatPctInput").value);
               if (isNaN(w) || w <= 0) {
                 showError(document.getElementById("totalWeightInput"), "Invalid weight");
                 return false;
@@ -553,13 +544,15 @@
           }
           return true;
         }
+    
         function clearErrors(stepEl) {
-          stepEl.querySelectorAll(".error-message").forEach((e) => e.remove());
-          stepEl.querySelectorAll(".invalid-input").forEach((inp) => inp.classList.remove("invalid-input"));
+          stepEl.querySelectorAll(".error-message").forEach(e => e.remove());
+          stepEl.querySelectorAll(".invalid-input").forEach(inp => inp.classList.remove("invalid-input"));
         }
+    
         function showError(inputEl, msg) {
           inputEl.classList.add("invalid-input");
-          let e = document.createElement("div");
+          const e = document.createElement("div");
           e.className = "error-message";
           e.textContent = msg;
           inputEl.insertAdjacentElement("afterend", e);
@@ -567,9 +560,9 @@
     
         // --- On Calculate Button ---
         document.getElementById("calculateButton").addEventListener("click", () => {
-          clearErrors(steps[3]);
-          let wg = document.querySelector('input[name="weightGoal"]:checked');
-          let da = document.querySelector('input[name="dietaryApproach"]:checked');
+          clearErrors(steps[currentStepIndex]);
+          const wg = document.querySelector('input[name="weightGoal"]:checked');
+          const da = document.querySelector('input[name="dietaryApproach"]:checked');
           if (!wg) {
             showError(document.getElementById("loseWeight"), "Select weight goal");
             return;
@@ -578,7 +571,7 @@
             showError(document.getElementById("lowCarb"), "Select dietary approach");
             return;
           }
-          let dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+          const dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
           if (dailyAdj > 0) {
             showError(document.getElementById("dailyAdjustmentSelect"), "For weight loss, select a deficit (negative value)");
             return;
@@ -587,7 +580,7 @@
           showStep(4);
         });
     
-        // --- Final Calculation, Update UI, and Render Charts ---
+        // --- Final Calculation, UI Update, and Chart Rendering ---
         function doFinalCalculation() {
           const isKg = document.getElementById("radioKg").checked;
           let M0 = 0, F0 = 0;
@@ -605,13 +598,12 @@
             F0 = (bf / 100) * w;
             M0 = w - F0;
           }
-          let cWeight = M0 + F0;
-          document.getElementById("currentWeightSpan").textContent = fmtWeight(cWeight, isKg);
-          document.getElementById("currentFatSpan").textContent =
-            fmtWeight(F0, isKg) + " (" + (F0 / cWeight * 100).toFixed(1) + "%)";
-          document.getElementById("currentLeanSpan").textContent = fmtWeight(M0, isKg);
-          document.getElementById("currentBFpctSpan").textContent = (F0 / cWeight * 100).toFixed(1) + "%";
-          document.getElementById("currentBFcatSpan").textContent = getBFCat(F0 / cWeight);
+          const cWeight = M0 + F0;
+          setTextContent("currentWeightSpan", fmtWeight(cWeight, isKg));
+          setTextContent("currentFatSpan", fmtWeight(F0, isKg) + " (" + (F0 / cWeight * 100).toFixed(1) + "%)");
+          setTextContent("currentLeanSpan", fmtWeight(M0, isKg));
+          setTextContent("currentBFpctSpan", (F0 / cWeight * 100).toFixed(1) + "%");
+          setTextContent("currentBFcatSpan", getBFCat(F0 / cWeight));
     
           // --- Compute Goal Range with Low-High Values ---
           const fatRangeLookup = {
@@ -622,8 +614,8 @@
             poor: { pLow: 0.25, pHigh: 0.30 },
             dangerouslyHigh: { pLow: 0.30, pHigh: 0.35 }
           };
-          let catKey = document.getElementById("fatGoalCategorySelect").value;
-          let range = fatRangeLookup[catKey] || { pLow: 0.10, pHigh: 0.15 };
+          const catKey = document.getElementById("fatGoalCategorySelect").value;
+          const range = fatRangeLookup[catKey] || { pLow: 0.10, pHigh: 0.15 };
           const goalWeightLow = M0 / (1 - range.pLow);
           const goalWeightHigh = M0 / (1 - range.pHigh);
           const goalFatLow = goalWeightLow - M0;
@@ -631,14 +623,11 @@
           const goalBFpctLow = (goalFatLow / goalWeightLow) * 100;
           const goalBFpctHigh = (goalFatHigh / goalWeightHigh) * 100;
     
-          document.getElementById("goalWeightSpan").textContent =
-            fmtWeight(goalWeightLow, isKg) + "–" + fmtWeight(goalWeightHigh, isKg);
-          document.getElementById("goalFatSpan").textContent =
-            fmtWeight(goalFatLow, isKg) + "–" + fmtWeight(goalFatHigh, isKg);
-          document.getElementById("goalLeanSpan").textContent = fmtWeight(M0, isKg);
-          document.getElementById("goalBFpctSpan").textContent =
-            goalBFpctLow.toFixed(1) + "%–" + goalBFpctHigh.toFixed(1) + "%";
-          document.getElementById("goalBFcatSpan").textContent = catKey;
+          setTextContent("goalWeightSpan", fmtWeight(goalWeightLow, isKg) + "–" + fmtWeight(goalWeightHigh, isKg));
+          setTextContent("goalFatSpan", fmtWeight(goalFatLow, isKg) + "–" + fmtWeight(goalFatHigh, isKg));
+          setTextContent("goalLeanSpan", fmtWeight(M0, isKg));
+          setTextContent("goalBFpctSpan", goalBFpctLow.toFixed(1) + "%–" + goalBFpctHigh.toFixed(1) + "%");
+          setTextContent("goalBFcatSpan", catKey);
     
           // --- Summary Settings ---
           const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
@@ -665,68 +654,68 @@
           };
           const leanInfo = leanLossLookup[dietary] ? leanLossLookup[dietary][deficitVal] : null;
           if (leanInfo) {
-            document.getElementById("summaryLeanGoalPct").textContent =
-              leanInfo.lean + "% lean loss, " + leanInfo.fat + "% fat loss";
+            setTextContent("summaryLeanGoalPct", leanInfo.lean + "% lean loss, " + leanInfo.fat + "% fat loss");
           } else {
-            document.getElementById("summaryLeanGoalPct").textContent = "--";
+            setTextContent("summaryLeanGoalPct", "--");
           }
-          document.getElementById("summaryWeightGoal").textContent = "Lose Weight";
-          document.getElementById("summaryDietApproach").textContent = dietary;
+          setTextContent("summaryWeightGoal", "Lose Weight");
+          setTextContent("summaryDietApproach", dietary);
           const af = parseFloat(document.getElementById("activityLevelSelect").value) || 1.55;
-          document.getElementById("summaryActivityLevel").textContent = af;
-          let dailyAdjVal = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
-          document.getElementById("summaryDailyAdj").textContent = dailyAdjVal;
+          setTextContent("summaryActivityLevel", af);
+          const dailyAdjVal = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+          setTextContent("summaryDailyAdj", dailyAdjVal);
     
           // --- Compute BMR, TDEE, and Final Calories ---
-          let LMkg = M0 / 2.20462;
-          let BMR = 370 + 21.6 * LMkg;
-          let TDEE = BMR * af;
+          const LMkg = M0 / 2.20462;
+          const BMR = 370 + 21.6 * LMkg;
+          const TDEE = BMR * af;
           let finalCals = TDEE + dailyAdjVal;
           if (finalCals < 1200) finalCals = 1200;
-          document.getElementById("bmrSpan").textContent = Math.round(BMR);
-          document.getElementById("tdeeSpan").textContent = Math.round(TDEE);
-          document.getElementById("finalCalsSpan").textContent = Math.round(finalCals);
-          let netDiff = finalCals - TDEE;
-          document.getElementById("deficitOrSurplusLine").textContent =
-            netDiff > 0 ? ("+" + Math.round(netDiff)) : netDiff < 0 ? Math.round(netDiff) : "0";
+          setTextContent("bmrSpan", Math.round(BMR));
+          setTextContent("tdeeSpan", Math.round(TDEE));
+          setTextContent("finalCalsSpan", Math.round(finalCals));
+          const netDiff = finalCals - TDEE;
+          setTextContent("deficitOrSurplusLine", netDiff > 0 ? ("+" + Math.round(netDiff)) : netDiff < 0 ? Math.round(netDiff) : "0");
     
           // --- Compute Macros ---
-          let macros = computeMacros(finalCals, dietary);
-          document.getElementById("carbsSpan").textContent = macros.carbsGrams + " g";
-          document.getElementById("proteinSpan").textContent = macros.proteinGrams + " g";
-          document.getElementById("fatSpan").textContent = macros.fatGrams + " g";
-          document.getElementById("macroHealthComment").textContent = getAdvice(netDiff);
+          const macros = computeMacros(finalCals, dietary);
+          setTextContent("carbsSpan", macros.carbsGrams + " g");
+          setTextContent("proteinSpan", macros.proteinGrams + " g");
+          setTextContent("fatSpan", macros.fatGrams + " g");
+          setTextContent("macroHealthComment", getAdvice(netDiff));
     
-          // --- Run Simulation for Forecast Charts ---
-          // Here, we simulate weekly changes using a relative deficit and metabolic adaptation.
-          // Using an evidence-based BMR formula: BMR = 370 + 21.6 * (LeanMass in kg)
-          // TDEE is computed as BMR * activity factor.
-          // A constant relative deficit (e.g., 30%) is applied, with metabolic adaptation reducing TDEE 3–6% per week (capped at ~20–25%).
-          // The simulation returns weekly forecast data.
-          let simulationData = simulateMetabolicAdaptation({
-            initialWeight: cWeight,
-            isKg: false,
-            bodyFatPct: (F0 / cWeight) * 100,
-            leanMass: M0,
-            age: parseInt(document.getElementById("ageInput").value) || 30,
-            gender: document.querySelector('input[name="gender"]:checked').value,
-            activityMultiplier: af,
-            weightGoal: "lose",
-            deficitFraction: Math.abs(parseFloat(document.getElementById("dailyAdjustmentSelect").value)) / TDEE,
-            dietaryApproach: dietary,
-            carbTolerance: "Unsure",
-            targetBFRange: { min: 15, max: 20 },
-            forecastWeeks: 16,
-            adaptationFactor: 0.04,
-            adaptationCap: 0.20
-          });
-          if (simulationData && simulationData.weeklyData) {
-            // Render the forecast charts using Chart.js
-            renderForecastCharts(simulationData.weeklyData);
-            console.log("Simulation Result:", simulationData);
-          } else {
-            console.error("No simulation data available.");
+          // --- Run Simulation and Render Forecast Charts ---
+          try {
+            const simParams = {
+              initialWeight: cWeight,
+              isKg: false,
+              bodyFatPct: (F0 / cWeight) * 100,
+              leanMass: M0,
+              age: parseInt(document.getElementById("ageInput").value) || 30,
+              gender: document.querySelector('input[name="gender"]:checked').value,
+              activityMultiplier: af,
+              weightGoal: "lose",
+              deficitFraction: Math.abs(parseFloat(document.getElementById("dailyAdjustmentSelect").value)) / TDEE,
+              dietaryApproach: dietary,
+              carbTolerance: "Unsure",
+              targetBFRange: { min: 15, max: 20 },
+              forecastWeeks: 16,
+              adaptationFactor: 0.04,
+              adaptationCap: 0.20
+            };
+            const simResult = simulateMetabolicAdaptation(simParams);
+            if (simResult && simResult.weeklyData) {
+              renderForecastCharts(simResult.weeklyData);
+              console.log("Simulation Result:", simResult);
+            } else {
+              console.error("No simulation data available.");
+            }
+          } catch (err) {
+            console.error("Error in simulation:", err);
           }
+    
+          // --- Compute Time-to-Mid-Goal ---
+          timeToGoal(cWeight, goalWeightLow, finalCals, TDEE, isKg);
         }
     
         // --- Simulation Function ---
@@ -750,19 +739,18 @@
               adaptationFactor = 0.04,
               adaptationCap = 0.20
             } = params;
-            if (!initialWeight || initialWeight <= 0) throw new Error("Initial weight must be a positive number.");
-            if (bodyFatPct < 0 || bodyFatPct > 100) throw new Error("Body fat percentage must be between 0 and 100.");
-            if (!age || age <= 0) throw new Error("Age must be a positive number.");
+            if (!initialWeight || initialWeight <= 0) throw new Error("Initial weight must be positive.");
+            if (bodyFatPct < 0 || bodyFatPct > 100) throw new Error("Body fat percentage must be 0-100.");
+            if (!age || age <= 0) throw new Error("Age must be positive.");
             if (!activityMultiplier || activityMultiplier < 1) throw new Error("Activity multiplier must be >= 1.");
             if (!["lose", "maintain", "gain"].includes(weightGoal)) throw new Error("Invalid weight goal.");
             if (typeof deficitFraction !== "number") throw new Error("Deficit fraction must be a number.");
             if (!["balanced", "low-carb", "high-protein"].includes(dietaryApproach)) throw new Error("Invalid dietary approach.");
             if (!targetBFRange || typeof targetBFRange.min !== "number" || typeof targetBFRange.max !== "number")
-              throw new Error("Target body fat range must be provided as an object with min and max.");
-            if (!forecastWeeks || forecastWeeks <= 0) throw new Error("Forecast period must be at least 1 week.");
+              throw new Error("Target BF range must have min and max values.");
+            if (!forecastWeeks || forecastWeeks <= 0) throw new Error("Forecast weeks must be at least 1.");
     
             const lbsToKg = (lbs) => lbs / 2.20462;
-            const kgToLbs = (kg) => kg * 2.20462;
     
             let currentWeight = initialWeight;
             let currentLeanMass = leanMass && leanMass > 0 ? leanMass : currentWeight * (1 - (bodyFatPct / 100));
@@ -802,8 +790,7 @@
               const dailyCalDiff = currentTDEE - currentCalTarget;
               const weeklyCalDiff = dailyCalDiff * 7;
               const weightChange = weeklyCalDiff / 3500;
-              let leanMassChange = weightGoal === "lose" ? weightChange * leanLossPercent :
-                                   weightGoal === "gain" ? -weightChange * 0.50 : 0;
+              const leanMassChange = weightGoal === "lose" ? weightChange * leanLossPercent : (weightGoal === "gain" ? -weightChange * 0.50 : 0);
               currentWeight = currentWeight - weightChange;
               currentLeanMass = currentLeanMass - leanMassChange;
               if (currentWeight < 0) currentWeight = 0;
@@ -834,120 +821,17 @@
               });
             }
     
-            return {
-              weeklyData,
-              disclaimer: "This calculator is for informational purposes only. Consult a healthcare professional before making any major changes to your diet or exercise program."
-            };
+            return { weeklyData, disclaimer: "This calculator is for informational purposes only. Consult a healthcare professional before making any major changes to your diet or exercise program." };
           } catch (error) {
             console.error("Simulation error:", error);
             return null;
           }
         }
     
-        // --- Render Forecast Charts ---
-        function renderForecastCharts(weeklyData) {
-          try {
-            const weeks = weeklyData.map(pt => pt.week);
-            const calorieTargets = weeklyData.map(pt => Math.round(pt.calorieTarget));
-            const weights = weeklyData.map(pt => Math.round(pt.weight));
-            const proteins = weeklyData.map(pt => pt.macros.protein);
-            const carbs = weeklyData.map(pt => pt.macros.carbs);
-            const fats = weeklyData.map(pt => pt.macros.fat);
-    
-            // Calorie Forecast Chart
-            if (window.calorieChart) window.calorieChart.destroy();
-            const ctxCal = document.getElementById("calorieChart").getContext("2d");
-            window.calorieChart = new Chart(ctxCal, {
-              type: "line",
-              data: {
-                labels: weeks,
-                datasets: [{
-                  label: "Daily Calorie Target",
-                  data: calorieTargets,
-                  borderColor: "rgb(75, 192, 192)",
-                  fill: false
-                }]
-              },
-              options: {
-                responsive: true,
-                title: { display: true, text: "Calorie Forecast" },
-                scales: {
-                  x: { title: { display: true, text: "Weeks" } },
-                  y: { title: { display: true, text: "Calories" } }
-                }
-              }
-            });
-    
-            // Macronutrient Trajectory Chart
-            if (window.macroChart) window.macroChart.destroy();
-            const ctxMacro = document.getElementById("macroChart").getContext("2d");
-            window.macroChart = new Chart(ctxMacro, {
-              type: "line",
-              data: {
-                labels: weeks,
-                datasets: [
-                  {
-                    label: "Protein (g)",
-                    data: proteins,
-                    borderColor: "rgb(255, 99, 132)",
-                    fill: false
-                  },
-                  {
-                    label: "Carbs (g)",
-                    data: carbs,
-                    borderColor: "rgb(54, 162, 235)",
-                    fill: false
-                  },
-                  {
-                    label: "Fat (g)",
-                    data: fats,
-                    borderColor: "rgb(255, 205, 86)",
-                    fill: false
-                  }
-                ]
-              },
-              options: {
-                responsive: true,
-                title: { display: true, text: "Macronutrient Trajectory" },
-                scales: {
-                  x: { title: { display: true, text: "Weeks" } },
-                  y: { title: { display: true, text: "Grams" } }
-                }
-              }
-            });
-    
-            // Weight Loss Trajectory Chart
-            if (window.weightChart) window.weightChart.destroy();
-            const ctxWeight = document.getElementById("weightChart").getContext("2d");
-            window.weightChart = new Chart(ctxWeight, {
-              type: "line",
-              data: {
-                labels: weeks,
-                datasets: [{
-                  label: "Predicted Weight (lbs)",
-                  data: weights,
-                  borderColor: "rgb(153, 102, 255)",
-                  fill: false
-                }]
-              },
-              options: {
-                responsive: true,
-                title: { display: true, text: "Weight Loss Trajectory" },
-                scales: {
-                  x: { title: { display: true, text: "Weeks" } },
-                  y: { title: { display: true, text: "Weight (lbs)" } }
-                }
-              }
-            });
-          } catch (error) {
-            console.error("Error rendering charts:", error);
-          }
-        }
-    
         // --- New Scenario Button ---
         document.getElementById("newScenarioBtn").addEventListener("click", () => {
-          steps.forEach((s) => (s.style.display = "none"));
-          document.querySelectorAll('input[type="number"]').forEach((inp) => (inp.value = ""));
+          steps.forEach(s => s.style.display = "none");
+          document.querySelectorAll('input[type="number"]').forEach(inp => inp.value = "");
           dailyAdjustmentSelect.value = "0";
           document.getElementById("loseWeight").checked = true;
           document.getElementById("radioLbs").checked = true;
@@ -956,15 +840,15 @@
           showStep(0);
         });
     
-        // --- Modal Handling ---
-        document.querySelectorAll("[data-open-modal]").forEach((a) => {
-          a.addEventListener("click", (e) => {
+        // --- Modal Handlers ---
+        document.querySelectorAll("[data-open-modal]").forEach(a => {
+          a.addEventListener("click", e => {
             e.preventDefault();
             let modalId = a.getAttribute("data-open-modal");
             document.getElementById(modalId).style.display = "block";
           });
         });
-        document.querySelectorAll(".close-modal-btn").forEach((btn) => {
+        document.querySelectorAll(".close-modal-btn").forEach(btn => {
           btn.addEventListener("click", () => {
             let id = btn.getAttribute("data-close-modal");
             document.getElementById(id).style.display = "none";
@@ -973,6 +857,166 @@
         document.getElementById("disclaimerLink").addEventListener("click", () => {
           document.getElementById("disclaimerModal").style.display = "block";
         });
+    
+        // --- On Calculate Button ---
+        document.getElementById("calculateButton").addEventListener("click", () => {
+          clearErrors(steps[currentStepIndex]);
+          const wg = document.querySelector('input[name="weightGoal"]:checked');
+          const da = document.querySelector('input[name="dietaryApproach"]:checked');
+          if (!wg) {
+            showError(document.getElementById("loseWeight"), "Select weight goal");
+            return;
+          }
+          if (!da) {
+            showError(document.getElementById("lowCarb"), "Select dietary approach");
+            return;
+          }
+          const dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+          if (dailyAdj > 0) {
+            showError(document.getElementById("dailyAdjustmentSelect"), "For weight loss, select a deficit (negative value)");
+            return;
+          }
+          doFinalCalculation();
+          showStep(4);
+        });
+    
+        // --- Final Calculation, UI Update, and Chart Rendering ---
+        function doFinalCalculation() {
+          const isKg = document.getElementById("radioKg").checked;
+          let M0 = 0, F0 = 0;
+          if (document.getElementById("radioLeanFat").checked) {
+            M0 = parseFloat(document.getElementById("leanMassInput").value) || 0;
+            F0 = parseFloat(document.getElementById("fatMassInput").value) || 0;
+            if (isKg) {
+              M0 *= 2.20462;
+              F0 *= 2.20462;
+            }
+          } else {
+            let w = parseFloat(document.getElementById("totalWeightInput").value) || 0;
+            let bf = parseFloat(document.getElementById("bodyFatPctInput").value) || 0;
+            if (isKg) w *= 2.20462;
+            F0 = (bf / 100) * w;
+            M0 = w - F0;
+          }
+          const cWeight = M0 + F0;
+          setTextContent("currentWeightSpan", fmtWeight(cWeight, isKg));
+          setTextContent("currentFatSpan", fmtWeight(F0, isKg) + " (" + (F0 / cWeight * 100).toFixed(1) + "%)");
+          setTextContent("currentLeanSpan", fmtWeight(M0, isKg));
+          setTextContent("currentBFpctSpan", (F0 / cWeight * 100).toFixed(1) + "%");
+          setTextContent("currentBFcatSpan", getBFCat(F0 / cWeight));
+    
+          // --- Compute Goal Range with Low-High Values ---
+          const fatRangeLookup = {
+            dangerouslyLow: { pLow: 0.08, pHigh: 0.10 },
+            excellent: { pLow: 0.10, pHigh: 0.15 },
+            good: { pLow: 0.15, pHigh: 0.20 },
+            fair: { pLow: 0.20, pHigh: 0.25 },
+            poor: { pLow: 0.25, pHigh: 0.30 },
+            dangerouslyHigh: { pLow: 0.30, pHigh: 0.35 }
+          };
+          const catKey = document.getElementById("fatGoalCategorySelect").value;
+          const range = fatRangeLookup[catKey] || { pLow: 0.10, pHigh: 0.15 };
+          const goalWeightLow = M0 / (1 - range.pLow);
+          const goalWeightHigh = M0 / (1 - range.pHigh);
+          const goalFatLow = goalWeightLow - M0;
+          const goalFatHigh = goalWeightHigh - M0;
+          const goalBFpctLow = (goalFatLow / goalWeightLow) * 100;
+          const goalBFpctHigh = (goalFatHigh / goalWeightHigh) * 100;
+    
+          setTextContent("goalWeightSpan", fmtWeight(goalWeightLow, isKg) + "–" + fmtWeight(goalWeightHigh, isKg));
+          setTextContent("goalFatSpan", fmtWeight(goalFatLow, isKg) + "–" + fmtWeight(goalFatHigh, isKg));
+          setTextContent("goalLeanSpan", fmtWeight(M0, isKg));
+          setTextContent("goalBFpctSpan", goalBFpctLow.toFixed(1) + "%–" + goalBFpctHigh.toFixed(1) + "%");
+          setTextContent("goalBFcatSpan", catKey);
+    
+          // --- Summary Settings ---
+          const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
+          const deficitVal = document.getElementById("dailyAdjustmentSelect").value;
+          const leanLossLookup = {
+            balanced: {
+              "-250": { fat: 90, lean: 10 },
+              "-500": { fat: 85, lean: 15 },
+              "-750": { fat: 80, lean: 20 },
+              "-1000": { fat: 75, lean: 25 }
+            },
+            "low-carb": {
+              "-250": { fat: 87, lean: 13 },
+              "-500": { fat: 82, lean: 18 },
+              "-750": { fat: 78, lean: 22 },
+              "-1000": { fat: 72, lean: 28 }
+            },
+            "high-protein": {
+              "-250": { fat: 95, lean: 5 },
+              "-500": { fat: 92, lean: 8 },
+              "-750": { fat: 88, lean: 12 },
+              "-1000": { fat: 85, lean: 15 }
+            }
+          };
+          const leanInfo = leanLossLookup[dietary] ? leanLossLookup[dietary][deficitVal] : null;
+          if (leanInfo) {
+            setTextContent("summaryLeanGoalPct", leanInfo.lean + "% lean loss, " + leanInfo.fat + "% fat loss");
+          } else {
+            setTextContent("summaryLeanGoalPct", "--");
+          }
+          setTextContent("summaryWeightGoal", "Lose Weight");
+          setTextContent("summaryDietApproach", dietary);
+          const af = parseFloat(document.getElementById("activityLevelSelect").value) || 1.55;
+          setTextContent("summaryActivityLevel", af);
+          const dailyAdjVal = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+          setTextContent("summaryDailyAdj", dailyAdjVal);
+    
+          // --- Compute BMR, TDEE, and Final Calories ---
+          const LMkg = M0 / 2.20462;
+          const BMR = 370 + 21.6 * LMkg;
+          const TDEE = BMR * af;
+          let finalCals = TDEE + dailyAdjVal;
+          if (finalCals < 1200) finalCals = 1200;
+          setTextContent("bmrSpan", Math.round(BMR));
+          setTextContent("tdeeSpan", Math.round(TDEE));
+          setTextContent("finalCalsSpan", Math.round(finalCals));
+          const netDiff = finalCals - TDEE;
+          setTextContent("deficitOrSurplusLine", netDiff > 0 ? ("+" + Math.round(netDiff)) : netDiff < 0 ? Math.round(netDiff) : "0");
+    
+          // --- Compute Macros ---
+          const macros = computeMacros(finalCals, dietary);
+          setTextContent("carbsSpan", macros.carbsGrams + " g");
+          setTextContent("proteinSpan", macros.proteinGrams + " g");
+          setTextContent("fatSpan", macros.fatGrams + " g");
+          setTextContent("macroHealthComment", getAdvice(netDiff));
+    
+          // --- Run Simulation and Render Forecast Charts ---
+          try {
+            const simParams = {
+              initialWeight: cWeight,
+              isKg: false,
+              bodyFatPct: (F0 / cWeight) * 100,
+              leanMass: M0,
+              age: parseInt(document.getElementById("ageInput").value) || 30,
+              gender: document.querySelector('input[name="gender"]:checked').value,
+              activityMultiplier: af,
+              weightGoal: "lose",
+              deficitFraction: Math.abs(parseFloat(document.getElementById("dailyAdjustmentSelect").value)) / TDEE,
+              dietaryApproach: dietary,
+              carbTolerance: "Unsure",
+              targetBFRange: { min: 15, max: 20 },
+              forecastWeeks: 16,
+              adaptationFactor: 0.04,
+              adaptationCap: 0.20
+            };
+            const simResult = simulateMetabolicAdaptation(simParams);
+            if (simResult && simResult.weeklyData) {
+              renderForecastCharts(simResult.weeklyData);
+              console.log("Simulation Result:", simResult);
+            } else {
+              console.error("No simulation data available.");
+            }
+          } catch (err) {
+            console.error("Error in simulation:", err);
+          }
+    
+          // --- Compute Time-to-Mid-Goal ---
+          timeToGoal(cWeight, goalWeightLow, finalCals, TDEE, isKg);
+        }
     
         // --- Unit Test: Log Simulation Result ---
         try {
@@ -996,7 +1040,6 @@
         } catch (error) {
           console.error("Unit Test Simulation Error:", error);
         }
-    
       })();
     </script>
     
