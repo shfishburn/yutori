@@ -7,24 +7,32 @@
     <title>Yutori Labs - Development Projects</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!-- Navigation with a small, hover-enabled logo -->
     <nav class="nav-wrapper">
       <div class="container">
-        <img src="assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
+        <a href="index.html">
+          <!-- Ensure the logo path is correct relative to index.html -->
+          <img src="assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
+        </a>
       </div>
     </nav>
 
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">R&D</h1>
-          <p class="hero-subtitle">
-            Our sandbox projects
-          </p>
+          <h1 class="hero-title">R&amp;D</h1>
+          <p class="hero-subtitle">Our sandbox projects</p>
         </div>
       </div>
     </section>
@@ -34,51 +42,18 @@
         <h2 class="section-title">Projects</h2>
         <div class="projects-grid">
           <div class="project-card">
-            <h3 class="project-title">Health Span Protocol</h3>
+            <h3 class="project-title">Body Composition Calculator V1</h3>
             <p class="project-description">
-              Short description goes here.
+              Calculate and plan your body composition goals with our step-by-step wizard.
             </p>
-            <a href="#" class="project-button">View Project</a>
+            <a href="/calcv1/bccv1.html" class="project-button">View Calculator V1</a>
           </div>
-          
-<div class="project-card">
-  <h3 class="project-title">Body Composition Calculator</h3>
-  <p class="project-description">
-    Calculate and plan your body composition goals with our step-by-step wizard.
-  </p>
-  <a href="/bcc/" class="project-button">View Project</a>
-</div>
-
           <div class="project-card">
-            <h3 class="project-title">Assessment Protocol</h3>
+            <h3 class="project-title">Body Composition Calculator V2</h3>
             <p class="project-description">
-              A systematic approach to baseline fitness assessment applicable across the adult age spectrum.
+              Enhanced version with improved UI and additional features.
             </p>
-            <a href="/assessment/" class="project-button">View Project</a>
-          </div>
-
-          <div class="project-card">
-            <h3 class="project-title">Sleep Quality Monitor</h3>
-            <p class="project-description">
-              Short description goes here.
-            </p>
-            <a href="#" class="project-button">View Project</a>
-          </div>
-
-          <div class="project-card">
-            <h3 class="project-title">Stress Management Tool</h3>
-            <p class="project-description">
-              Short description goes here.
-            </p>
-            <a href="#" class="project-button">View Project</a>
-          </div>
-
-          <div class="project-card">
-            <h3 class="project-title">Activity Tracker</h3>
-            <p class="project-description">
-              Short description goes here.
-            </p>
-            <a href="#" class="project-button">View Project</a>
+            <a href="/calcv2/bccv2.html" class="project-button">View Calculator V2</a>
           </div>
         </div>
       </div>

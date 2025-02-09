@@ -1,0 +1,165 @@
+/*
+  File Name: styles.css
+  Description: Stylesheet for the Body Composition Calculator demo. Implements responsive design,
+               mobile optimization, and styles for headers, sections, buttons, progress bar, and forms.
+  Change Control:
+    - Version 1.0: Initial creation.
+*/
+
+/* Basic resets and typography */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+  }
+  
+  /* Header styles */
+  header {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  #measurement-path {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .path-option {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background-color: #eee;
+  }
+  
+  .path-option.selected {
+    background-color: #cde;
+    font-weight: bold;
+  }
+  
+  #restart-demo {
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  /* Progress bar styles */
+  #progress-container {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 4px;
+    margin-top: 10px;
+    position: relative;
+    height: 20px;
+  }
+  
+  #progress-bar {
+    background-color: #27ae60;
+    height: 100%;
+    width: 0;
+    border-radius: 4px;
+  }
+  
+  #progress-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #fff;
+  }
+  
+  /* Main container and section styles */
+  #main-container {
+    padding: 20px;
+  }
+  
+  .section {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  /* Input groups */
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .input-group input,
+  .input-group select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  
+  /* Button styles */
+  button {
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #3498db;
+    color: #fff;
+    margin-top: 10px;
+  }
+  
+  button.next-btn {
+    background-color: #2ecc71;
+  }
+  
+  button#upgrade-accuracy {
+    background-color: #f39c12;
+  }
+  
+  /* Quiz button styles */
+  .quiz-group {
+    margin-bottom: 15px;
+    border: 1px dashed #ccc;
+    padding: 10px;
+  }
+  
+  .quiz-question {
+    margin-bottom: 10px;
+  }
+  
+  .quiz-answer {
+    margin-right: 5px;
+    padding: 5px 10px;
+    background-color: #ddd;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    #measurement-path {
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
+  

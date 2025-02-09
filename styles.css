@@ -1,0 +1,192 @@
+/* === Global Resets and Variables === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --container-width: 1200px;
+  --container-padding: 2rem;
+  --primary-color: #cd6e44;
+  --secondary-color: #e6a954;
+  --text-color: #1f2937;
+  --light-text: #6b7280;
+  --background: #f9fafb;
+  --card-bg: #ffffff;
+  --hover-color: #b85e3a;
+}
+
+/* === Base Typography & Body === */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-color);
+  background: var(--background);
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+}
+
+/* === Container Layout === */
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* === Navigation === */
+.nav-wrapper {
+  background: var(--card-bg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
+}
+
+/* Logo: small size with hover effect */
+.logo {
+  max-width: 160px;
+  height: auto;
+  transition: transform 0.2s ease-in-out;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* === Hero Section === */
+.hero-section {
+  background: linear-gradient(100deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  padding: 4rem 0;
+}
+
+.hero-content {
+  max-width: 800px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  letter-spacing: -0.03em;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  font-weight: 300;
+  max-width: 600px;
+  opacity: 0.9;
+}
+
+/* === Projects Section === */
+.projects-section {
+  padding: 4rem 0;
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 3vw, 2rem);
+  font-weight: 700;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+}
+
+.projects-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+/* === Project Card === */
+.project-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.15);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.project-title {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.project-description {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+  color: var(--light-text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.project-button {
+  display: inline-block;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.project-button:hover {
+  background: var(--hover-color);
+  transform: translateY(-1px);
+}
+
+/* === Footer === */
+.footer-section {
+  background: #393e46;
+  color: #fff;
+  padding: 2rem 0;
+}
+
+.footer-content {
+  opacity: 0.8;
+  font-size: 0.9375rem;
+}
+
+/* === Generic Button Styles === */
+button {
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #3498db;
+  color: #fff;
+  margin-top: 10px;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hover effect for generic buttons */
+button:hover {
+  background-color: #2980b9;
+  opacity: 0.9;
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 1rem;
+  }
+}
+
+/* === Calculator Specific Styles (if needed on calculator pages) === */
+/* These may be merged with your calc-styles.css if desired. */
+
+/* Example: Ensure buttons (including .btn) have a hover opacity effect */
+.btn:hover {
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Added shrink-to-fit and description for consistency -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta name="description" content="Yutori Labs - Body Composition Calculator V1" />
+    <title>Body Composition Calculator V1</title>
+    <!-- Include Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="calc-styles.css" />
+  </head>
+  <body>
+    <nav class="nav-wrapper">
+      <div class="container">
+        <a href="../index.html">
+          <img src="../assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
+        </a>
+      </div>
+    </nav>
+
+    <section id="calculator" class="projects-section">
+      <div class="container">
+        <h1>Body Composition Calculator</h1>
+        <p>This calculator determines your body composition goals based on the step-by-step data you provide.</p>
+    
+        <!-- Step 1: Mode & Units -->
+        <div class="wizard-step" id="step1" style="display: block;">
+          <h2>Step 1: Mode & Units</h2>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="inputMode" value="leanFat" id="radioLeanFat" />
+              Lean/Fat mass
+            </label>
+            <label>
+              <input type="radio" name="inputMode" value="weightBF" id="radioWeightBF" checked />
+              Weight + BF%
+            </label>
+          </div>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="unit" value="lbs" id="radioLbs" checked />
+              lbs
+            </label>
+            <label>
+              <input type="radio" name="unit" value="kg" id="radioKg" />
+              kg
+            </label>
+          </div>
+          <div class="wizard-buttons">
+            <button type="button" class="btn" data-next-step>Next</button>
+          </div>
+        </div>
+    
+        <!-- Step 2: Age & Gender -->
+        <div class="wizard-step" id="step2">
+          <h2>Step 2: Age & Gender</h2>
+          <label>AGE:</label>
+          <input type="number" id="ageInput" min="20" max="69" />
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="gender" value="female" id="radioFemale" checked />
+              Female
+            </label>
+            <label>
+              <input type="radio" name="gender" value="male" id="radioMale" />
+              Male
+            </label>
+          </div>
+          <div class="wizard-buttons">
+            <button type="button" class="btn" data-prev-step>Back</button>
+            <button type="button" class="btn" data-next-step>Next</button>
+          </div>
+        </div>
+    
+        <!-- Step 3: Composition -->
+        <div class="wizard-step" id="step3">
+          <h2>Step 3: Composition</h2>
+          <div id="leanFatSection" style="display: none;">
+            <label>LEAN MASS:</label>
+            <input type="number" id="leanMassInput" />
+            <label>FAT MASS:</label>
+            <input type="number" id="fatMassInput" />
+          </div>
+          <div id="weightBFSection">
+            <label>TOTAL WEIGHT:</label>
+            <input type="number" id="totalWeightInput" />
+            <label>BODY FAT (%):</label>
+            <input type="number" id="bodyFatPctInput" step="0.1" />
+          </div>
+          <div class="wizard-buttons">
+            <button type="button" class="btn" data-prev-step>Back</button>
+            <button type="button" class="btn" data-next-step>Next</button>
+          </div>
+        </div>
+    
+        <!-- Step 4: Goals, Activity & Calorie Adjustment -->
+        <div class="wizard-step" id="step4">
+          <h2>Step 4: Goals & Activity</h2>
+          <p><a href="#" data-open-modal="weightGoalModal">Weight Goal Info</a></p>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="weightGoal" value="lose" id="loseWeight" checked />
+              Lose Weight
+            </label>
+          </div>
+          <p><a href="#" data-open-modal="dietaryApproachModal">Dietary Approach Info</a></p>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" />
+              Low-Carb
+            </label>
+            <label>
+              <input type="radio" name="dietaryApproach" value="high-protein" id="highProtein" />
+              High-Protein
+            </label>
+            <label>
+              <input type="radio" name="dietaryApproach" value="balanced" id="balancedMacros" checked />
+              Balanced
+            </label>
+          </div>
+          <p><a href="#" data-open-modal="activityLevelModal">Activity Info</a></p>
+          <select id="activityLevelSelect">
+            <option value="1.2">Sedentary (1.2)</option>
+            <option value="1.375">Light (1.375)</option>
+            <option value="1.55" selected>Moderate (1.55)</option>
+            <option value="1.725">Very Active (1.725)</option>
+            <option value="1.9">Extremely Active (1.9)</option>
+          </select>
+          <p><a href="#" data-open-modal="calorieDeficitModal">Calorie Adjustment Info</a></p>
+          <select id="dailyAdjustmentSelect"></select>
+          <p><a href="#" data-open-modal="fatRangeModal">Fat% Range Info</a></p>
+          <select id="fatGoalCategorySelect">
+            <option value="dangerouslyLow">Dangerously Low</option>
+            <option value="excellent" selected>Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+            <option value="dangerouslyHigh">Dangerously High</option>
+          </select>
+          <div class="wizard-buttons">
+            <button type="button" class="btn" data-prev-step>Back</button>
+            <button type="button" class="btn" id="calculateButton">Calculate</button>
+          </div>
+        </div>
+    
+ <!-- Step 5: Results (Improved Layout) -->
+<div class="wizard-step" id="step5">
+  <div class="max-w-4xl mx-auto p-4">
+    <h2 class="text-3xl font-bold text-center mb-6">Your Results</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Settings Card -->
+      <div class="bg-white shadow rounded p-4">
+        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Settings</h3>
+        <ul class="space-y-1 text-sm">
+          <li><strong>Goal:</strong> <span id="summaryWeightGoal">--</span></li>
+          <li><strong>Dietary Approach:</strong> <span id="summaryDietApproach">--</span></li>
+          <li><strong>Activity:</strong> <span id="summaryActivityLevel">--</span></li>
+          <li><strong>Daily Calorie Adjustment:</strong> <span id="summaryDailyAdj">--</span></li>
+          <li><strong>Lean Goal:</strong> <span id="summaryLeanGoalPct">--</span></li>
+        </ul>
+      </div>
+
+      <!-- Current Composition Card -->
+      <div class="bg-white shadow rounded p-4">
+        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Current Composition</h3>
+        <ul class="space-y-1 text-sm">
+          <li><strong>Weight:</strong> <span id="currentWeightSpan">--</span></li>
+          <li><strong>Fat Mass:</strong> <span id="currentFatSpan">--</span></li>
+          <li><strong>Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
+          <li><strong>BF%:</strong> <span id="currentBFpctSpan">--</span></li>
+          <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
+        </ul>
+      </div>
+
+      <!-- Goal Range Card -->
+      <div class="bg-white shadow rounded p-4">
+        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Goal Range</h3>
+        <ul class="space-y-1 text-sm">
+          <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
+          <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
+          <li><strong>Lean Mass:</strong> <span id="goalLeanSpan">--</span></li>
+          <li><strong>BF%:</strong> <span id="goalBFpctSpan">--</span></li>
+          <li><strong>Category:</strong> <span id="goalBFcatSpan">--</span></li>
+        </ul>
+      </div>
+
+      <!-- Calories & Macros Card (spanning two columns on medium screens) -->
+      <div class="bg-white shadow rounded p-4 md:col-span-2">
+        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Calories &amp; Macros</h3>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p><strong>BMR:</strong> <span id="bmrSpan">--</span></p>
+            <p><strong>TDEE:</strong> <span id="tdeeSpan">--</span></p>
+            <p>
+              <strong>Final Cals:</strong>
+              <span id="finalCalsSpan">--</span>
+              (<span id="deficitOrSurplusLine">--</span>)
+            </p>
+          </div>
+          <div>
+            <p><strong>Carbs:</strong> <span id="carbsSpan">--</span></p>
+            <p><strong>Protein:</strong> <span id="proteinSpan">--</span></p>
+            <p><strong>Fat:</strong> <span id="fatSpan">--</span></p>
+          </div>
+        </div>
+        <p class="mt-2 italic text-sm" id="macroHealthComment">--</p>
+      </div>
+
+      <!-- Time-to-Goal Card -->
+      <div class="bg-white shadow rounded p-4">
+        <h3 class="text-xl font-semibold border-b pb-2 mb-2">Time to Mid-Goal</h3>
+        <p class="text-sm" id="timeToGoalText">--</p>
+      </div>
+    </div>
+
+    <!-- Bottom Buttons -->
+    <div class="mt-6 text-center">
+      <button class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn">New Scenario</button>
+      <button class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">Disclaimer</button>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <div class="modal-overlay" id="weightGoalModal">
+      <div class="modal-content">
+        <h3>Weight Goal</h3>
+        <p>Lose, Maintain, or Gain Lean Mass. Adjusts your final daily cals.</p>
+        <button class="close-modal-btn" data-close-modal="weightGoalModal">Exit</button>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="dietaryApproachModal">
+      <div class="modal-content">
+        <h3>Dietary Approach</h3>
+        <p>Low-carb, High-protein, or Balanced macros. Adjusts carb/fat split.</p>
+        <button class="close-modal-btn" data-close-modal="dietaryApproachModal">Exit</button>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="activityLevelModal">
+      <div class="modal-content">
+        <h3>Activity Level</h3>
+        <p>Factor to multiply your BMR. Sedentary ~1.2, Very Active ~1.725, etc.</p>
+        <button class="close-modal-btn" data-close-modal="activityLevelModal">Exit</button>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="calorieDeficitModal">
+      <div class="modal-content">
+        <h3>Calorie Adjustment Info</h3>
+        <p>
+          Depending on your weight goal, select an option from the dropdown below:
+          <br /><br />
+          <strong>Weight Maintenance:</strong><br />
+          Maintain: (0 cal/day) ≈ no weight change
+          <br /><br />
+          <strong>Weight Loss:</strong><br />
+          Slow loss: (~250 cal/day deficit) ≈ 0.5 lb/week<br />
+          Moderate loss: (~500 cal/day deficit) ≈ 1 lb/week<br />
+          Rapid loss: (~750 cal/day deficit) ≈ 1.5 lb/week<br />
+          Dangerous loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more
+          <br /><br />
+          <strong>Weight Gain:</strong><br />
+          Slow gain: (~125 cal/day surplus) ≈ 0.25 lb/week<br />
+          Moderate gain: (~250–500 cal/day surplus) ≈ 0.5–1 lb/week<br />
+          Rapid gain: (~500–750 cal/day surplus) ≈ 1–1.5 lb/week<br />
+          Dangerous gain: (~750+ cal/day surplus) ≈ 1.5+ lb/week
+        </p>
+        <button class="close-modal-btn" data-close-modal="calorieDeficitModal">Exit</button>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="leanMassGoalModal">
+      <div class="modal-content">
+        <h3>Lean Goal (%)</h3>
+        <p>Percentage of lost/gained weight that is lean mass vs. fat mass.</p>
+        <button class="close-modal-btn" data-close-modal="leanMassGoalModal">Exit</button>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="fatRangeModal">
+      <div class="modal-content">
+        <h3>Fat% Range</h3>
+        <p>Select an overall body-fat range category. e.g., "excellent" ~10-15% BF.</p>
+        <button class="close-modal-btn" data-close-modal="fatRangeModal">Exit</button>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="disclaimerModal">
+      <div class="modal-content">
+        <h3>Disclaimer</h3>
+        <p>This is not medical advice. Just estimates. Consult a professional.</p>
+        <button class="close-modal-btn" data-close-modal="disclaimerModal">Exit</button>
+      </div>
+    </div>
+    
+    <script>
+      (function () {
+        "use strict";
+    
+        // --- Helper Functions ---
+        function fmtWeight(weight, isKg) {
+          if (typeof weight !== "number") {
+            console.error("fmtWeight expects a number; received:", typeof weight);
+            return "";
+          }
+          if (isKg) {
+            let kg = weight / 2.20462;
+            return kg.toFixed(2) + " kg";
+          } else {
+            return weight.toFixed(2) + " lbs";
+          }
+        }
+    
+        function getBFCat(ratio) {
+          if (ratio < 0.1) {
+            return "Very Low";
+          } else if (ratio < 0.15) {
+            return "Excellent";
+          } else if (ratio < 0.2) {
+            return "Good";
+          } else if (ratio < 0.25) {
+            return "Fair";
+          } else if (ratio < 0.3) {
+            return "Poor";
+          } else {
+            return "Very High";
+          }
+        }
+    
+        function computeMacros(finalCals, approach) {
+          let macros = {};
+          if (approach === "balanced") {
+            macros.carbsGrams = Math.round((finalCals * 0.40) / 4);
+            macros.proteinGrams = Math.round((finalCals * 0.30) / 4);
+            macros.fatGrams = Math.round((finalCals * 0.30) / 9);
+          } else if (approach === "low-carb") {
+            macros.carbsGrams = Math.round((finalCals * 0.25) / 4);
+            macros.proteinGrams = Math.round((finalCals * 0.40) / 4);
+            macros.fatGrams = Math.round((finalCals * 0.35) / 9);
+          } else if (approach === "high-protein") {
+            macros.carbsGrams = Math.round((finalCals * 0.35) / 4);
+            macros.proteinGrams = Math.round((finalCals * 0.45) / 4);
+            macros.fatGrams = Math.round((finalCals * 0.20) / 9);
+          } else {
+            macros.carbsGrams = Math.round((finalCals * 0.40) / 4);
+            macros.proteinGrams = Math.round((finalCals * 0.30) / 4);
+            macros.fatGrams = Math.round((finalCals * 0.30) / 9);
+          }
+          return macros;
+        }
+    
+        function getAdvice(netDiff) {
+          if (netDiff < 0) {
+            return "Calorie deficit: aiming for weight loss.";
+          } else if (netDiff > 0) {
+            return "Calorie surplus: aiming for weight gain.";
+          } else {
+            return "Calorie maintenance.";
+          }
+        }
+    
+        // --- New Time-to–Mid–Goal Calculation Function ---
+        // This function calculates the expected target date for reaching the midpoint between current weight and goal weight.
+        function timeToGoal(cWeight, goalWeight, finalCals, TDEE, isKg) {
+          // For weight loss, netDiff = TDEE - finalCals (positive if deficit)
+          let netDiff = TDEE - finalCals;
+          let absNetDiff = Math.abs(netDiff);
+          if (absNetDiff === 0) {
+            document.getElementById("timeToGoalText").textContent = "No calorie change – mid-goal date cannot be determined.";
+            return;
+          }
+          // Estimate weekly weight change (3500 cal per lb)
+          let weeklyChange = (absNetDiff * 7) / 3500; // in lbs per week
+          if (weeklyChange === 0) {
+            document.getElementById("timeToGoalText").textContent = "Insufficient deficit for measurable weight change.";
+            return;
+          }
+          // Compute the midpoint weight
+          let midWeight = (cWeight + goalWeight) / 2;
+          // Calculate the absolute weight difference from current weight to midWeight
+          let weightDiff = Math.abs(midWeight - cWeight);
+          // Estimate number of weeks needed to cover half the difference
+          let weeks = weightDiff / weeklyChange;
+          // Now, add that many days to today's date
+          let today = new Date();
+          let daysToAdd = Math.round(weeks * 7);
+          let targetDate = new Date();
+          targetDate.setDate(today.getDate() + daysToAdd);
+          // Format the expected date nicely
+          let options = { year: 'numeric', month: 'short', day: 'numeric' };
+          let formattedDate = targetDate.toLocaleDateString(undefined, options);
+          document.getElementById("timeToGoalText").textContent = formattedDate;
+        }
+    
+        // --- Steps & Navigation ---
+        const steps = Array.from(document.querySelectorAll(".wizard-step"));
+        let currentStepIndex = 0;
+        function showStep(index) {
+          steps.forEach((s, i) => (s.style.display = i === index ? "block" : "none"));
+          currentStepIndex = index;
+        }
+        document.querySelectorAll("[data-next-step]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (!validateCurrentStep()) return;
+            showStep(currentStepIndex + 1);
+          });
+        });
+        document.querySelectorAll("[data-prev-step]").forEach((btn) => {
+          btn.addEventListener("click", () => showStep(currentStepIndex - 1));
+        });
+    
+        // --- Toggle between LeanFat and WeightBF sections ---
+        const radioLeanFat = document.getElementById("radioLeanFat");
+        const radioWeightBF = document.getElementById("radioWeightBF");
+        function updateModeUI() {
+          document.getElementById("leanFatSection").style.display = radioLeanFat.checked ? "block" : "none";
+          document.getElementById("weightBFSection").style.display = radioWeightBF.checked ? "block" : "none";
+        }
+        [radioLeanFat, radioWeightBF].forEach((r) => r.addEventListener("change", updateModeUI));
+        updateModeUI();
+    
+        // --- Update the Calorie Adjustment Dropdown ---
+        const weightGoalRadios = document.getElementsByName("weightGoal");
+        const dailyAdjustmentSelect = document.getElementById("dailyAdjustmentSelect");
+        function updateCalorieDropdown() {
+          let optionsHTML = `
+            <option value="-250" selected>Slow loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
+            <option value="-500">Moderate loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
+            <option value="-750">Rapid loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
+            <option value="-1000">Dangerous loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
+          `;
+          dailyAdjustmentSelect.innerHTML = optionsHTML;
+        }
+        updateCalorieDropdown();
+        Array.from(weightGoalRadios).forEach((radio) => {
+          radio.addEventListener("change", updateCalorieDropdown);
+        });
+    
+        // --- Basic Validation ---
+        function validateCurrentStep() {
+          clearErrors(steps[currentStepIndex]);
+          if (currentStepIndex === 1) {
+            let ageVal = parseInt(document.getElementById("ageInput").value || "", 10);
+            if (isNaN(ageVal) || ageVal < 20 || ageVal > 69) {
+              showError(document.getElementById("ageInput"), "Age must be 20-69");
+              return false;
+            }
+          }
+          if (currentStepIndex === 2) {
+            if (radioLeanFat.checked) {
+              let l = parseFloat(document.getElementById("leanMassInput").value);
+              let f = parseFloat(document.getElementById("fatMassInput").value);
+              if (isNaN(l) || l <= 0) {
+                showError(document.getElementById("leanMassInput"), "Invalid lean mass");
+                return false;
+              }
+              if (isNaN(f) || f < 0) {
+                showError(document.getElementById("fatMassInput"), "Invalid fat mass");
+                return false;
+              }
+              if (l + f <= 0) {
+                showError(document.getElementById("fatMassInput"), "Lean+fat must be >0");
+                return false;
+              }
+            } else {
+              let w = parseFloat(document.getElementById("totalWeightInput").value);
+              let bf = parseFloat(document.getElementById("bodyFatPctInput").value);
+              if (isNaN(w) || w <= 0) {
+                showError(document.getElementById("totalWeightInput"), "Invalid weight");
+                return false;
+              }
+              if (isNaN(bf) || bf < 0 || bf > 100) {
+                showError(document.getElementById("bodyFatPctInput"), "BF% must be between 0 and 100");
+                return false;
+              }
+            }
+            return true;
+          }
+          return true;
+        }
+        function clearErrors(stepEl) {
+          stepEl.querySelectorAll(".error-message").forEach((e) => e.remove());
+          stepEl.querySelectorAll(".invalid-input").forEach((inp) => inp.classList.remove("invalid-input"));
+        }
+        function showError(inputEl, msg) {
+          inputEl.classList.add("invalid-input");
+          let e = document.createElement("div");
+          e.className = "error-message";
+          e.textContent = msg;
+          inputEl.insertAdjacentElement("afterend", e);
+        }
+    
+        // --- On Calculate ---
+        document.getElementById("calculateButton").addEventListener("click", () => {
+          clearErrors(steps[3]);
+          let wg = document.querySelector('input[name="weightGoal"]:checked');
+          let da = document.querySelector('input[name="dietaryApproach"]:checked');
+          if (!wg) {
+            showError(document.getElementById("loseWeight"), "Select weight goal");
+            return;
+          }
+          if (!da) {
+            showError(document.getElementById("lowCarb"), "Select dietary approach");
+            return;
+          }
+          let dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+          if (dailyAdj > 0) {
+            showError(document.getElementById("dailyAdjustmentSelect"), "For weight loss, select a deficit (negative value)");
+            return;
+          }
+          doFinalCalculation();
+          showStep(4);
+        });
+    
+        // --- Final Calculation & Results ---
+        function doFinalCalculation() {
+          const isKg = document.getElementById("radioKg").checked;
+          let M0 = 0, F0 = 0;
+          if (document.getElementById("radioLeanFat").checked) {
+            M0 = parseFloat(document.getElementById("leanMassInput").value) || 0;
+            F0 = parseFloat(document.getElementById("fatMassInput").value) || 0;
+            if (isKg) {
+              M0 *= 2.20462;
+              F0 *= 2.20462;
+            }
+          } else {
+            let w = parseFloat(document.getElementById("totalWeightInput").value) || 0;
+            let bf = parseFloat(document.getElementById("bodyFatPctInput").value) || 0;
+            if (isKg) w *= 2.20462;
+            F0 = (bf / 100) * w;
+            M0 = w - F0;
+          }
+          let cWeight = M0 + F0;
+          document.getElementById("currentWeightSpan").textContent = fmtWeight(cWeight, isKg);
+          document.getElementById("currentFatSpan").textContent =
+            fmtWeight(F0, isKg) + " (" + (F0 / cWeight * 100).toFixed(1) + "%)";
+          document.getElementById("currentLeanSpan").textContent = fmtWeight(M0, isKg);
+          document.getElementById("currentBFpctSpan").textContent = (F0 / cWeight * 100).toFixed(1) + "%";
+          document.getElementById("currentBFcatSpan").textContent = getBFCat(F0 / cWeight);
+    
+          // --- Compute Goal Range ---
+          const fatGoalSelect = document.getElementById("fatGoalCategorySelect");
+          const fatGoalRanges = {
+            dangerouslyLow: 0.10,
+            excellent: 0.15,
+            good: 0.20,
+            fair: 0.25,
+            poor: 0.30,
+            dangerouslyHigh: 0.35
+          };
+          let targetBF = fatGoalRanges[fatGoalSelect.value] || 0.15;
+          let goalWeight = M0 / (1 - targetBF);
+          let goalFat = goalWeight - M0;
+          let goalBFpct = (goalFat / goalWeight) * 100;
+          let goalBFCat = getBFCat(goalFat / goalWeight);
+          document.getElementById("goalWeightSpan").textContent = fmtWeight(goalWeight, isKg);
+          document.getElementById("goalFatSpan").textContent = fmtWeight(goalFat, isKg) + " (" + goalBFpct.toFixed(1) + "%)";
+          document.getElementById("goalLeanSpan").textContent = fmtWeight(M0, isKg);
+          document.getElementById("goalBFpctSpan").textContent = goalBFpct.toFixed(1) + "%";
+          document.getElementById("goalBFcatSpan").textContent = goalBFCat;
+    
+          // --- Summary Settings ---
+          const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
+          const deficitVal = document.getElementById("dailyAdjustmentSelect").value;
+          const leanGoalInfo = leanLossLookup[dietary][deficitVal];
+          document.getElementById("summaryLeanGoalPct").textContent =
+            leanGoalInfo.lean + "% lean loss, " + leanGoalInfo.fat + "% fat loss";
+          document.getElementById("summaryWeightGoal").textContent = "Lose Weight";
+          document.getElementById("summaryDietApproach").textContent = dietary;
+          const af = parseFloat(document.getElementById("activityLevelSelect").value) || 1.55;
+          document.getElementById("summaryActivityLevel").textContent = af;
+          let dailyAdjVal = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+          document.getElementById("summaryDailyAdj").textContent = dailyAdjVal;
+    
+          // --- Compute BMR, TDEE, and Final Calories ---
+          let LMkg = M0 / 2.20462;
+          let BMR = 370 + 21.6 * LMkg;
+          let TDEE = BMR * af;
+          let finalCals = TDEE + dailyAdjVal;
+          if (finalCals < 1200) finalCals = 1200;
+          document.getElementById("bmrSpan").textContent = Math.round(BMR);
+          document.getElementById("tdeeSpan").textContent = Math.round(TDEE);
+          document.getElementById("finalCalsSpan").textContent = Math.round(finalCals);
+          let netDiff = finalCals - TDEE;
+          document.getElementById("deficitOrSurplusLine").textContent =
+            netDiff > 0 ? ("+" + Math.round(netDiff)) : netDiff < 0 ? Math.round(netDiff) : "0";
+    
+          // --- Compute Macros ---
+          let macros = computeMacros(finalCals, dietary);
+          document.getElementById("carbsSpan").textContent = macros.carbsGrams + " g";
+          document.getElementById("proteinSpan").textContent = macros.proteinGrams + " g";
+          document.getElementById("fatSpan").textContent = macros.fatGrams + " g";
+          document.getElementById("macroHealthComment").textContent = getAdvice(netDiff);
+    
+          // --- Compute Time to Mid-Goal (Expected Date) ---
+          timeToGoal(cWeight, goalWeight, finalCals, TDEE, isKg);
+        }
+    
+        const leanLossLookup = {
+          balanced: {
+            "-250": { fat: 90, lean: 10 },
+            "-500": { fat: 85, lean: 15 },
+            "-750": { fat: 80, lean: 20 },
+            "-1000": { fat: 75, lean: 25 }
+          },
+          "low-carb": {
+            "-250": { fat: 87, lean: 13 },
+            "-500": { fat: 82, lean: 18 },
+            "-750": { fat: 78, lean: 22 },
+            "-1000": { fat: 72, lean: 28 }
+          },
+          "high-protein": {
+            "-250": { fat: 95, lean: 5 },
+            "-500": { fat: 92, lean: 8 },
+            "-750": { fat: 88, lean: 12 },
+            "-1000": { fat: 85, lean: 15 }
+          }
+        };
+    
+        document.getElementById("newScenarioBtn").addEventListener("click", () => {
+          steps.forEach((s) => (s.style.display = "none"));
+          document.querySelectorAll('input[type="number"]').forEach((inp) => (inp.value = ""));
+          dailyAdjustmentSelect.value = "0";
+          document.getElementById("loseWeight").checked = true;
+          document.getElementById("radioLbs").checked = true;
+          updateModeUI();
+          updateCalorieDropdown();
+          showStep(0);
+        });
+    
+        document.querySelectorAll("[data-open-modal]").forEach((a) => {
+          a.addEventListener("click", (e) => {
+            e.preventDefault();
+            let modalId = a.getAttribute("data-open-modal");
+            document.getElementById(modalId).style.display = "block";
+          });
+        });
+        document.querySelectorAll(".close-modal-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            let id = btn.getAttribute("data-close-modal");
+            document.getElementById(id).style.display = "none";
+          });
+        });
+        document.getElementById("disclaimerLink").addEventListener("click", () => {
+          document.getElementById("disclaimerModal").style.display = "block";
+        });
+      })();
+    </script>
+    
+    
+    
+    <footer class="footer-section">
+      <div class="container">
+        <div class="footer-content">
+          <p class="text-white">&copy; 2025 Yutori Labs. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+      </body>
+    </html>
+    
