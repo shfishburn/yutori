@@ -16,11 +16,42 @@
     <link rel="stylesheet" href="calc-styles.css" />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Inline CSS for Modals -->
+    <style>
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      .close-modal-btn {
+        background: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
     <nav class="nav-wrapper">
       <div class="container">
-        <!-- Verify asset path if logo gives a 404 -->
+        <!-- If the logo gives a 404, update the asset path -->
         <a href="../index.html">
           <img src="../assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
         </a>
@@ -36,22 +67,12 @@
         <div class="wizard-step" id="step1" style="display: block;">
           <h2 class="text-xl font-semibold mb-2">Step 1: Mode & Units</h2>
           <div class="radio-group mb-4">
-            <label><b>BODY WEIGHT or BODY FAT %: </b></label>
-            <label>
-              <input type="radio" name="inputMode" value="leanFat" id="radioLeanFat" /> Lean/Fat mass or
-            </label>
-            <label>
-              <input type="radio" name="inputMode" value="weightBF" id="radioWeightBF" checked /> Weight + BF%
-            </label>
+            <label><input type="radio" name="inputMode" value="leanFat" id="radioLeanFat" /> Lean/Fat mass</label>
+            <label><input type="radio" name="inputMode" value="weightBF" id="radioWeightBF" checked /> Weight + BF%</label>
           </div>
           <div class="radio-group mb-4">
-            <label><b>POUNDS or KILOS: </b></label>
-            <label>
-              <input type="radio" name="unit" value="lbs" id="radioLbs" checked /> lbs or
-            </label>
-            <label>
-              <input type="radio" name="unit" value="kg" id="radioKg" /> kg
-            </label>
+            <label><input type="radio" name="unit" value="lbs" id="radioLbs" checked /> lbs</label>
+            <label><input type="radio" name="unit" value="kg" id="radioKg" /> kg</label>
           </div>
           <div class="wizard-buttons">
             <button type="button" class="btn" data-next-step>Next</button>
@@ -61,16 +82,11 @@
         <!-- STEP 2: Age & Gender -->
         <div class="wizard-step" id="step2">
           <h2 class="text-xl font-semibold mb-2">Step 2: Age & Gender</h2>
-          <label><b>AGE: (18 to 75)</b></label>
+          <label>AGE: (18 to 75)</label>
           <input type="number" id="ageInput" min="18" max="75" class="mb-4" />
           <div class="radio-group mb-4">
-            <label><b>GENDER:</b></label>
-            <label>
-              <input type="radio" name="gender" value="female" id="radioFemale" /> Female
-            </label>
-            <label>
-              <input type="radio" name="gender" value="male" id="radioMale" checked /> Male
-            </label>
+            <label><input type="radio" name="gender" value="female" id="radioFemale" checked /> Female</label>
+            <label><input type="radio" name="gender" value="male" id="radioMale" /> Male</label>
           </div>
           <div class="wizard-buttons">
             <button type="button" class="btn" data-prev-step>Back</button>
@@ -82,15 +98,15 @@
         <div class="wizard-step" id="step3">
           <h2 class="text-xl font-semibold mb-2">Step 3: Composition</h2>
           <div id="leanFatSection" style="display: none;">
-            <label>Lean Mass:</label>
+            <label>LEAN MASS:</label>
             <input type="number" id="leanMassInput" class="mb-2" />
-            <label>Fat Mass:</label>
+            <label>FAT MASS:</label>
             <input type="number" id="fatMassInput" class="mb-2" />
           </div>
           <div id="weightBFSection">
-            <label>Total Weight:</label>
+            <label>TOTAL WEIGHT:</label>
             <input type="number" id="totalWeightInput" class="mb-2" />
-            <label>Body Fat (%):</label>
+            <label>BODY FAT (%):</label>
             <input type="number" id="bodyFatPctInput" step="0.1" class="mb-2" />
           </div>
           <div class="wizard-buttons">
@@ -104,39 +120,32 @@
           <h2 class="text-xl font-semibold mb-2">Step 4: Goals & Activity</h2>
           <p><a href="#" data-open-modal="weightGoalModal" class="text-blue-500 underline">Weight Goal Info</a></p>
           <div class="radio-group mb-4">
-            <label>
-              <input type="radio" name="weightGoal" value="lose" id="loseWeight" checked /> Lose Weight
-            </label>
+            <label><input type="radio" name="weightGoal" value="lose" id="loseWeight" checked /> Lose Weight</label>
           </div>
           <p><a href="#" data-open-modal="dietaryApproachModal" class="text-blue-500 underline">Dietary Approach Info</a></p>
           <div class="radio-group mb-4">
-            <label>
-              <input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" /> Low-Carb (Not Keto)
-            </label>
-            <label>
-              <input type="radio" name="dietaryApproach" value="high-protein" id="highProtein" /> High-Protein
-            </label>
-            <label>
-              <input type="radio" name="dietaryApproach" value="balanced" id="balancedMacros" checked /> Balanced
-            </label>
+            <label><input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" /> Low-Carb</label>
+            <label><input type="radio" name="dietaryApproach" value="high-protein" id="highProtein" /> High-Protein</label>
+            <label><input type="radio" name="dietaryApproach" value="balanced" id="balancedMacros" checked /> Balanced</label>
           </div>
           <p><a href="#" data-open-modal="activityLevelModal" class="text-blue-500 underline">Activity Info</a></p>
           <select id="activityLevelSelect" class="mb-4">
-            <option value="1.2">Sedentary (1.2x BMR = TDEE)</option>
-            <option value="1.375">Light (1.375x BMR = TDEE)</option>
-            <option value="1.55" selected>Moderate (1.55x BMR = TDEE)</option>
-            <option value="1.725">Very Active (1.725x BMR = TDEE)</option>
-            <option value="1.9">Extremely Active (1.9x BMR = TDEE)</option>
+            <option value="1.2">Sedentary (1.2)</option>
+            <option value="1.375">Light (1.375)</option>
+            <option value="1.55" selected>Moderate (1.55)</option>
+            <option value="1.725">Very Active (1.725)</option>
+            <option value="1.9">Extremely Active (1.9)</option>
           </select>
           <p><a href="#" data-open-modal="calorieDeficitModal" class="text-blue-500 underline">Calorie Adjustment Info</a></p>
           <select id="dailyAdjustmentSelect" class="mb-4"></select>
           <p><a href="#" data-open-modal="fatRangeModal" class="text-blue-500 underline">Fat% Range Info</a></p>
           <select id="fatGoalCategorySelect" class="mb-4">
-            <option value="excellent" selected>Excellent (!10% to 15% BF)</option>
-            <option value="good">Good (~15% to 20% BF)</option>
-            <option value="fair">Fair (~20% to 25% BF)</option>
-            <option value="poor">Poor (~25% to 30% BF)</option>
-            <option value="dangerouslyHigh">Dangerously High (~30% or more BF)</option>
+            <option value="dangerouslyLow">Dangerously Low</option>
+            <option value="excellent" selected>Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+            <option value="dangerouslyHigh">Dangerously High</option>
           </select>
           <div class="wizard-buttons">
             <button type="button" class="btn" data-prev-step>Back</button>
@@ -144,8 +153,8 @@
           </div>
         </div>
     
-        <!-- STEP 5: Results -->
-        <!-- Top 2x2 Cards -->
+        <!-- STEP 5: Results Section -->
+        <!-- Top 2x2 Grid -->
         <div class="wizard-step" id="step5">
           <div class="max-w-4xl mx-auto p-4">
             <!-- Subheadline: Current Body Composition -->
@@ -153,8 +162,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Settings Card (Left) -->
               <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">About You</h3>
-                <h4 class="text-sm font-medium text-gray-600 mb-2">Today</h4>
+                <h3 class="text-xl font-semibold mb-1">Settings</h3>
+                <h4 class="text-sm font-medium text-gray-600 mb-2">Current Stats</h4>
                 <ul class="space-y-1 text-sm">
                   <li><strong>Goal:</strong> <span id="summaryWeightGoal">--</span></li>
                   <li><strong>Age:</strong> <span id="summaryAge">--</span></li>
@@ -167,7 +176,7 @@
               </div>
               <!-- Current Composition Card (Right) -->
               <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">Current Composition</h3>
+                <h3 class="text-xl font-semibold mb-1">Current Stats</h3>
                 <h4 class="text-sm font-medium text-gray-600 mb-2">Body Composition</h4>
                 <ul class="space-y-1 text-sm">
                   <li><strong>Weight:</strong> <span id="currentWeightSpan">--</span></li>
@@ -187,8 +196,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Goal Card (Left) -->
               <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">Goal Composition</h3>
-                <h4 class="text-sm font-medium text-gray-600 mb-2">Lean and Body Fat Ranges</h4>
+                <h3 class="text-xl font-semibold mb-1">Goal</h3>
+                <h4 class="text-sm font-medium text-gray-600 mb-2">Target Range</h4>
                 <ul class="space-y-1 text-sm">
                   <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
                   <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
@@ -202,8 +211,8 @@
               </div>
               <!-- Nutrition Card (Right) -->
               <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">Calories & Macronutrients</h3>
-                <h4 class="text-sm font-medium text-gray-600 mb-2">Recommended Ranges</h4>
+                <h3 class="text-xl font-semibold mb-1">Nutrition</h3>
+                <h4 class="text-sm font-medium text-gray-600 mb-2">Calories & Macros</h4>
                 <ul class="space-y-1 text-sm">
                   <li><strong>BMR:</strong> <span id="bmrSpan">--</span></li>
                   <li><strong>TDEE:</strong> <span id="tdeeSpan">--</span></li>
@@ -219,9 +228,9 @@
               </div>
             </div>
     
-            <!-- Subheadline: Charts -->
+            <!-- Subheadline: Charts (Stacked Vertically) -->
             <h2 class="text-2xl font-bold mt-8 mb-2">Charts</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 gap-6">
               <!-- Weight Loss Trajectory Chart -->
               <div class="bg-white shadow rounded p-4">
                 <h3 class="text-xl font-semibold mb-1">Weight Loss Trajectory</h3>
@@ -240,7 +249,7 @@
                 <h4 class="text-sm font-medium text-gray-600 mb-2">Protein, Carbs & Fat (g)</h4>
                 <canvas id="macroChart" class="w-full h-64"></canvas>
               </div>
-              <p class="mt-2 text-sm col-span-1 md:col-span-3">
+              <p class="mt-2 text-sm">
                 <a href="#" data-open-modal="forecastModal" class="text-blue-500 underline">Learn More about Forecast Charts</a>
               </p>
             </div>
@@ -280,7 +289,7 @@
       <div class="modal-content">
         <h3>How Are These Figures Calculated?</h3>
         <p>
-          <strong>Settings:</strong> Your current lean mass, age, and gender are used to compute your BMR (<em>370 + 21.6 × [Lean Mass in kg]</em>). TDEE is derived by multiplying BMR by your activity level. Your goal weight range is then calculated using your target BF percentages.
+          <strong>Settings:</strong> Your current lean mass, age, and gender are used to compute your BMR (<em>370 + 21.6 × [Lean Mass in kg]</em>). TDEE is derived by multiplying BMR by your activity level, and your goal weight range is calculated using your target BF percentages.
         </p>
         <button class="close-modal-btn" data-close-modal="explanationModal">Close</button>
       </div>
@@ -687,7 +696,7 @@
           a.addEventListener("click", e => {
             e.preventDefault();
             let modalId = a.getAttribute("data-open-modal");
-            document.getElementById(modalId).style.display = "block";
+            document.getElementById(modalId).style.display = "flex";
           });
         });
         document.querySelectorAll(".close-modal-btn").forEach(btn => {
@@ -697,7 +706,7 @@
           });
         });
         document.getElementById("disclaimerLink").addEventListener("click", () => {
-          document.getElementById("disclaimerModal").style.display = "block";
+          document.getElementById("disclaimerModal").style.display = "flex";
         });
     
         // --- Navigation & UI Handling ---
@@ -731,7 +740,7 @@
             <option value="-250" selected>Slow loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
             <option value="-500">Moderate loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
             <option value="-750">Rapid loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
-            <option value="-1000">Aggressive loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
+            <option value="-1000">Dangerous loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
           `;
           dailyAdjustmentSelect.innerHTML = optionsHTML;
         }
@@ -744,7 +753,7 @@
           if (currentStepIndex === 1) {
             const ageVal = parseInt(document.getElementById("ageInput").value || "", 10);
             if (isNaN(ageVal) || ageVal < 20 || ageVal > 69) {
-              showError(document.getElementById("ageInput"), "Age must be 18-75");
+              showError(document.getElementById("ageInput"), "Age must be 20-69");
               return false;
             }
           }
@@ -909,7 +918,7 @@
           let finalCals = TDEE + dailyAdjVal;
           if (finalCals < 1200) finalCals = 1200;
     
-          // --- Run Simulation with More Gradual Adaptation ---
+          // --- Run Simulation with Dynamic Energy Density ---
           const simParams = {
             initialWeight: cWeight,
             isKg: false,
@@ -980,9 +989,6 @@ Over ${simResult.weeklyData.length} weeks, you will lose a total of ${(initialSi
           } else {
             console.error("No simulation data available.");
           }
-    
-          // --- Optionally: Call timeToGoal if needed ---
-          // timeToGoal(cWeight, goalWeightLow, finalCals, TDEE, isKg);
         }
     
         // --- Unit Test: Log Simulation Result ---
