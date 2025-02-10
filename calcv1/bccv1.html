@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="calc-styles.css" />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Inline CSS for Modals -->
+    <!-- Inline CSS for Modals and Buttons -->
     <style>
       .modal-overlay {
         position: fixed;
@@ -46,14 +46,22 @@
         border-radius: 4px;
         cursor: pointer;
       }
+      .btn {
+        background: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <nav class="nav-wrapper">
       <div class="container">
-        <!-- If the logo gives a 404, update the asset path -->
+        <!-- Update asset path if necessary -->
         <a href="../index.html">
-          <img src="../assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
+          <img src="/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
         </a>
       </div>
     </nav>
@@ -61,67 +69,51 @@
     <section id="calculator" class="projects-section">
       <div class="container">
         <h1 class="text-3xl font-bold mb-4">Body Composition Calculator</h1>
-        <p class="mb-6">This calculator determines your body composition goals based on the step-by-step data you provide.</p>
+        <p class="mb-6">This calculator determines your body composition goals based on the data you provide.</p>
     
-        <!-- STEP 1: Mode & Units -->
+        <!-- STEP 1: Your Information (Merged Inputs) -->
         <div class="wizard-step" id="step1" style="display: block;">
-          <h2 class="text-xl font-semibold mb-2">Step 1: Mode & Units</h2>
-          <div class="radio-group mb-4">
-            <label><input type="radio" name="inputMode" value="leanFat" id="radioLeanFat" /> Lean/Fat mass</label>
-            <label><input type="radio" name="inputMode" value="weightBF" id="radioWeightBF" checked /> Weight + BF%</label>
+          <h2 class="text-xl font-semibold mb-2">Step 1: Your Information</h2>
+          <div class="mb-4">
+            <label class="block">Select Units (pounds or kilograms):</label>
+            <div class="radio-group">
+              <label><input type="radio" name="unit" value="lbs" id="radioLbs" checked /> lbs/inches</label>
+              <label><input type="radio" name="unit" value="kg" id="radioKg" /> kg/cm</label>
+            </div>
           </div>
-          <div class="radio-group mb-4">
-            <label><input type="radio" name="unit" value="lbs" id="radioLbs" checked /> lbs</label>
-            <label><input type="radio" name="unit" value="kg" id="radioKg" /> kg</label>
+          <div class="mb-4">
+            <label>Height (in inches or cm):</label>
+            <input type="number" id="heightInput" class="mb-2" placeholder="e.g., 70 in or 178 cm" />
+          </div>
+          <div class="mb-4">
+            <label>AGE (18 to 75):</label>
+            <input type="number" id="ageInput" min="20" max="69" class="mb-2" placeholder="e.g., 18 to 75" />
+          </div>
+          <div class="mb-4">
+            <label>Gender (assigned at birth):</label>
+            <div class="radio-group">
+              <label><input type="radio" name="gender" value="female" id="radioFemale" checked /> Female</label>
+              <label><input type="radio" name="gender" value="male" id="radioMale" /> Male</label>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label>Total Weight:</label>
+            <input type="number" id="totalWeightInput" class="mb-2" placeholder="e.g., pounds or kilograms" />
+          </div>
+          <div class="mb-4">
+            <label>Body Fat (%):</label>
+            <input type="number" id="bodyFatPctInput" step="0.1" class="mb-2" placeholder="e.g., 25 for 25% body fat" />
           </div>
           <div class="wizard-buttons">
             <button type="button" class="btn" data-next-step>Next</button>
           </div>
         </div>
     
-        <!-- STEP 2: Age & Gender -->
+        <!-- STEP 2: Goals & Activity -->
         <div class="wizard-step" id="step2">
-          <h2 class="text-xl font-semibold mb-2">Step 2: Age & Gender</h2>
-          <label>AGE: (18 to 75)</label>
-          <input type="number" id="ageInput" min="18" max="75" class="mb-4" />
-          <div class="radio-group mb-4">
-            <label><input type="radio" name="gender" value="female" id="radioFemale" checked /> Female</label>
-            <label><input type="radio" name="gender" value="male" id="radioMale" /> Male</label>
-          </div>
-          <div class="wizard-buttons">
-            <button type="button" class="btn" data-prev-step>Back</button>
-            <button type="button" class="btn" data-next-step>Next</button>
-          </div>
-        </div>
-    
-        <!-- STEP 3: Composition -->
-        <div class="wizard-step" id="step3">
-          <h2 class="text-xl font-semibold mb-2">Step 3: Composition</h2>
-          <div id="leanFatSection" style="display: none;">
-            <label>LEAN MASS:</label>
-            <input type="number" id="leanMassInput" class="mb-2" />
-            <label>FAT MASS:</label>
-            <input type="number" id="fatMassInput" class="mb-2" />
-          </div>
-          <div id="weightBFSection">
-            <label>TOTAL WEIGHT:</label>
-            <input type="number" id="totalWeightInput" class="mb-2" />
-            <label>BODY FAT (%):</label>
-            <input type="number" id="bodyFatPctInput" step="0.1" class="mb-2" />
-          </div>
-          <div class="wizard-buttons">
-            <button type="button" class="btn" data-prev-step>Back</button>
-            <button type="button" class="btn" data-next-step>Next</button>
-          </div>
-        </div>
-    
-        <!-- STEP 4: Goals, Activity & Calorie Adjustment -->
-        <div class="wizard-step" id="step4">
-          <h2 class="text-xl font-semibold mb-2">Step 4: Goals & Activity</h2>
-          <p><a href="#" data-open-modal="weightGoalModal" class="text-blue-500 underline">Weight Goal Info</a></p>
-          <div class="radio-group mb-4">
-            <label><input type="radio" name="weightGoal" value="lose" id="loseWeight" checked /> Lose Weight</label>
-          </div>
+          <h2 class="text-xl font-semibold mb-2">Step 2: Goals & Activity</h2>
+          <!-- Weight goal is fixed to "Lose Weight" -->
+          <p><strong>Weight Goal:</strong> Lose Weight</p>
           <p><a href="#" data-open-modal="dietaryApproachModal" class="text-blue-500 underline">Dietary Approach Info</a></p>
           <div class="radio-group mb-4">
             <label><input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" /> Low-Carb</label>
@@ -136,8 +128,14 @@
             <option value="1.725">Very Active (1.725)</option>
             <option value="1.9">Extremely Active (1.9)</option>
           </select>
-          <p><a href="#" data-open-modal="calorieDeficitModal" class="text-blue-500 underline">Calorie Adjustment Info</a></p>
-          <select id="dailyAdjustmentSelect" class="mb-4"></select>
+          <p><a href="#" data-open-modal="calorieDeficitModal" class="text-blue-500 underline">Calorie Deficit Info</a></p>
+          <!-- Calorie Deficit is a drop‑down -->
+          <select id="dailyAdjustmentSelect" class="mb-4">
+            <option value="-250" selected>Slow loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
+            <option value="-500">Moderate loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
+            <option value="-750">Rapid loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
+            <option value="-1000">Dangerous loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
+          </select>
           <p><a href="#" data-open-modal="fatRangeModal" class="text-blue-500 underline">Fat% Range Info</a></p>
           <select id="fatGoalCategorySelect" class="mb-4">
             <option value="dangerouslyLow">Dangerously Low</option>
@@ -153,11 +151,10 @@
           </div>
         </div>
     
-        <!-- STEP 5: Results Section -->
-        <!-- Top 2x2 Grid -->
-        <div class="wizard-step" id="step5">
+        <!-- STEP 3: Results -->
+        <div class="wizard-step" id="step3">
           <div class="max-w-4xl mx-auto p-4">
-            <!-- Subheadline: Current Body Composition -->
+            <!-- 2×2 Grid: Current & Goal Body Composition -->
             <h2 class="text-2xl font-bold mb-2">Current Body Composition</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Settings Card (Left) -->
@@ -165,12 +162,12 @@
                 <h3 class="text-xl font-semibold mb-1">Settings</h3>
                 <h4 class="text-sm font-medium text-gray-600 mb-2">Current Stats</h4>
                 <ul class="space-y-1 text-sm">
-                  <li><strong>Goal:</strong> <span id="summaryWeightGoal">--</span></li>
+                  <li><strong>Goal:</strong> <span id="summaryWeightGoal">Lose Weight</span></li>
                   <li><strong>Age:</strong> <span id="summaryAge">--</span></li>
                   <li><strong>Gender:</strong> <span id="summaryGender">--</span></li>
                   <li><strong>Dietary Approach:</strong> <span id="summaryDietApproach">--</span></li>
                   <li><strong>Activity:</strong> <span id="summaryActivityLevel">--</span></li>
-                  <li><strong>Daily Calorie Adjustment:</strong> <span id="summaryDailyAdj">--</span></li>
+                  <li><strong>Daily Calorie Deficit:</strong> <span id="summaryDailyAdj">--</span></li>
                   <li><strong>Lean Goal:</strong> <span id="summaryLeanGoalPct">--</span></li>
                 </ul>
               </div>
@@ -191,7 +188,6 @@
               </div>
             </div>
     
-            <!-- Subheadline: Goal Body Composition -->
             <h2 class="text-2xl font-bold mt-8 mb-2">Goal Body Composition</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Goal Card (Left) -->
@@ -228,7 +224,7 @@
               </div>
             </div>
     
-            <!-- Subheadline: Charts (Stacked Vertically) -->
+            <!-- Charts: Stacked Vertically -->
             <h2 class="text-2xl font-bold mt-8 mb-2">Charts</h2>
             <div class="grid grid-cols-1 gap-6">
               <!-- Weight Loss Trajectory Chart -->
@@ -289,7 +285,10 @@
       <div class="modal-content">
         <h3>How Are These Figures Calculated?</h3>
         <p>
-          <strong>Settings:</strong> Your current lean mass, age, and gender are used to compute your BMR (<em>370 + 21.6 × [Lean Mass in kg]</em>). TDEE is derived by multiplying BMR by your activity level, and your goal weight range is calculated using your target BF percentages.
+          <strong>Settings:</strong> Your total weight, height, age, and gender are used with the Mifflin–St Jeor equation to compute your Resting Metabolic Rate (RMR):
+          <br /><em>For males: (10 × weight_kg) + (6.25 × height_cm) – (5 × age) + 5</em>
+          <br /><em>For females: (10 × weight_kg) + (6.25 × height_cm) – (5 × age) – 161</em>
+          <br />TDEE is derived by multiplying RMR by your activity multiplier. Your goal weight range is calculated using your target BF percentages.
         </p>
         <button class="close-modal-btn" data-close-modal="explanationModal">Close</button>
       </div>
@@ -300,7 +299,7 @@
       <div class="modal-content">
         <h3>Goal Range Explanation</h3>
         <p>
-          Your goal weight range is determined by your lean mass and your target BF percentages:
+          Your goal weight range is determined by your lean mass (calculated as total weight × [1 – BF%]) and your target BF percentages:
           <br /><em>Goal Weight Low = Lean Mass ÷ (1 – pLow)</em> and <em>Goal Weight High = Lean Mass ÷ (1 – pHigh)</em>.
           For example, a reference user might have:
           <br />Weight: 218.35 lbs–232.00 lbs, Fat Mass: 32.75 lbs–46.40 lbs, Lean Mass: 185.60 lbs, BF%: 15.0%–20.0% (GOOD).
@@ -314,11 +313,14 @@
       <div class="modal-content">
         <h3>Calories & Macronutrients Explanation</h3>
         <p>
-          Your BMR is computed as <em>370 + 21.6 × (Lean Mass in kg)</em> and multiplied by your activity factor to derive TDEE.
-          A relative deficit is applied to set your daily calorie target.
-          We use a dynamic effective energy density:
-          <em>E_eff = L × 760 + (1 – L) × 3500</em>, where L is the fraction of weight loss that is lean tissue.
-          This model dynamically updates your macronutrient targets.
+          Your RMR is computed using the Mifflin–St Jeor equation:
+          <br /><em>For males: (10 × weight_kg) + (6.25 × height_cm) – (5 × age) + 5</em>
+          <br /><em>For females: (10 × weight_kg) + (6.25 × height_cm) – (5 × age) – 161</em>
+          <br />TDEE is derived by multiplying RMR by your activity multiplier.
+          A relative deficit (selected from the drop‑down) is applied to set your daily calorie target.
+          We then use a dynamic effective energy density:
+          <em>E_eff = L × 760 + (1 – L) × 3500</em>,
+          where L is the fraction of weight loss that is lean tissue, to simulate weight loss and update your macronutrient targets.
         </p>
         <button class="close-modal-btn" data-close-modal="calorieMacroModal">Close</button>
       </div>
@@ -328,7 +330,7 @@
     <div class="modal-overlay" id="weightGoalModal">
       <div class="modal-content">
         <h3>Weight Goal</h3>
-        <p>Lose, Maintain, or Gain Lean Mass. This adjusts your final daily calories.</p>
+        <p>This calculator supports a weight loss scenario only.</p>
         <button class="close-modal-btn" data-close-modal="weightGoalModal">Exit</button>
       </div>
     </div>
@@ -336,7 +338,7 @@
     <div class="modal-overlay" id="dietaryApproachModal">
       <div class="modal-content">
         <h3>Dietary Approach</h3>
-        <p>Low-carb, High-protein, or Balanced macros determine your nutrient split.</p>
+        <p>Low‑carb, High‑protein, or Balanced macros determine your nutrient split.</p>
         <button class="close-modal-btn" data-close-modal="dietaryApproachModal">Exit</button>
       </div>
     </div>
@@ -344,39 +346,26 @@
     <div class="modal-overlay" id="activityLevelModal">
       <div class="modal-content">
         <h3>Activity Level</h3>
-        <p>Your activity multiplier adjusts your BMR. Examples: Sedentary ~1.2, Very Active ~1.725.</p>
+        <p>Your activity multiplier adjusts your RMR. Examples: Sedentary ~1.2, Very Active ~1.725.</p>
         <button class="close-modal-btn" data-close-modal="activityLevelModal">Exit</button>
       </div>
     </div>
     
     <div class="modal-overlay" id="calorieDeficitModal">
       <div class="modal-content">
-        <h3>Calorie Adjustment Info</h3>
+        <h3>Calorie Deficit Info</h3>
         <p>
-          Depending on your goal, choose from these options:
-          <br /><br />
-          <strong>Maintenance:</strong> 0 cal/day (no change)
-          <br /><br />
-          <strong>Weight Loss:</strong> Options for a 250, 500, 750, or 1000 cal/day deficit.
-          <br /><br />
-          <strong>Weight Gain:</strong> Options for a 125, 250–500, 500–750, or 750+ cal/day surplus.
+          The calorie deficit drop‑down provides options for a 250, 500, 750, or 1000 cal/day deficit.
+          This deficit is applied relative to your TDEE to determine your daily calorie target.
         </p>
         <button class="close-modal-btn" data-close-modal="calorieDeficitModal">Exit</button>
-      </div>
-    </div>
-    
-    <div class="modal-overlay" id="leanMassGoalModal">
-      <div class="modal-content">
-        <h3>Lean Goal (%)</h3>
-        <p>This indicates the percentage of weight change that is lean tissue loss versus fat loss.</p>
-        <button class="close-modal-btn" data-close-modal="leanMassGoalModal">Exit</button>
       </div>
     </div>
     
     <div class="modal-overlay" id="fatRangeModal">
       <div class="modal-content">
         <h3>Fat% Range</h3>
-        <p>Select a target body-fat range (for example, "excellent" ~10–15% BF).</p>
+        <p>Select a target body‑fat range (for example, "excellent" ~10–15% BF).</p>
         <button class="close-modal-btn" data-close-modal="fatRangeModal">Exit</button>
       </div>
     </div>
@@ -554,7 +543,7 @@
           }
         }
     
-        // --- Simulation Function with Dynamic Energy Density ---
+        // --- Simulation Function using Mifflin–St Jeor ---
         function simulateMetabolicAdaptation(params) {
           try {
             if (typeof params !== "object") throw new Error("Input parameters must be provided in an object.");
@@ -573,13 +562,13 @@
               targetBFRange,
               forecastWeeks,
               adaptationFactor = 0.02,
-              adaptationCap = 0.10
+              adaptationCap = 0.20
             } = params;
             if (!initialWeight || initialWeight <= 0) throw new Error("Initial weight must be positive.");
             if (bodyFatPct < 0 || bodyFatPct > 100) throw new Error("Body fat percentage must be 0-100.");
             if (!age || age <= 0) throw new Error("Age must be positive.");
             if (!activityMultiplier || activityMultiplier < 1) throw new Error("Activity multiplier must be >= 1.");
-            if (!["lose", "maintain", "gain"].includes(weightGoal)) throw new Error("Invalid weight goal.");
+            if (!["lose"].includes(weightGoal)) throw new Error("Only weight loss is supported.");
             if (typeof deficitFraction !== "number") throw new Error("Deficit fraction must be a number.");
             if (!["balanced", "low-carb", "high-protein"].includes(dietaryApproach))
               throw new Error("Invalid dietary approach.");
@@ -587,18 +576,29 @@
               throw new Error("Target BF range must have min and max values.");
             if (!forecastWeeks || forecastWeeks <= 0) throw new Error("Forecast weeks must be at least 1.");
     
+            // Convert weight to kg if needed
             const lbsToKg = (lbs) => lbs / 2.20462;
+            const unit = document.querySelector('input[name="unit"]:checked').value;
+            let weightKg = unit === "lbs" ? lbsToKg(initialWeight) : initialWeight;
     
+            // Convert height to cm (if unit is lbs then height is in inches)
+            let heightInput = parseFloat(document.getElementById("heightInput").value);
+            if (isNaN(heightInput) || heightInput <= 0) throw new Error("Height must be provided.");
+            let heightCm = unit === "lbs" ? (heightInput * 2.54) : heightInput;
+    
+            // Compute RMR using Mifflin–St Jeor
+            let baselineRMR;
+            if (gender === "male") {
+              baselineRMR = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5;
+            } else {
+              baselineRMR = (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
+            }
+    
+            // For simulation, compute lean mass from total weight and BF%
             let currentWeight = initialWeight;
-            let currentLeanMass = (leanMass && leanMass > 0)
-              ? leanMass
-              : currentWeight * (1 - (bodyFatPct / 100));
-            const leanMassKg = isKg ? currentLeanMass : lbsToKg(currentLeanMass);
-            const baselineBMR = 370 + (21.6 * leanMassKg);
-            const baselineTDEE = baselineBMR * activityMultiplier;
-            let initialCalTarget = weightGoal === "lose" ? baselineTDEE * (1 - deficitFraction) :
-                                    weightGoal === "gain" ? baselineTDEE * (1 + Math.abs(deficitFraction)) :
-                                    baselineTDEE;
+            let currentLeanMass = initialWeight * (1 - (bodyFatPct / 100));
+            const baselineTDEE = baselineRMR * activityMultiplier;
+            let initialCalTarget = baselineTDEE * (1 - deficitFraction);
             const minCal = gender === "male" ? 1500 : 1200;
             if (initialCalTarget < minCal) initialCalTarget = minCal;
     
@@ -616,12 +616,15 @@
               default:
                 leanLossPercent = 0.15;
             }
-            let proteinMultiplier = weightGoal === "lose" ? (age < 60 ? 2.2 : (gender === "male" ? 2.5 : 2.6)) : 2.0;
-            let carbPercent = carbTolerance === "Low" ? 0.20 : 0.35;
+            // For low-carb, force carb percent to 20%
+            let carbPercent = dietaryApproach === "low-carb" ? 0.20 : (carbTolerance === "Low" ? 0.20 : 0.35);
+    
+            // IMPORTANT: When calculating protein, convert lean mass (in lbs) to kg if needed
+            let proteinMultiplier = (age < 60) ? 2.2 : (gender === "male" ? 2.5 : 2.6);
     
             const weeklyData = [];
             let cumulativeAdaptation = 0;
-            let currentBMR = baselineBMR;
+            let currentRMR = baselineRMR;
             let currentTDEE = baselineTDEE;
             let currentCalTarget = initialCalTarget;
     
@@ -633,26 +636,32 @@
               const L = leanLossPercent;
               const E_eff = L * 760 + (1 - L) * 3500;
     
-              // Weight change = weeklyCalDiff / E_eff
+              // Weight change (in lbs) = weeklyCalDiff / E_eff
               const weightChange = weeklyCalDiff / E_eff;
-              const leanMassChange = weightGoal === "lose" ? weightChange * leanLossPercent
-                                   : (weightGoal === "gain" ? -weightChange * 0.50 : 0);
+              // Compute lean mass change (note: currentLeanMass is in lbs; conversion will occur when computing protein)
+              const leanMassChange = weightChange * leanLossPercent;
     
               currentWeight = currentWeight - weightChange;
               currentLeanMass = currentLeanMass - leanMassChange;
               if (currentWeight < 0) currentWeight = 0;
               if (currentLeanMass < 0) currentLeanMass = 0;
-              const updatedLeanKg = isKg ? currentLeanMass : lbsToKg(currentLeanMass);
-              currentBMR = 370 + (21.6 * updatedLeanKg);
+    
+              // Update RMR based on new weight (keep height, age, gender constant)
+              let newWeightKg = unit === "lbs" ? lbsToKg(currentWeight) : currentWeight;
+              if (gender === "male") {
+                currentRMR = (10 * newWeightKg) + (6.25 * heightCm) - (5 * age) + 5;
+              } else {
+                currentRMR = (10 * newWeightKg) + (6.25 * heightCm) - (5 * age) - 161;
+              }
+    
               cumulativeAdaptation += adaptationFactor;
               if (cumulativeAdaptation > adaptationCap) cumulativeAdaptation = adaptationCap;
               currentTDEE = baselineTDEE * (1 - cumulativeAdaptation);
-              currentCalTarget = weightGoal === "lose" ? currentTDEE * (1 - deficitFraction) :
-                                 weightGoal === "gain" ? currentTDEE * (1 + Math.abs(deficitFraction)) :
-                                 currentTDEE;
+              currentCalTarget = currentTDEE * (1 - deficitFraction);
               if (currentCalTarget < minCal) currentCalTarget = minCal;
     
-              const proteinGrams = Math.max(updatedLeanKg * proteinMultiplier, (0.30 * currentCalTarget) / 4);
+              // Compute protein target using lean mass converted to kg
+              const proteinGrams = Math.max((unit === "lbs" ? lbsToKg(currentLeanMass) : currentLeanMass) * proteinMultiplier, (0.30 * currentCalTarget) / 4);
               const carbGrams = (currentCalTarget * carbPercent) / 4;
               const fatGrams = (currentCalTarget - (proteinGrams * 4 + carbGrams * 4)) / 9;
     
@@ -683,11 +692,8 @@
         document.getElementById("newScenarioBtn").addEventListener("click", () => {
           steps.forEach(s => s.style.display = "none");
           document.querySelectorAll('input[type="number"]').forEach(inp => inp.value = "");
-          dailyAdjustmentSelect.value = "0";
-          document.getElementById("loseWeight").checked = true;
+          dailyAdjustmentSelect.value = "-250";
           document.getElementById("radioLbs").checked = true;
-          updateModeUI();
-          updateCalorieDropdown();
           showStep(0);
         });
     
@@ -723,16 +729,6 @@
           btn.addEventListener("click", () => showStep(currentStepIndex - 1));
         });
     
-        // --- Toggle between LeanFat and WeightBF ---
-        const radioLeanFat = document.getElementById("radioLeanFat");
-        const radioWeightBF = document.getElementById("radioWeightBF");
-        function updateModeUI() {
-          document.getElementById("leanFatSection").style.display = radioLeanFat.checked ? "block" : "none";
-          document.getElementById("weightBFSection").style.display = radioWeightBF.checked ? "block" : "none";
-        }
-        [radioLeanFat, radioWeightBF].forEach(r => r.addEventListener("change", updateModeUI));
-        updateModeUI();
-    
         // --- Calorie Adjustment Dropdown ---
         const weightGoalRadios = document.getElementsByName("weightGoal");
         function updateCalorieDropdown() {
@@ -750,40 +746,27 @@
         // --- Basic Validation ---
         function validateCurrentStep() {
           clearErrors(steps[currentStepIndex]);
-          if (currentStepIndex === 1) {
+          // In merged step 1, validate height, age, weight and BF%
+          if (currentStepIndex === 0) {
+            const heightVal = parseFloat(document.getElementById("heightInput").value);
             const ageVal = parseInt(document.getElementById("ageInput").value || "", 10);
-            if (isNaN(ageVal) || ageVal < 20 || ageVal > 69) {
-              showError(document.getElementById("ageInput"), "Age must be 20-69");
+            const weightVal = parseFloat(document.getElementById("totalWeightInput").value);
+            const bfVal = parseFloat(document.getElementById("bodyFatPctInput").value);
+            if (isNaN(heightVal) || heightVal <= 0) {
+              showError(document.getElementById("heightInput"), "Height must be provided and positive.");
               return false;
             }
-          }
-          if (currentStepIndex === 2) {
-            if (radioLeanFat.checked) {
-              const l = parseFloat(document.getElementById("leanMassInput").value);
-              const f = parseFloat(document.getElementById("fatMassInput").value);
-              if (isNaN(l) || l <= 0) {
-                showError(document.getElementById("leanMassInput"), "Invalid lean mass");
-                return false;
-              }
-              if (isNaN(f) || f < 0) {
-                showError(document.getElementById("fatMassInput"), "Invalid fat mass");
-                return false;
-              }
-              if (l + f <= 0) {
-                showError(document.getElementById("fatMassInput"), "Lean+fat must be >0");
-                return false;
-              }
-            } else {
-              const w = parseFloat(document.getElementById("totalWeightInput").value);
-              const bf = parseFloat(document.getElementById("bodyFatPctInput").value);
-              if (isNaN(w) || w <= 0) {
-                showError(document.getElementById("totalWeightInput"), "Invalid weight");
-                return false;
-              }
-              if (isNaN(bf) || bf < 0 || bf > 100) {
-                showError(document.getElementById("bodyFatPctInput"), "BF% must be between 0 and 100");
-                return false;
-              }
+            if (isNaN(ageVal) || ageVal < 18 || ageVal > 75) {
+              showError(document.getElementById("ageInput"), "Age must be 18-75");
+              return false;
+            }
+            if (isNaN(weightVal) || weightVal <= 0) {
+              showError(document.getElementById("totalWeightInput"), "Invalid weight");
+              return false;
+            }
+            if (isNaN(bfVal) || bfVal < 0 || bfVal > 100) {
+              showError(document.getElementById("bodyFatPctInput"), "BF% must be between 8% and 40%");
+              return false;
             }
           }
           return true;
@@ -805,49 +788,45 @@
         // --- On Calculate Button ---
         document.getElementById("calculateButton").addEventListener("click", () => {
           clearErrors(steps[currentStepIndex]);
-          const wg = document.querySelector('input[name="weightGoal"]:checked');
-          const da = document.querySelector('input[name="dietaryApproach"]:checked');
-          if (!wg) {
-            showError(document.getElementById("loseWeight"), "Select weight goal");
-            return;
-          }
-          if (!da) {
-            showError(document.getElementById("lowCarb"), "Select dietary approach");
-            return;
-          }
           const dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
           if (dailyAdj > 0) {
             showError(document.getElementById("dailyAdjustmentSelect"), "For weight loss, select a deficit (negative value)");
             return;
           }
           doFinalCalculation();
-          showStep(4);
+          showStep(2);
         });
     
         // --- Final Calculation, UI Update, and Chart Rendering ---
         function doFinalCalculation() {
-          const isKg = document.getElementById("radioKg").checked;
-          let M0 = 0, F0 = 0;
-          if (document.getElementById("radioLeanFat").checked) {
-            M0 = parseFloat(document.getElementById("leanMassInput").value) || 0;
-            F0 = parseFloat(document.getElementById("fatMassInput").value) || 0;
-            if (isKg) {
-              M0 *= 2.20462;
-              F0 *= 2.20462;
-            }
+          const unit = document.querySelector('input[name="unit"]:checked').value;
+          const isKg = unit === "kg";
+          const weightVal = parseFloat(document.getElementById("totalWeightInput").value);
+          const bfVal = parseFloat(document.getElementById("bodyFatPctInput").value);
+          const ageVal = parseInt(document.getElementById("ageInput").value) || 30;
+          const gender = document.querySelector('input[name="gender"]:checked').value;
+          const heightVal = parseFloat(document.getElementById("heightInput").value);
+          const heightCm = unit === "lbs" ? (heightVal * 2.54) : heightVal;
+          const lbsToKg = (lbs) => lbs / 2.20462;
+          const weightKg = unit === "lbs" ? lbsToKg(weightVal) : weightVal;
+    
+          // Compute RMR using Mifflin–St Jeor
+          let RMR;
+          if (gender === "male") {
+            RMR = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) + 5;
           } else {
-            let w = parseFloat(document.getElementById("totalWeightInput").value) || 0;
-            let bf = parseFloat(document.getElementById("bodyFatPctInput").value) || 0;
-            if (isKg) w *= 2.20462;
-            F0 = (bf / 100) * w;
-            M0 = w - F0;
+            RMR = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) - 161;
           }
-          const cWeight = M0 + F0;
-          setTextContent("currentWeightSpan", fmtWeight(cWeight, isKg));
-          setTextContent("currentFatSpan", fmtWeight(F0, isKg) + " (" + (F0 / cWeight * 100).toFixed(1) + "%)");
-          setTextContent("currentLeanSpan", fmtWeight(M0, isKg));
-          setTextContent("currentBFpctSpan", (F0 / cWeight * 100).toFixed(1) + "%");
-          setTextContent("currentBFcatSpan", getBFCat(F0 / cWeight));
+    
+          // Compute lean mass from total weight and BF%
+          const leanMass = weightVal * (1 - (bfVal / 100));
+          const cWeight = unit === "lbs" ? weightVal : (weightVal * 2.20462);
+          setTextContent("currentWeightSpan", fmtWeight(cWeight, false));
+          const fatMass = weightVal * (bfVal / 100);
+          setTextContent("currentFatSpan", fmtWeight(fatMass, false) + " (" + ((fatMass / weightVal) * 100).toFixed(1) + "%)");
+          setTextContent("currentLeanSpan", fmtWeight(leanMass, false));
+          setTextContent("currentBFpctSpan", ((fatMass / weightVal) * 100).toFixed(1) + "%");
+          setTextContent("currentBFcatSpan", getBFCat(fatMass / weightVal));
     
           // --- Compute Goal Range (Low-High) ---
           const fatRangeLookup = {
@@ -860,23 +839,23 @@
           };
           const catKey = document.getElementById("fatGoalCategorySelect").value;
           const range = fatRangeLookup[catKey] || { pLow: 0.10, pHigh: 0.15 };
-          const goalWeightLow = M0 / (1 - range.pLow);
-          const goalWeightHigh = M0 / (1 - range.pHigh);
-          const goalFatLow = goalWeightLow - M0;
-          const goalFatHigh = goalWeightHigh - M0;
+          const goalWeightLow = leanMass / (1 - range.pLow);
+          const goalWeightHigh = leanMass / (1 - range.pHigh);
+          const goalFatLow = goalWeightLow - leanMass;
+          const goalFatHigh = goalWeightHigh - leanMass;
           const goalBFpctLow = (goalFatLow / goalWeightLow) * 100;
           const goalBFpctHigh = (goalFatHigh / goalWeightHigh) * 100;
     
-          setTextContent("goalWeightSpan", fmtWeight(goalWeightLow, isKg) + "–" + fmtWeight(goalWeightHigh, isKg));
-          setTextContent("goalFatSpan", fmtWeight(goalFatLow, isKg) + "–" + fmtWeight(goalFatHigh, isKg));
-          setTextContent("goalLeanSpan", fmtWeight(M0, isKg));
+          setTextContent("goalWeightSpan", fmtWeight(goalWeightLow, false) + "–" + fmtWeight(goalWeightHigh, false));
+          setTextContent("goalFatSpan", fmtWeight(goalFatLow, false) + "–" + fmtWeight(goalFatHigh, false));
+          setTextContent("goalLeanSpan", fmtWeight(leanMass, false));
           setTextContent("goalBFpctSpan", goalBFpctLow.toFixed(1) + "%–" + goalBFpctHigh.toFixed(1) + "%");
           setTextContent("goalBFcatSpan", catKey);
     
           // --- Summary Settings (Settings Card) ---
           const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
           setTextContent("summaryAge", document.getElementById("ageInput").value || "--");
-          setTextContent("summaryGender", document.querySelector('input[name="gender"]:checked').value || "--");
+          setTextContent("summaryGender", gender || "--");
           const deficitVal = document.getElementById("dailyAdjustmentSelect").value;
           const leanLossLookup = {
             balanced: {
@@ -911,10 +890,14 @@
           const dailyAdjVal = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
           setTextContent("summaryDailyAdj", dailyAdjVal);
     
-          // --- Compute Current BMR, TDEE, and Final Calories ---
-          const LMkg = M0 / 2.20462;
-          const BMR = 370 + 21.6 * LMkg;
-          const TDEE = BMR * af;
+          // --- Compute RMR, TDEE, and Final Calories using Mifflin–St Jeor ---
+          let RMR_final;
+          if (gender === "male") {
+            RMR_final = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) + 5;
+          } else {
+            RMR_final = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) - 161;
+          }
+          const TDEE = RMR_final * af;
           let finalCals = TDEE + dailyAdjVal;
           if (finalCals < 1200) finalCals = 1200;
     
@@ -922,10 +905,10 @@
           const simParams = {
             initialWeight: cWeight,
             isKg: false,
-            bodyFatPct: (F0 / cWeight) * 100,
-            leanMass: M0,
-            age: parseInt(document.getElementById("ageInput").value) || 30,
-            gender: document.querySelector('input[name="gender"]:checked').value,
+            bodyFatPct: bfVal,
+            leanMass: leanMass,
+            age: ageVal,
+            gender: gender,
             activityMultiplier: af,
             weightGoal: "lose",
             deficitFraction: Math.abs(parseFloat(document.getElementById("dailyAdjustmentSelect").value)) / TDEE,
@@ -934,7 +917,7 @@
             targetBFRange: { min: 15, max: 20 },
             forecastWeeks: 16,
             adaptationFactor: 0.02,
-            adaptationCap: 0.10
+            adaptationCap: 0.20
           };
           const simResult = simulateMetabolicAdaptation(simParams);
           if (simResult && simResult.weeklyData) {
@@ -955,7 +938,7 @@
             const fatLow = Math.min(...fatArray);
             const fatHigh = Math.max(...fatArray);
     
-            setTextContent("bmrSpan", Math.round(BMR) + " kcal/day");
+            setTextContent("bmrSpan", Math.round(RMR_final) + " kcal/day");
             setTextContent("tdeeSpan", Math.round(tdeeLow) + "–" + Math.round(tdeeHigh) + " kcal/day");
             setTextContent("finalCalsSpan", Math.round(finalCalsLow) + "–" + Math.round(finalCalsHigh) + " kcal/day");
             setTextContent("carbsSpan", Math.round(carbsLow) + "–" + Math.round(carbsHigh) + " g");
@@ -978,9 +961,9 @@
             const extraInfo = document.createElement("p");
             extraInfo.className = "mt-2 text-sm text-gray-700";
             extraInfo.textContent = `For a reference user, the Goal Range is:
-Weight: ${fmtWeight(goalWeightLow, isKg)}–${fmtWeight(goalWeightHigh, isKg)},
-Fat Mass: ${fmtWeight(goalFatLow, isKg)}–${fmtWeight(goalFatHigh, isKg)},
-Lean Mass: ${fmtWeight(M0, isKg)},
+Weight: ${fmtWeight(goalWeightLow, false)}–${fmtWeight(goalWeightHigh, false)},
+Fat Mass: ${fmtWeight(goalFatLow, false)}–${fmtWeight(goalFatHigh, false)},
+Lean Mass: ${fmtWeight(leanMass, false)},
 BF%: ${goalBFpctLow.toFixed(1)}%–${goalBFpctHigh.toFixed(1)}% (${catKey.toUpperCase()}).
 Based on current projections, you should lose up to ${avgWeeklyLoss.toFixed(2)} lbs per week.
 Over ${simResult.weeklyData.length} weeks, you will lose a total of ${(initialSimWeight - finalSimWeight).toFixed(2)} lbs.`;
@@ -991,31 +974,32 @@ Over ${simResult.weeklyData.length} weeks, you will lose a total of ${(initialSi
           }
         }
     
-        // --- Unit Test: Log Simulation Result ---
+        // --- Unit Test: Log Simulation Result for our reference user ---
         try {
           const testSim = simulateMetabolicAdaptation({
-            initialWeight: 250,
+            initialWeight: 287.5,
             isKg: false,
-            bodyFatPct: 30,
-            age: 45,
+            bodyFatPct: 35.7,
+            age: 62,
             gender: "male",
             activityMultiplier: 1.55,
             weightGoal: "lose",
-            deficitFraction: 0.30,
-            dietaryApproach: "balanced",
+            deficitFraction: 0.50,  // Moderate loss (~500 cal/day deficit)
+            dietaryApproach: "low-carb",
             carbTolerance: "Unsure",
             targetBFRange: { min: 15, max: 20 },
             forecastWeeks: 16,
             adaptationFactor: 0.02,
-            adaptationCap: 0.10
+            adaptationCap: 0.20
           });
           console.log("Unit Test Simulation Result:", testSim);
         } catch (error) {
           console.error("Unit Test Simulation Error:", error);
         }
       })();
-    </script>
-    
+
+  </script>
+
     <footer class="footer-section">
       <div class="container">
         <div class="footer-content">
