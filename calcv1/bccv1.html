@@ -38,22 +38,6 @@
         width: 90%;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
-      .btn {
-        background: #007BFF;
-        color: #fff;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .btn {
-        background: #007BFF;
-        color: #fff;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-      }
     </style>
   </head>
   <body>
@@ -65,12 +49,12 @@
         </a>
       </div>
     </nav>
-    
+
     <section id="calculator" class="projects-section">
       <div class="container">
         <h1 class="text-3xl font-bold mb-4">Body Composition Calculator</h1>
         <p class="mb-6">This calculator determines your body composition goals based on the data you provide.</p>
-    
+
         <!-- STEP 1: Your Information (Merged Inputs) -->
         <div class="wizard-step" id="step1" style="display: block;">
           <h2 class="text-xl font-semibold mb-2">Step 1: Your Information</h2>
@@ -108,7 +92,7 @@
             <button type="button" class="btn" data-next-step>Next</button>
           </div>
         </div>
-    
+
         <!-- STEP 2: Goals & Activity -->
         <div class="wizard-step" id="step2">
           <h2 class="text-xl font-semibold mb-2">Step 2: Goals & Activity</h2>
@@ -150,7 +134,7 @@
             <button type="button" class="btn" id="calculateButton">Calculate</button>
           </div>
         </div>
-    
+
         <!-- STEP 3: Results -->
         <div class="wizard-step" id="step3">
           <div class="max-w-4xl mx-auto p-4">
@@ -187,7 +171,7 @@
                 </p>
               </div>
             </div>
-    
+
             <h2 class="text-2xl font-bold mt-8 mb-2">Goal Body Composition</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Goal Card (Left) -->
@@ -223,7 +207,7 @@
                 </p>
               </div>
             </div>
-    
+
             <!-- Charts: Stacked Vertically -->
             <h2 class="text-2xl font-bold mt-8 mb-2">Charts</h2>
             <div class="grid grid-cols-1 gap-6">
@@ -249,7 +233,7 @@
                 <a href="#" data-open-modal="forecastModal" class="text-blue-500 underline">Learn More about Forecast Charts</a>
               </p>
             </div>
-    
+
             <!-- Bottom Buttons -->
             <div class="mt-6 text-center">
               <button class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn">New Scenario</button>
@@ -257,29 +241,29 @@
             </div>
           </div>
         </div>
-    
+
       </div>
     </section>
-    
+
     <!-- Modals -->
     <!-- Body Composition Modal -->
     <div class="modal-overlay" id="bodyCompModal">
       <div class="modal-content">
         <h3>Body Composition Details</h3>
         <p>This section shows your current body composition—including your weight, fat mass, lean mass, and BF%—which is used to set realistic goals.</p>
-        <button class="btn" data-close-modal="bodyCompModal">Close</button>
+        <button class="btn close-modal-btn" data-close-modal="bodyCompModal">Close</button>
       </div>
     </div>
-    
+
     <!-- Forecast Charts Modal -->
     <div class="modal-overlay" id="forecastModal">
       <div class="modal-content">
         <h3>Forecast Charts Explanation</h3>
         <p>The charts display your predicted weight loss trajectory, daily calorie target, and macronutrient needs over time. They update dynamically as your metabolic adaptation is simulated.</p>
-        <button class="btn" data-close-modal="forecastModal">Close</button>
+        <button class="btn close-modal-btn" data-close-modal="forecastModal">Close</button>
       </div>
     </div>
-    
+
     <!-- Explanation Modal for Settings -->
     <div class="modal-overlay" id="explanationModal">
       <div class="modal-content">
@@ -290,10 +274,10 @@
           <br /><em>For females: (10 × weight_kg) + (6.25 × height_cm) – (5 × age) – 161</em>
           <br />TDEE is derived by multiplying RMR by your activity multiplier. Your goal weight range is calculated using your target BF percentages.
         </p>
-        <button class="btn" data-close-modal="explanationModal">Close</button>
+        <button class="btn close-modal-btn" data-close-modal="explanationModal">Close</button>
       </div>
     </div>
-    
+
     <!-- Explanation Modal for Goal Range -->
     <div class="modal-overlay" id="goalRangeModal">
       <div class="modal-content">
@@ -304,10 +288,10 @@
           For example, a reference user might have:
           <br />Weight: 218.35 lbs–232.00 lbs, Fat Mass: 32.75 lbs–46.40 lbs, Lean Mass: 185.60 lbs, BF%: 15.0%–20.0% (GOOD).
         </p>
-        <button class="btn" data-close-modal="goalRangeModal">Close</button>
+        <button class="btn close-modal-btn" data-close-modal="goalRangeModal">Close</button>
       </div>
     </div>
-    
+
     <!-- Explanation Modal for Calories & Macros -->
     <div class="modal-overlay" id="calorieMacroModal">
       <div class="modal-content">
@@ -322,35 +306,35 @@
           <em>E_eff = L × 760 + (1 – L) × 3500</em>,
           where L is the fraction of weight loss that is lean tissue, to simulate weight loss and update your macronutrient targets.
         </p>
-        <button class="btn" data-close-modal="calorieMacroModal">Close</button>
+        <button class="btn close-modal-btn" data-close-modal="calorieMacroModal">Close</button>
       </div>
     </div>
-    
+
     <!-- Other Modals -->
     <div class="modal-overlay" id="weightGoalModal">
       <div class="modal-content">
         <h3>Weight Goal</h3>
         <p>This calculator supports a weight loss scenario only.</p>
-        <button class="btn" data-close-modal="weightGoalModal">Exit</button>
+        <button class="btn close-modal-btn" data-close-modal="weightGoalModal">Exit</button>
       </div>
     </div>
-    
+
     <div class="modal-overlay" id="dietaryApproachModal">
       <div class="modal-content">
         <h3>Dietary Approach</h3>
         <p>Low‑carb, High‑protein, or Balanced macros determine your nutrient split.</p>
-        <button class="btn" data-close-modal="dietaryApproachModal">Exit</button>
+        <button class="btn close-modal-btn" data-close-modal="dietaryApproachModal">Exit</button>
       </div>
     </div>
-    
+
     <div class="modal-overlay" id="activityLevelModal">
       <div class="modal-content">
         <h3>Activity Level</h3>
         <p>Your activity multiplier adjusts your RMR. Examples: Sedentary ~1.2, Very Active ~1.725.</p>
-        <button class="btn" data-close-modal="activityLevelModal">Exit</button>
+        <button class="btn close-modal-btn" data-close-modal="activityLevelModal">Exit</button>
       </div>
     </div>
-    
+
     <div class="modal-overlay" id="calorieDeficitModal">
       <div class="modal-content">
         <h3>Calorie Deficit Info</h3>
@@ -358,28 +342,28 @@
           The calorie deficit drop‑down provides options for a 250, 500, 750, or 1000 cal/day deficit.
           This deficit is applied relative to your TDEE to determine your daily calorie target.
         </p>
-        <button class="btn" data-close-modal="calorieDeficitModal">Exit</button>
+        <button class="btn close-modal-btn" data-close-modal="calorieDeficitModal">Exit</button>
       </div>
     </div>
-    
+
     <div class="modal-overlay" id="fatRangeModal">
       <div class="modal-content">
         <h3>Fat% Range</h3>
         <p>Select a target body‑fat range (for example, "excellent" ~10–15% BF).</p>
-        <button class="btn" data-close-modal="fatRangeModal">Exit</button>
+        <button class="btn close-modal-btn" data-close-modal="fatRangeModal">Exit</button>
       </div>
     </div>
-    
+
     <div class="modal-overlay" id="disclaimerModal">
       <div class="modal-content">
         <h3>Disclaimer</h3>
         <p>This is not medical advice. These estimates are based on current research; individual results may vary.
            Consult a healthcare professional for personalized guidance.
         </p>
-        <button class="btn" data-close-modal="disclaimerModal">Exit</button>
+        <button class="btn close-modal-btn" data-close-modal="disclaimerModal">Exit</button>
       </div>
     </div>
-    
+
     <script src="calculator.js"></script>
 
     <footer class="footer-section">
