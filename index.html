@@ -23,7 +23,7 @@
       <div class="container">
         <a href="index.html">
           <!-- Ensure the logo path is correct relative to index.html -->
-          <img src="/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
+          <img src="/assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
         </a>
       </div>
     </nav>
@@ -32,7 +32,9 @@
       <div class="container">
         <div class="hero-content">
           <h1 class="hero-title">R&amp;D</h1>
-          <p class="hero-subtitle">Our sandbox projects</p>
+          <p class="hero-subtitle">
+            <strong>Sandbox Projects &amp; Experiments</strong>
+          </p>
         </div>
       </div>
     </section>
@@ -42,18 +44,34 @@
         <h2 class="section-title">Projects</h2>
         <div class="projects-grid">
           <div class="project-card">
-            <h3 class="project-title">Body Composition Calculator V1</h3>
-            <p class="project-description">
-              Calculate and plan your body composition goals with our step-by-step wizard.
-            </p>
-            <a href="/calcv1/bccv1.html" class="project-button">View Calculator V1</a>
+            <h3 class="project-title">Body Composition Calculator</h3>
+            <div class="project-description">
+              <p class="mb-6">
+                This calculator creates your personalized fitness roadmap by combining proven scientific formulas with your unique data. It starts by calculating your Resting Metabolic Rate using the gold-standard Mifflin-St Jeor equation, then factors in your activity level to determine your Total Daily Energy Expenditure (TDEE).
+              </p>
+              <p>
+                By analyzing your lean mass and target body fat percentage, it optimizes your macronutrient targets and establishes a healthy goal weight range. Interactive forecast charts visualize your projected progress, automatically adjusting to show how changes in your nutrition and activity will impact your journey—giving you a clear, science-backed path to achieving your fitness goals safely and sustainably.
+              </p>
+            </div>
+            <br>
+            <br>
+            <a href="/calcv1/bccv1.html" class="project-button">Get Started</a>
           </div>
           <div class="project-card">
-            <h3 class="project-title">Body Composition Calculator V2</h3>
+            <h3 class="project-title">Fitness AI</h3>
             <p class="project-description">
-              Enhanced version with improved UI and additional features.
+              Click below to access Yutori Labs' custom ChatGPT, designed to create science-based, personalized fitness protocols. Get a tailored training plan built on real data, your goals, and your lifestyle—no gimmicks, just results.
             </p>
-            <a href="/calcv2/bccv2.html" class="project-button">View Calculator V2</a>
+            <br>
+            <a 
+              href="https://chatgpt.com/g/g-67ab7df813408191aa884e3b11b05b97-yutori-labs-fitness-protocol-builder" 
+              class="project-button"
+              target="_blank" 
+              rel="noopener noreferrer"
+              onclick="return confirm('You are about to leave our website. Do you want to continue?');"
+            >
+              Visit Fitness Protocol Builder
+            </a>
           </div>
         </div>
       </div>
@@ -62,7 +80,16 @@
     <footer class="footer-section">
       <div class="container">
         <div class="footer-content">
-          <p>&copy; 2025 Yutori Labs. All rights reserved.</p>
+          <a href="/legal/terms.html" style="color: #cd6e44;">
+            Privacy Policy
+          </a>
+          <br>
+          <a href="/legal/terms.html" style="color: #cd6e44;">
+            Terms of Service
+          </a>
+          <br>
+          <br>
+          <p>&copy; 20025 Yutori Labs, LLC</p>
         </div>
       </div>
     </footer>

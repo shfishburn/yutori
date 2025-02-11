@@ -51,7 +51,7 @@
       <div class="container">
         <!-- Update asset path if necessary -->
         <a href="../index.html">
-          <img src="/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
+          <img src="/assets/logo_400px_wide.png" alt="Yutori Labs" class="logo" />
         </a>
       </div>
     </nav>
@@ -59,12 +59,6 @@
     <section id="calculator" class="projects-section">
       <div class="container">
         <h1 class="text-3xl font-bold mb-4">Body Composition Calculator</h1>
-        <p class="mb-6">
-          This calculator creates your personalized fitness roadmap by combining proven scientific formulas with your unique data. It starts by calculating your Resting Metabolic Rate using the gold-standard Mifflin-St Jeor equation, then factors in your activity level to determine your Total Daily Energy Expenditure (TDEE).
-        </p>
-        <p>
-          By analyzing your lean mass and target body fat percentage, it optimizes your macronutrient targets and establishes a healthy goal weight range. Interactive forecast charts visualize your projected progress, automatically adjusting to show how changes in your nutrition and activity will impact your journey—giving you a clear, science-backed path to achieving your fitness goals safely and sustainably.
-        </p>
 
         <!-- STEP 1: Your Information (Merged Inputs) -->
         <div class="wizard-step" id="step1" style="display: block;">
@@ -169,7 +163,7 @@
             <label class="inline-flex items-center whitespace-nowrap">
               <span>Dietary Approach:</span>
               <a href="#" data-open-modal="dietaryApproachModal" class="ml-1">
-                <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
               </a>
             </label>
             <div class="radio-group mb-4">
@@ -191,7 +185,7 @@
             <label class="inline-flex items-center whitespace-nowrap">
               <span>Daily Activity Level:</span>
               <a href="#" data-open-modal="activityLevelModal" class="ml-1">
-                <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
               </a>
             </label>
             <select id="activityLevelSelect" class="mb-4">
@@ -206,7 +200,7 @@
             <label class="inline-flex items-center whitespace-nowrap">
               <span>Daily Calorie Deficit:</span>
               <a href="#" data-open-modal="calorieDeficitModal" class="ml-1">
-                <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
               </a>
             </label>
             <select id="dailyAdjustmentSelect" class="mb-4">
@@ -220,7 +214,7 @@
             <label class="inline-flex items-center whitespace-nowrap">
               <span>Body Fat Goal %:</span>
               <a href="#" data-open-modal="fatRangeModal" class="ml-1">
-                <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
               </a>
             </label>
             <select id="fatGoalCategorySelect" class="mb-4">
@@ -265,7 +259,7 @@
                 <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
                   Today's Composition
                   <a href="#" data-open-modal="bodyCompModal" class="ml-1">
-                    <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
                   </a>
                 </h3>
                 <p>Using your provided measurements and metrics, this analysis reflects your current body composition distribution and key physiological markers.</p>
@@ -286,7 +280,7 @@
                 <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
                   Projected Composition
                   <a href="#" data-open-modal="goalRangeModal" class="ml-1">
-                    <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
                   </a>
                 </h3>
                 <p>
@@ -303,7 +297,7 @@
                 <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
                   Calories & Macros
                   <a href="#" data-open-modal="calorieMacroModal" class="ml-1">
-                    <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
                   </a>
                 </h3>
                 <p>Your personalized calorie and macronutrient targets have been calibrated to optimize progress toward your fitness goal.</p>
@@ -326,7 +320,7 @@
             <h2 class="text-2xl font-bold mt-8 mb-2 inline-flex items-center">
               Charts
               <a href="#" data-open-modal="forecastModal" class="ml-1">
-                <img src="/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
+                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
               </a>
             </h2>
             <div class="grid grid-cols-1 gap-6">
@@ -628,13 +622,22 @@
     </div>
 
     <script src="calculator.js"></script>
-
     <footer class="footer-section">
       <div class="container">
         <div class="footer-content">
-          <p class="text-white">&copy; 2025 Yutori Labs. All rights reserved.</p>
+          <a href="/legal/terms.html" style="color: #cd6e44;">
+            Privacy Policy
+          </a>
+          <br>
+          <a href="/legal/terms.html" style="color: #cd6e44;">
+            Terms of Service
+          </a>
+          <br>
+          <br>
+          <p>&copy; 20025 Yutori Labs, LLC</p>
         </div>
       </div>
     </footer>
+    
   </body>
 </html>
