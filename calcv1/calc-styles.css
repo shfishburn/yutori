@@ -1,4 +1,4 @@
- /* --- Calculator Specific Styles --- */
+/* --- Calculator Specific Styles --- */
 
 /* Wizard Steps */
 .wizard-step {
@@ -51,6 +51,9 @@ select {
   cursor: pointer;
   margin-right: 0.5em;
   transition: background-color 0.2s ease;
+  display: inline-block;
+  width: 150px;  /* Adjust this fixed width as desired */
+  text-align: center;
 }
 
 .btn:hover {
