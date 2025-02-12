@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <!-- Responsive viewport and description -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <meta name="description" content="Yutori Labs - Building cutting-edge solutions for complex problems" />
-    <title>Yutori Labs - Development Projects</title>
+    <meta name="description" content="Yutori Labs - Fitness AI" />
+    <title>Yutori Labs - Fitness AI</title>
     <!-- Preconnect and load Inter font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,7 +19,7 @@
       rel="stylesheet"
     />
     <!-- Global styles -->
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
     <!-- Unified Navigation -->
@@ -32,7 +32,7 @@
         <!-- Hamburger Icon for mobile -->
         <button id="navToggle" class="md:hidden focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
@@ -53,71 +53,49 @@
       </ul>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">R&D</h1>
-          <p class="hero-subtitle">Sandbox & Experimental Projects</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects-section py-8">
+    <!-- Hero Section (left-aligned) -->
+    <section class="hero-section py-12">
       <div class="container mx-auto">
-        <h2 class="section-title text-2xl font-semibold mb-6">Projects</h2>
-        <div class="projects-grid grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="project-card p-6 border rounded shadow">
-            <h3 class="project-title text-xl font-bold mb-4">Body Composition Calculator</h3>
-            <div class="project-description mb-4">
-              <p>
-                Our calculator creates your personalized fitness roadmap by combining proven scientific formulas with your unique data.
-            </div>
-            <a href="/calcv1/bccv1.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-              Build Your Plan
-            </a>
-          </div>
-          <div class="project-card p-6 border rounded shadow">
-            <h3 class="project-title text-xl font-bold mb-4">Fitness AI</h3>
-            <div class="project-description mb-4">
-              <p>
-                Learn more about Fitness AI. Create science-based, personalized fitness protocols.
-              </p>
-            </div>
-            <a href="/chat/chat.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-            Learn More
-            </a>
-          </div>
-          <div class="project-card p-6 border rounded shadow md:col-span-2">
-            <h3 class="project-title text-xl font-bold mb-4">JSON File Manager</h3>
-            <div class="project-description mb-4">
-              <p>
-                Upload, edit, and save your JSON array. Use this tool to update exercise and supplement protocols.
-              </p>
-            </div>
-            <a href="/editor/editor.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-              Manage Your JSON Array
-            </a>
-          </div>
+        <div class="hero-content">
+          <h1 class="hero-title text-4xl font-bold text-left">Yutori Labs Fitness AI</h1>
+          <p class="hero-subtitle mt-4 text-lg text-left">
+            Get personalized advice and support from our AI chat assistant.
+          </p>
         </div>
       </div>
     </section>
+ <!-- Content Section (aligned under hero text) -->
+ <section class="content-section py-8">
+    <div class="container mx-auto">
+      <h2 class="text-xl font-semibold mb-2">Fitness AI</h2>
+      <div class="indented-section ml-6">
+        <p>Craft your own personalized, science‑backed plan with the power of our custom GPT. Our system guides your development of your protocol from the ground up—integrating advanced assessments, tailored exercise routines, and precise nutritional guidance. With the latest in data-driven insights and continuous monitoring, you can create a dynamic plan that evolves with your needs, ensuring that every aspect of your training and recovery is optimized for long‑term health and performance.
+        </p>
+      </div>
+      <br>
+      <a href="https://chatgpt.com/g/g-67ab7df813408191aa884e3b11b05b97-yutori-labs-fitness-protocol-builder" 
+         class="project-button inline-block btn" 
+         target="_blank" rel="noopener noreferrer" 
+         onclick="return confirm('You are about to leave our website. Do you want to continue?');">
+        Chat Now
+      </a>
+    </div>
+  </section>
 
     <!-- Footer -->
     <footer class="footer-section bg-gray-100 py-6">
       <div class="container mx-auto text-center">
         <div class="footer-content">
           <a href="/legal/terms.html" class="text-[#cd6e44] hover:underline">Privacy Policy</a>
-          <br />
+          <br>
           <a href="/legal/terms.html" class="text-[#cd6e44] hover:underline">Terms of Service</a>
-          <br /><br />
+          <br><br>
           <p>&copy; 2025 Yutori Labs, LLC</p>
         </div>
       </div>
     </footer>
 
-    <!-- Inline JS for nav toggle -->
+    <!-- Inline JavaScript for Mobile Navigation Toggle -->
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         const navToggle = document.getElementById("navToggle");

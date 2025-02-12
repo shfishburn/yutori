@@ -1,64 +1,193 @@
-/* custom.css */
+/* =====================================================
+   CUSTOM STYLES (custom.css)
+   ===================================================== */
 
 /* Container adjustments */
 .container {
-    padding: 2rem;
-    margin-top: 1rem;
-  }
-  
-  /* Controls container: left aligned with spacing */
-  .controls {
-    margin-bottom: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-start;
-  }
-  
-  /* Uniform button style: same width for all buttons */
-  .btn {
-    width: 150px;
-  }
-  
-  /* Data container styling */
-  .data-container {
-    margin-bottom: 2rem;
-  }
-  
-  /* Form container styling */
-  .form-container {
-    border: 1px solid #000;
-    padding: 1rem;
-    margin-top: 2rem;
-    background: var(--card-bg);
-    border-radius: 0.5rem;
-  }
-  
-  .form-fields > div {
-    margin-bottom: 1rem;
-  }
-  
-  /* Form buttons container: left aligned */
+  padding: 2rem;
+  margin-top: 1rem;
+}
+
+/* Controls container: left aligned with spacing */
+.controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+/* Uniform button style: same width for all buttons */
+.btn {
+  width: 150px;
+}
+
+/* Data container styling */
+.data-container {
+  margin-bottom: 2rem;
+}
+
+/* Form container styling */
+.form-container {
+  border: 1px solid #000;
+  padding: 1rem;
+  margin-top: 2rem;
+  background: var(--card-bg);
+  border-radius: 0.5rem;
+}
+
+/* Spacing for each form field */
+.form-fields > div {
+  margin-bottom: 1rem;
+}
+
+/* Form buttons container: left aligned */
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+/* Utility class to hide elements (with !important to override higher specificity) */
+.hidden {
+  display: none !important;
+}
+
+/* Mobile responsiveness adjustments */
+@media (max-width: 768px) {
+  .controls,
   .form-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
   }
-  
-  /* Utility class to hide elements */
-  .hidden {
-    display: none;
+  /* On smaller screens, buttons take full width */
+  .btn {
+    width: 100%;
   }
-  
-  /* Mobile responsiveness */
-  @media (max-width: 768px) {
-    .controls,
-    .form-buttons {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    /* On smaller screens, buttons take full width */
-    .btn {
-      width: 100%;
-    }
-  }
-  
+}
+
+/* =====================================================
+   TABLE STYLES (crud-styles.css)
+   ===================================================== */
+
+/* Table styling */
+.data-table {
+  background-color: #f3f4f6; /* Light gray background */
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db; /* Light gray border */
+}
+
+/* Style for the action row */
+.actions-row td {
+  padding-top: 0.5rem;
+}
+
+/* Button styling override for icon buttons and others.
+   Resets background, border, and padding for buttons. */
+.btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* =====================================================
+   MODAL OVERRIDES & RESPONSIVE ADJUSTMENTS
+   ===================================================== */
+
+/* Modal Container:
+   Fills the viewport, centers content, and enables vertical scrolling. */
+#modalContainer {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.5); /* Similar to Tailwind's bg-gray-900 bg-opacity-50 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+/* Modal Content:
+   Controls vertical spacing for a more compact layout.
+   Adjust padding and margins as desired. */
+#modalContent {
+  background-color: #fff;
+  padding: 1rem !important;
+  margin: 1rem auto !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 28rem; /* Approximately Tailwind's max-w-md */
+}
+
+/* Sticky header in modal:
+   Keeps the headline visible when scrolling. */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 10;
+}
+
+/* Modal body: scrollable container below the header.
+   It is given a max-height so that the content is scrollable if needed. */
+.modal-body {
+  max-height: calc(90vh - 3rem); /* Adjust header height as needed */
+  overflow-y: auto;
+  padding-top: 0.5rem;
+}
+
+/* =====================================================
+   SVG ICON OVERRIDES
+   ===================================================== */
+
+/* Force Edit and Delete SVG icons inside the icon container to use the specified orange color (#cd6e44). */
+.icon-container svg {
+  color: #cd6e44 !important;
+  stroke: #cd6e44 !important;
+}
+
+/* =====================================================
+   JSON MANAGER CONTROLS OVERRIDES
+   ===================================================== */
+
+/* Make the JSON Manager controls section sticky so that it remains at the top,
+   and add a light orange separator under the controls. */
+#json-manager .controls {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 1rem;
+  z-index: 20;
+  border-bottom: 2px solid rgba(205, 110, 68, 0.5); /* Light orange separator */
+}
+
+/* Override button styling in the controls section to restore normal button sizes. */
+#json-manager .controls button {
+  width: auto;
+  padding: 0.5rem 1rem;
+  background-color: #cd6e44;
+  border: 1px solid #cd6e44;
+  color: #fff;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+/* Disabled button styling in the controls section. */
+#json-manager .controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
