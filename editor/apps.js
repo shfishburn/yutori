@@ -1,15 +1,3 @@
-/*
- * app.js
- * JSON File Manager
- *
- * This file handles:
- * - Loading and parsing a JSON file via the File System Access API
- * - Rendering JSON objects with pagination, a total count, and per‑object subheadings
- * - Editing/adding objects via a responsive modal with a sticky header and scrollable body
- * - Deleting objects and saving changes back to the file
- * - Hiding the JSON Manager controls when the modal is open
- */
-
 "use strict";
 
 // -------------------------------------------------------------------------
@@ -39,7 +27,30 @@ async function openFile() {
   loader.classList.remove("hidden"); // Show loader
   try {
     if (!window.showOpenFilePicker) {
-      alert("File System Access API is not supported in this browser.");
+      console.warn("File System Access API not supported. Falling back to file input.");
+      // Fallback using a file input element
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          let contents = await file.text();
+          contents = contents.replace(/^\uFEFF/, "");
+          jsonData = JSON.parse(contents);
+          if (!Array.isArray(jsonData)) {
+            alert("The JSON file does not contain an array.");
+            jsonData = [];
+            return;
+          }
+          itemsToShow = 10; // Reset pagination on file load.
+          computeColumns();
+          renderTables();
+          document.getElementById("saveFileBtn").disabled = false;
+          document.getElementById("addItemBtn").disabled = false;
+        }
+      };
+      input.click();
       return;
     }
     const [handle] = await window.showOpenFilePicker({
@@ -52,9 +63,7 @@ async function openFile() {
     fileHandle = handle;
     const file = await handle.getFile();
     let contents = await file.text();
-    // Remove BOM if present.
     contents = contents.replace(/^\uFEFF/, "");
-    console.log("File contents:", contents);
     jsonData = JSON.parse(contents);
     if (!Array.isArray(jsonData)) {
       alert("The JSON file does not contain an array.");
@@ -84,6 +93,24 @@ function computeColumns() {
 }
 
 // -------------------------------------------------------------------------
+// Unused parseValue Function
+// -------------------------------------------------------------------------
+// The parseValue function is not currently used and has been commented out.
+// function parseValue(value) {
+//   const trimmed = value.trim();
+//   if (!isNaN(trimmed) && trimmed !== "") {
+//     return Number(trimmed);
+//   }
+//   if (trimmed.toLowerCase() === "true") {
+//     return true;
+//   }
+//   if (trimmed.toLowerCase() === "false") {
+//     return false;
+//   }
+//   return value;
+// }
+
+// -------------------------------------------------------------------------
 // Dropdown Options
 // -------------------------------------------------------------------------
 function getDropdownOptions(fieldName) {
@@ -95,7 +122,6 @@ function getDropdownOptions(fieldName) {
     }
   });
   const options = Object.keys(freq);
-  // Sort alphabetically (A–Z)
   options.sort((a, b) => a.localeCompare(b));
   return options;
 }
@@ -143,7 +169,6 @@ function renderTables() {
     editIcon.addEventListener("click", () => {
       try {
         const globalIndex = jsonData.indexOf(item);
-        console.log("Edit icon clicked for index:", globalIndex, item);
         if (globalIndex === -1) {
           throw new Error("Item not found in jsonData array");
         }
@@ -170,7 +195,6 @@ function renderTables() {
     deleteIcon.addEventListener("click", async () => {
       try {
         const globalIndex = jsonData.indexOf(item);
-        console.log("Delete icon clicked for index:", globalIndex, item);
         if (globalIndex === -1) {
           throw new Error("Item not found in jsonData array");
         }
@@ -241,11 +265,6 @@ function renderTables() {
 // -------------------------------------------------------------------------
 // Modal Editing and Dropdown Handling
 // -------------------------------------------------------------------------
-
-// createFieldInput: Creates a form field for a given key and current value.
-// If common dropdown options exist (sorted alphabetically) for the field,
-// it creates a select dropdown with an "Other" option and a custom input.
-// On EDIT, if no valid current value is provided, the select defaults to the first option.
 function createFieldInput(key, currentValue) {
   const wrapper = document.createElement("div");
   wrapper.classList.add("mb-2");
@@ -272,24 +291,18 @@ function createFieldInput(key, currentValue) {
     otherOption.textContent = "Other";
     select.appendChild(otherOption);
 
-    // Set the select's value:
-    // If currentValue is defined, nonempty, and exists among options, use it;
-    // otherwise, default to the first option.
     if (currentValue !== undefined && currentValue !== "" && options.includes(currentValue)) {
       select.value = currentValue;
     } else {
       select.value = options[0];
     }
 
-    // Create a custom input for new values.
     const customInput = document.createElement("input");
     customInput.type = "text";
     customInput.name = key + "_custom";
     customInput.classList.add("border", "p-1", "w-full", "mt-1");
-    // Initially hide the custom input.
     customInput.style.display = "none";
 
-    // When the select changes, toggle the custom input if "Other" is selected.
     select.addEventListener("change", function () {
       if (this.value === "Other") {
         customInput.style.display = "block";
@@ -298,7 +311,6 @@ function createFieldInput(key, currentValue) {
       }
     });
 
-    // When the custom input loses focus, add its value to the select if nonempty.
     customInput.addEventListener("blur", function () {
       const newValue = this.value.trim();
       if (newValue !== "") {
@@ -313,7 +325,6 @@ function createFieldInput(key, currentValue) {
           const newOption = document.createElement("option");
           newOption.value = newValue;
           newOption.textContent = newValue;
-          // Insert new option before the "Other" option.
           select.insertBefore(newOption, select.lastElementChild);
         }
         select.value = newValue;
@@ -324,7 +335,6 @@ function createFieldInput(key, currentValue) {
     wrapper.appendChild(select);
     wrapper.appendChild(customInput);
   } else {
-    // If no common options exist, simply create a text input.
     const input = document.createElement("input");
     input.type = "text";
     input.name = key;
@@ -335,11 +345,7 @@ function createFieldInput(key, currentValue) {
   return wrapper;
 }
 
-// showItemForm: Opens the modal with an editing (or adding) form.
-// It hides the JSON Manager controls so they don't overlap the modal.
-// The modal content is split into a sticky header and a scrollable body.
 function showItemForm(item = {}) {
-  // Hide JSON Manager controls.
   const controls = document.querySelector("#json-manager .controls");
   if (controls) {
     controls.classList.add("hidden");
@@ -353,7 +359,6 @@ function showItemForm(item = {}) {
   }
   modalContent.innerHTML = "";
 
-  // Create sticky header.
   const headerContainer = document.createElement("div");
   headerContainer.classList.add("sticky-header");
   const formTitle = document.createElement("h2");
@@ -363,17 +368,14 @@ function showItemForm(item = {}) {
   headerContainer.appendChild(formTitle);
   modalContent.appendChild(headerContainer);
 
-  // Create scrollable modal body.
   const modalBody = document.createElement("div");
   modalBody.classList.add("modal-body");
 
-  // Create the form element.
   const form = document.createElement("form");
   form.id = "itemForm";
   const formFields = document.createElement("div");
   formFields.id = "formFields";
 
-  // Build a union of global columns and the keys from the current item.
   const formColumns = new Set(columns);
   Object.keys(item).forEach((key) => formColumns.add(key));
   formColumns.forEach((key) => {
@@ -382,7 +384,6 @@ function showItemForm(item = {}) {
   });
   form.appendChild(formFields);
 
-  // Create form buttons.
   const formButtons = document.createElement("div");
   formButtons.classList.add("flex", "space-x-2", "mt-2");
 
@@ -407,14 +408,11 @@ function showItemForm(item = {}) {
   modalBody.appendChild(form);
   modalContent.appendChild(modalBody);
   modalContainer.classList.remove("hidden");
-  console.log("Show item form with item:", item);
 }
 
-// hideModal: Hides the modal and restores the JSON Manager controls.
 function hideModal() {
   const modalContainer = document.getElementById("modalContainer");
   modalContainer.classList.add("hidden");
-  console.log("Modal hidden");
 
   const controls = document.querySelector("#json-manager .controls");
   if (controls) {
@@ -422,9 +420,6 @@ function hideModal() {
   }
 }
 
-// saveItemFromModal: Processes the modal form submission,
-// collects field values (handling dropdowns and custom inputs),
-// and updates or adds the object.
 function saveItemFromModal(form) {
   const formFields = form.querySelector("#formFields");
   const newItem = {};
@@ -459,22 +454,6 @@ function saveItemFromModal(form) {
   hideModal();
 }
 
-// parseValue: Parses a string value into a Number, Boolean, or returns it as a string.
-function parseValue(value) {
-  const trimmed = value.trim();
-  if (!isNaN(trimmed) && trimmed !== "") {
-    return Number(trimmed);
-  }
-  if (trimmed.toLowerCase() === "true") {
-    return true;
-  }
-  if (trimmed.toLowerCase() === "false") {
-    return false;
-  }
-  return value;
-}
-
-// saveFile: Saves the current jsonData back to the file.
 async function saveFile() {
   try {
     if (!fileHandle) {

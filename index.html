@@ -39,7 +39,7 @@
         <!-- Desktop Navigation Menu -->
         <ul id="navMenu" class="hidden md:flex space-x-6">
           <li><a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a></li>
-          <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">Editor</a></li>
+          <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">JSON Editor</a></li>
           <li><a href="/calcv1/bccv1.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
           <li><a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Chat</a></li>
         </ul>
@@ -73,6 +73,7 @@
             <div class="project-description mb-4">
               <p>
                 Our calculator creates your personalized fitness roadmap by combining proven scientific formulas with your unique data.
+              </p>
             </div>
             <a href="/calcv1/bccv1.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
               Build Your Plan
@@ -86,7 +87,7 @@
               </p>
             </div>
             <a href="/chat/chat.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-            Learn More
+              Learn More
             </a>
           </div>
           <div class="project-card p-6 border rounded shadow md:col-span-2">
@@ -120,17 +121,7 @@
       </div>
     </footer>
 
-    <!-- Inline JS for nav toggle -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const navToggle = document.getElementById("navToggle");
-        const navMenuMobile = document.getElementById("navMenuMobile");
-        if (navToggle && navMenuMobile) {
-          navToggle.addEventListener("click", function() {
-            navMenuMobile.classList.toggle("hidden");
-          });
-        }
-      });
-    </script>
+    <!-- JavaScript Modules -->
+    <script src="/nav.js"></script>
   </body>
 </html>

@@ -2,6 +2,24 @@
    CUSTOM STYLES (custom.css)
    ===================================================== */
 
+/* Ensure navigation is visible */
+nav {
+  display: block;
+  z-index: 50; /* Raise nav above overlapping elements */
+}
+
+/* Explicit override to ensure desktop nav is visible */
+@media (min-width: 768px) {
+  #navMenu {
+    display: flex !important;
+  }
+}
+
+/* Force desktop navigation links to be dark */
+#navMenu a {
+  color: #1f2937 !important; /* Tailwind's text-gray-800 equivalent */
+}
+
 /* Container adjustments */
 .container {
   padding: 2rem;
@@ -47,8 +65,7 @@
   justify-content: flex-start;
 }
 
-/* Utility class to hide elements 
-   (with !important to override more specific selectors) */
+/* Utility class to hide elements (with !important to override more specific selectors) */
 .hidden {
   display: none !important;
 }
@@ -90,19 +107,6 @@
   padding-top: 0.5rem;
 }
 
-/* Button styling override for icon buttons and others.
-   Resets background, border, and padding for buttons. */
-.btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.btn:hover {
-  opacity: 0.8;
-}
-
 /* =====================================================
    MODAL OVERRIDES & RESPONSIVE ADJUSTMENTS
    ===================================================== */
@@ -120,8 +124,7 @@
 }
 
 /* Modal Content:
-   Controls vertical spacing for a more compact layout.
-   Adjust padding and margins as desired. */
+   Limits modal height and forces content scrolling to occur in .modal-body */
 #modalContent {
   background-color: #fff;
   padding: 1rem !important;
@@ -130,6 +133,8 @@
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 28rem; /* Approximately Tailwind's max-w-md */
+  max-height: 90vh;
+  overflow: hidden;
 }
 
 /* Sticky header in modal:
@@ -144,11 +149,29 @@
 }
 
 /* Modal body:
-   Scrollable container below the header with a max-height. */
+   Scrollable container below the header with a max-height.
+   Enables smooth scrolling on touch devices. */
 .modal-body {
-  max-height: calc(90vh - 3rem); /* Adjust header height as needed */
+  max-height: calc(90vh - 4rem); /* Adjust header height as needed */
   overflow-y: auto;
-  padding-top: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+}
+
+/* Modal buttons styling */
+#modalContent button {
+  width: auto;
+  padding: 0.5rem 1rem;
+  background-color: #cd6e44;
+  border: 1px solid #cd6e44;
+  color: #fff;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+#modalContent button:hover {
+  opacity: 0.9;
 }
 
 /* =====================================================
