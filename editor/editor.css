@@ -47,7 +47,8 @@
   justify-content: flex-start;
 }
 
-/* Utility class to hide elements (with !important to override higher specificity) */
+/* Utility class to hide elements 
+   (with !important to override more specific selectors) */
 .hidden {
   display: none !important;
 }
@@ -142,8 +143,8 @@
   z-index: 10;
 }
 
-/* Modal body: scrollable container below the header.
-   It is given a max-height so that the content is scrollable if needed. */
+/* Modal body:
+   Scrollable container below the header with a max-height. */
 .modal-body {
   max-height: calc(90vh - 3rem); /* Adjust header height as needed */
   overflow-y: auto;

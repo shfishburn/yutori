@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="editor.css" />
   </head>
   <body>
-    <!-- Unified Navigation -->
+    <!-- Unified Navigation (only one instance) -->
     <nav class="nav-wrapper bg-white shadow">
       <div class="container mx-auto flex items-center justify-between py-4">
         <!-- Logo -->
@@ -33,12 +33,8 @@
         <!-- Hamburger Icon for mobile -->
         <button id="navToggle" class="md:hidden focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            ></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
         <!-- Desktop Navigation Menu -->
@@ -158,5 +154,17 @@
 
     <!-- CRUD JSON Manager JavaScript -->
     <script src="apps.js"></script>
+    <!-- Inline JavaScript for Mobile Navigation Toggle -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const navToggle = document.getElementById("navToggle");
+        const navMenuMobile = document.getElementById("navMenuMobile");
+        if (navToggle && navMenuMobile) {
+          navToggle.addEventListener("click", function () {
+            navMenuMobile.classList.toggle("hidden");
+          });
+        }
+      });
+    </script>
   </body>
 </html>
