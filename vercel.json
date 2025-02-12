@@ -16,12 +16,52 @@
       {
         "src": "workouts/**/*.json",
         "use": "@vercel/static"
+      },
+      {
+        "src": "editor/**/*.html",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "editor/**/*.js",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "editor/**/*.css",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "editor/**/*.json",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "*.html",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "*.js",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "*.css",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "*.json",
+        "use": "@vercel/static"
       }
     ],
     "routes": [
       {
-        "src": "/(.*)",
+        "src": "/workouts/(.*)",
         "dest": "/workouts/$1"
+      },
+      {
+        "src": "/editor/(.*)",
+        "dest": "/editor/$1"
+      },
+      {
+        "src": "/",
+        "dest": "/index.html"
       }
     ],
     "headers": [
