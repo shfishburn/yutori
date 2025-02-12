@@ -1,4 +1,29 @@
 {
+    "version": 2,
+    "builds": [
+      {
+        "src": "workouts/**/*.html",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "workouts/**/*.js",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "workouts/**/*.css",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "workouts/**/*.json",
+        "use": "@vercel/static"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/workouts/$1"
+      }
+    ],
     "headers": [
       {
         "source": "/(.*)",

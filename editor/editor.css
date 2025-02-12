@@ -1,5 +1,5 @@
 /* =====================================================
-   CUSTOM STYLES (custom.css)
+   EDITOR PAGE SPECIFIC STYLES
    ===================================================== */
 
 /* Ensure navigation is visible */
@@ -21,9 +21,23 @@ nav {
 }
 
 /* Container adjustments */
-.container {
-  padding: 2rem;
-  margin-top: 1rem;
+body.editor-page .container {
+  padding: 2rem; /* Adjust to match index.html and calculator.html */
+  margin-top: 0; /* Remove any extra margin */
+}
+
+/* Hero section for editor */
+body.editor-page .hero-section {
+  padding: 4rem 0; /* Adjust padding to match index.html */
+}
+
+body.editor-page .hero-title {
+  font-size: 2.5rem; /* Same as index.html */
+}
+
+body.editor-page .hero-subtitle {
+  font-size: 1.2rem;
+  color: #555; /* Ensure consistency */
 }
 
 /* Controls container: left aligned with spacing */
