@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <!-- Responsive viewport and description -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <meta name="description" content="Yutori Labs - JSON File Manager" />
-    <title>Yutori Labs - JSON File Manager</title>
-    <!-- Preconnect to Google Fonts and load Inter -->
+    <meta name="description" content="Yutori Labs - Fitness AI" />
+    <title>Yutori Labs - Fitness AI</title>
+    <!-- Preconnect and load Inter font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,12 +18,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
       rel="stylesheet"
     />
-    <!-- Global and editor-specific CSS -->
+    <!-- Global styles -->
     <link rel="stylesheet" href="../styles.css" />
-    <link rel="stylesheet" href="editor.css" />
   </head>
   <body>
-    <!-- Unified Navigation (only one instance) -->
+    <!-- Unified Navigation -->
     <nav class="nav-wrapper bg-white shadow">
       <div class="container mx-auto flex items-center justify-between py-4">
         <!-- Logo -->
@@ -39,132 +38,124 @@
         </button>
         <!-- Desktop Navigation Menu -->
         <ul id="navMenu" class="hidden md:flex space-x-6">
-          <li>
-            <a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a>
-          </li>
-          <li>
-            <a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">Editor</a>
-          </li>
-          <li>
-            <a href="/calcv1/bccv1.html" class="text-gray-800 hover:text-gray-600">Calculator</a>
-          </li>
-          <li>
-            <a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Chat</a>
-          </li>
+          <li><a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a></li>
+          <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">Editor</a></li>
+          <li><a href="/calcv1/bccv1.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
+          <li><a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Chat</a></li>
         </ul>
       </div>
       <!-- Mobile Navigation Menu -->
       <ul id="navMenuMobile" class="md:hidden hidden px-4 pb-4">
-        <li class="py-1">
-          <a href="/index.html" class="block text-gray-800 hover:text-gray-600">Home</a>
-        </li>
-        <li class="py-1">
-          <a href="/editor/editor.html" class="block text-gray-800 hover:text-gray-600">JSON Editor</a>
-        </li>
-        <li class="py-1">
-          <a href="/calcv1/bccv1.html" class="block text-gray-800 hover:text-gray-600">Calculator</a>
-        </li>
-        <li class="py-1">
-          <a href="/chat/chat.html" class="block text-gray-800 hover:text-gray-600">Chat</a>
-        </li>
+        <li class="py-1"><a href="/index.html" class="block text-gray-800 hover:text-gray-600">Home</a></li>
+        <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800 hover:text-gray-600">JSON Editor</a></li>
+        <li class="py-1"><a href="/calcv1/bccv1.html" class="block text-gray-800 hover:text-gray-600">Calculator</a></li>
+        <li class="py-1"><a href="/chat/chat.html" class="block text-gray-800 hover:text-gray-600">Chat</a></li>
       </ul>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
+    <!-- Hero Section (left-aligned) -->
+    <section class="hero-section py-12">
+      <div class="container mx-auto">
         <div class="hero-content">
-          <h1 class="hero-title">JSON File Manager</h1>
-          <p class="hero-subtitle">Manage your JSON data with ease</p>
+          <h1 class="hero-title text-4xl font-bold text-left">JSON File Manager</h1>
+          <p class="hero-subtitle mt-4 text-lg text-left">
+            Manage your JSON data with ease.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- JSON Manager Section -->
-    <section id="json-manager" class="projects-section">
-      <div class="container">
-        <h2 class="section-title">Manage JSON Files</h2>
-        <!-- Controls: sticky header with buttons -->
-        <div id="controls" class="controls">
-          <button id="openFileBtn" class="btn">Open JSON</button>
-          <button id="saveFileBtn" class="btn" disabled>Save JSON</button>
-          <button id="addItemBtn" class="btn" disabled>Add Object</button>
-        </div>
-        <!-- Data container -->
-        <div id="dataContainer" class="data-container"></div>
-      </div>
-    </section>
 
-    <!-- Modal Container -->
+
+   <!-- JSON Manager Section -->
+   <section id="json-manager" class="projects-section">
+    <div class="container">
+      <h2 class="section-title">Manage JSON Files</h2>
+      <!-- Controls: sticky header with buttons -->
+      <div id="controls" class="controls">
+        <button id="openFileBtn" class="btn">Open JSON</button>
+        <button id="saveFileBtn" class="btn" disabled>Save JSON</button>
+        <button id="addItemBtn" class="btn" disabled>Add Object</button>
+      </div>
+      <!-- Data container -->
+      <div id="dataContainer" class="data-container"></div>
+    </div>
+  </section>
+
+  <!-- Modal Container -->
+  <div
+    id="modalContainer"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center overflow-y-auto hidden"
+  >
     <div
-      id="modalContainer"
-      class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center overflow-y-auto hidden"
+      id="modalContent"
+      class="bg-white p-1 rounded shadow-lg w-full max-w-md sm:max-w-lg md:w-1/2 my-2"
     >
-      <div
-        id="modalContent"
-        class="bg-white p-1 rounded shadow-lg w-full max-w-md sm:max-w-lg md:w-1/2 my-2"
-      >
-        <!-- Modal content is injected by app.js.
-             Expected structure:
-             - A sticky header (with class "sticky-header")
-             - A scrollable modal body (with class "modal-body") containing the form.
-        -->
+      <!-- Modal content is injected by app.js.
+           Expected structure:
+           - A sticky header (with class "sticky-header")
+           - A scrollable modal body (with class "modal-body") containing the form.
+      -->
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div
+    id="loadingIndicator"
+    class="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 hidden"
+  >
+    <svg
+      class="animate-spin h-10 w-10 text-gray-600"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8H4z"
+      ></path>
+    </svg>
+  </div>
+
+  <footer class="footer-section">
+    <div class="container">
+      <div class="footer-content">
+        <a href="/legal/terms.html" style="color: #cd6e44;">
+          Privacy Policy
+        </a>
+        <br>
+        <a href="/legal/terms.html" style="color: #cd6e44;">
+          Terms of Service
+        </a>
+        <br>
+        <br>
+        <p>&copy; 20025 Yutori Labs, LLC</p>
       </div>
     </div>
+  </footer>
 
-    <!-- Loading Indicator -->
-    <div
-      id="loadingIndicator"
-      class="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 hidden"
-    >
-      <svg
-        class="animate-spin h-10 w-10 text-gray-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v8H4z"
-        ></path>
-      </svg>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer-section">
-      <div class="container">
-        <div class="footer-content">
-          <a href="../legal/terms.html" style="color: #cd6e44;">Privacy Policy</a>
-          <br />
-          <a href="../legal/terms.html" style="color: #cd6e44;">Terms of Service</a>
-          <br /><br />
-          <p>&copy; 2025 Yutori Labs, LLC</p>
-        </div>
-      </div>
-    </footer>
-
-    <!-- CRUD JSON Manager JavaScript -->
-    <script src="apps.js"></script>
-    <!-- Inline JavaScript for Mobile Navigation Toggle -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const navToggle = document.getElementById("navToggle");
-        const navMenuMobile = document.getElementById("navMenuMobile");
-        if (navToggle && navMenuMobile) {
-          navToggle.addEventListener("click", function () {
-            navMenuMobile.classList.toggle("hidden");
-          });
-        }
-      });
-    </script>
-  </body>
+  <!-- CRUD JSON Manager JavaScript -->
+  <script src="apps.js"></script>
+  <!-- Inline JavaScript for Mobile Navigation Toggle -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const navToggle = document.getElementById("navToggle");
+      const navMenuMobile = document.getElementById("navMenuMobile");
+      if (navToggle && navMenuMobile) {
+        navToggle.addEventListener("click", function () {
+          navMenuMobile.classList.toggle("hidden");
+        });
+      }
+    });
+  </script>
+</body>
 </html>
