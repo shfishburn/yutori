@@ -2,7 +2,15 @@
     "version": 2,
     "builds": [
       {
-        "src": "workouts/**/*",
+        "src": "assets/**/*",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "calcv1/**/*",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "chat/**/*",
         "use": "@vercel/static"
       },
       {
@@ -10,30 +18,46 @@
         "use": "@vercel/static"
       },
       {
-        "src": "index.html",
+        "src": "legal/**/*",
         "use": "@vercel/static"
       },
       {
-        "src": "*.css",
+        "src": "workouts/**/*",
         "use": "@vercel/static"
       },
       {
-        "src": "*.js",
+        "src": "*.{html,css,js}",
         "use": "@vercel/static"
       }
     ],
     "routes": [
       {
-        "src": "/workouts/(.*)",
-        "dest": "/workouts/$1"
+        "src": "/assets/(.*)",
+        "dest": "/assets/$1"
+      },
+      {
+        "src": "/calcv1/(.*)",
+        "dest": "/calcv1/$1"
+      },
+      {
+        "src": "/chat/(.*)",
+        "dest": "/chat/$1"
       },
       {
         "src": "/editor/(.*)",
         "dest": "/editor/$1"
       },
       {
-        "src": "/",
-        "dest": "/index.html"
+        "src": "/legal/(.*)",
+        "dest": "/legal/$1"
+      },
+      {
+        "src": "/workouts/(.*)",
+        "dest": "/workouts/$1"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/$1"
       }
     ]
   }
