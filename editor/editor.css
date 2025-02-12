@@ -1,0 +1,64 @@
+/* custom.css */
+
+/* Container adjustments */
+.container {
+    padding: 2rem;
+    margin-top: 1rem;
+  }
+  
+  /* Controls container: left aligned with spacing */
+  .controls {
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  
+  /* Uniform button style: same width for all buttons */
+  .btn {
+    width: 150px;
+  }
+  
+  /* Data container styling */
+  .data-container {
+    margin-bottom: 2rem;
+  }
+  
+  /* Form container styling */
+  .form-container {
+    border: 1px solid #000;
+    padding: 1rem;
+    margin-top: 2rem;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+  }
+  
+  .form-fields > div {
+    margin-bottom: 1rem;
+  }
+  
+  /* Form buttons container: left aligned */
+  .form-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  
+  /* Utility class to hide elements */
+  .hidden {
+    display: none;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .controls,
+    .form-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    /* On smaller screens, buttons take full width */
+    .btn {
+      width: 100%;
+    }
+  }
+  

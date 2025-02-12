@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Ensure mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUD JSON File Manager</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/editor/editor.css">
+</head>
+<body>
+  <div class="container">
+    <h1>JSON File Manager</h1>
+    <!-- Controls: left aligned -->
+    <div id="controls" class="controls">
+      <button id="openFileBtn" class="btn">Open JSON</button>
+      <button id="saveFileBtn" class="btn" disabled>Save JSON</button>
+      <button id="addItemBtn" class="btn" disabled>Add Object</button>
+    </div>
+    <div id="dataContainer" class="data-container">
+      <!-- Dynamic content inserted by JavaScript -->
+    </div>
+    <!-- Hidden form container for Add/Edit operations -->
+    <div id="itemFormContainer" class="form-container hidden">
+      <h2 id="formTitle">Add/Edit Item</h2>
+      <form id="itemForm">
+        <div id="formFields" class="form-fields">
+          <!-- Dynamic form fields inserted by JavaScript -->
+        </div>
+        <!-- Form buttons: left aligned and same sized -->
+        <div class="form-buttons">
+          <button type="submit" id="saveItemBtn" class="btn">Save Object</button>
+          <button type="button" id="cancelItemBtn" class="btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="/editor/apps.js"></script>
+</body>
+</html>

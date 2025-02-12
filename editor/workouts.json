@@ -1,0 +1,53 @@
+[
+  {
+    "id": 300,
+    "dayOfWeek": 1,
+    "timeOfDay": "Morning",
+    "session": "Active Recovery",
+    "focusArea": "Light Endurance",
+    "exercise": "Treadmill Warm-Up",
+    "muscleExercised": "Legs",
+    "equipment": "Treadmill",
+    "sets": 6,
+    "reps": "Minutes",
+    "load": "Zone 1",
+    "notes": "Light walk ~6–8 min",
+    "baseMET": 4,
+    "sortOrder": 1,
+    "completed": false
+  }
+  {
+    "id": 301,
+    "dayOfWeek": 1,
+    "timeOfDay": "Morning",
+    "session": "Active Recovery",
+    "focusArea": "Fascial Integration",
+    "exercise": "Stretching",
+    "muscleExercised": "Full Body",
+    "equipment": "Yoga Mat",
+    "sets": 20,
+    "reps": "Minutes",
+    "load": "Zone 1",
+    "notes": "2-minute hold per stretch",
+    "baseMET": 4,
+    "sortOrder": 2,
+    "completed": false
+  },
+  {
+    "id": 302,
+    "dayOfWeek": 1,
+    "timeOfDay": "Morning",
+    "session": "Strength",
+    "focusArea": "Lateral Chain",
+    "exercise": "Side Lunges - Left Side",
+    "muscleExercised": "Glutes, Adductors, Abductors",
+    "equipment": "Bodyweight",
+    "sets": 3,
+    "reps": 10,
+    "load": "RPE 6-7",
+    "notes": "60-90 seconds rest",
+    "baseMET": 8,
+    "sortOrder": 3,
+    "completed": false
+  }
+]
