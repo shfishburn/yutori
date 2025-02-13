@@ -1,3 +1,8 @@
+/* Custom Section Title Class for Consistent H2 Headers */
+.section-title {
+  @apply text-3xl font-bold text-gray-900 mt-6 mb-4;
+}
+
 /* --- Calculator Specific Styles --- */
 
 /* Wizard Steps */
@@ -43,7 +48,7 @@ select {
 
 /* Button Styles */
 .btn {
-  background: var(--primary-color, #cd6e44) !important;
+  background: var(--primary-color) !important;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -52,18 +57,19 @@ select {
   margin-right: 0.5em;
   transition: background-color 0.2s ease;
   display: inline-block;
-  width: 150px;  /* Adjust this fixed width as desired */
+  width: 150px;
   text-align: center;
 }
 
 .btn:hover {
-  background: var(--hover-color, #b85e3a) !important;
+  background-color: var(--hover-color) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Special Button Colors */
 #newScenarioBtn,
 #disclaimerLink {
-  background: var(--primary-color, #cd6e44) !important;
+  background: var(--primary-color) !important;
 }
 
 /* Back Button Specific Styles */
@@ -148,12 +154,8 @@ select {
 }
 
 #calculator h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 1em 0;
-  padding-bottom: 0.5em;
-  border-bottom: 1px solid #eee;
-  color: var(--text-color, #1f2937);
+  /* All H2 headers should use the .section-title class now */
+  /* Remove any conflicting styling here if present */
 }
 
 #calculator p {
@@ -180,7 +182,7 @@ select {
 
 /* Results Section Specific Styles */
 #step5 .btn {
-  background: var(--primary-color, #cd6e44) !important;
+  background: var(--primary-color) !important;
 }
 
 #step5 .result-card {

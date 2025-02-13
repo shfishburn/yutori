@@ -2,7 +2,7 @@
 
 /* Hero Section Padding and Spacing */
 .hero-section {
-  margin-bottom: 2rem; /* Space after the hero section */
+  margin-bottom: 2rem;
 }
 
 /* Tab Content Display */
@@ -15,9 +15,10 @@
 
 /* Active Tab Button Styles */
 .tab-button.active {
-  background-color: var(--primary-color); /* Use brand orange color */
+  background-color: var(--primary-color);
   color: white;
   font-weight: bold;
+  transform: translateY(-2px);
 }
 
 /* Modal Styling */
@@ -27,14 +28,15 @@
 }
 .modal.modal-open {
   display: flex !important;
-  background: rgba(0, 0, 0, 0.5); /* Modal background */
+  background: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
 }
 
 /* Button Style Updates */
 .btn {
-  background-color: var(--primary-color); /* Orange color */
+  width: 150px;
+  background-color: var(--primary-color);
   color: white;
   padding: 0.75rem 1.25rem;
   border-radius: 0.5rem;
@@ -42,23 +44,33 @@
   font-weight: 600;
   transition: all 0.3s ease;
 }
+
 .btn:hover {
-  background-color: var(--hover-color);
+  background-color: var(--hover-color) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Date Picker Container and Header Color */
 #integrated-app header {
-  background: var(--primary-color); /* Orange header */
+  background: var(--primary-color);
 }
 
 /* Tab Bar Button Styles */
 .tab-bar button {
   background: transparent;
-  color: var(--primary-color); /* Ensure it's using orange */
+  color: var(--primary-color);
   padding: 0.5rem;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .tab-bar button:hover {
-  background-color: var(--accent-color); /* Light accent color */
+  background-color: var(--accent-color);
+  transform: translateY(-2px) !important;
+}
+
+/* (Optional) Primary nav hover override if needed on workouts page */
+#navMenu a:hover {
+  color: var(--primary-color) !important;
+  transform: translateY(-2px) !important;
 }

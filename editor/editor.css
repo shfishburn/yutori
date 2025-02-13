@@ -18,26 +18,32 @@ nav {
 /* Force desktop navigation links to be dark */
 #navMenu a {
   color: #1f2937 !important; /* Tailwind's text-gray-800 equivalent */
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+#navMenu a:hover {
+  color: var(--primary-color) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Container adjustments */
 body.editor-page .container {
-  padding: 2rem; /* Adjust to match index.html and calculator.html */
-  margin-top: 0; /* Remove any extra margin */
+  padding: 2rem;
+  margin-top: 0;
 }
 
 /* Hero section for editor */
 body.editor-page .hero-section {
-  padding: 4rem 0; /* Adjust padding to match index.html */
+  padding: 4rem 0;
 }
 
 body.editor-page .hero-title {
-  font-size: 2.5rem; /* Same as index.html */
+  font-size: 2.5rem;
 }
 
 body.editor-page .hero-subtitle {
   font-size: 1.2rem;
-  color: #555; /* Ensure consistency */
+  color: #555;
 }
 
 /* Controls container: left aligned with spacing */
@@ -51,6 +57,18 @@ body.editor-page .hero-subtitle {
 /* Uniform button style: same width for all buttons */
 .btn {
   width: 150px;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background-color: var(--hover-color) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Data container styling */
@@ -79,7 +97,7 @@ body.editor-page .hero-subtitle {
   justify-content: flex-start;
 }
 
-/* Utility class to hide elements (with !important to override more specific selectors) */
+/* Utility class to hide elements */
 .hidden {
   display: none !important;
 }
@@ -91,7 +109,6 @@ body.editor-page .hero-subtitle {
     flex-direction: column;
     gap: 0.75rem;
   }
-  /* On smaller screens, buttons take full width */
   .btn {
     width: 100%;
   }
@@ -100,10 +117,8 @@ body.editor-page .hero-subtitle {
 /* =====================================================
    TABLE STYLES (crud-styles.css)
    ===================================================== */
-
-/* Table styling */
 .data-table {
-  background-color: #f3f4f6; /* Light gray background */
+  background-color: #f3f4f6;
   border-collapse: collapse;
   margin-bottom: 1rem;
   width: 100%;
@@ -113,10 +128,9 @@ body.editor-page .hero-subtitle {
 .data-table td {
   text-align: left;
   padding: 0.5rem;
-  border: 1px solid #d1d5db; /* Light gray border */
+  border: 1px solid #d1d5db;
 }
 
-/* Style for the action row */
 .actions-row td {
   padding-top: 0.5rem;
 }
@@ -124,21 +138,16 @@ body.editor-page .hero-subtitle {
 /* =====================================================
    MODAL OVERRIDES & RESPONSIVE ADJUSTMENTS
    ===================================================== */
-
-/* Modal Container:
-   Fills the viewport, centers content, and enables vertical scrolling. */
 #modalContainer {
   position: fixed;
   inset: 0;
-  background-color: rgba(17, 24, 39, 0.5); /* Similar to Tailwind's bg-gray-900 bg-opacity-50 */
+  background-color: rgba(17, 24, 39, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow-y: auto;
 }
 
-/* Modal Content:
-   Limits modal height and forces content scrolling to occur in .modal-body */
 #modalContent {
   background-color: #fff;
   padding: 1rem !important;
@@ -146,13 +155,11 @@ body.editor-page .hero-subtitle {
   border-radius: 0.5rem;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 28rem; /* Approximately Tailwind's max-w-md */
+  max-width: 28rem;
   max-height: 90vh;
   overflow: hidden;
 }
 
-/* Sticky header in modal:
-   Keeps the headline visible when scrolling. */
 .sticky-header {
   position: sticky;
   top: 0;
@@ -162,17 +169,13 @@ body.editor-page .hero-subtitle {
   z-index: 10;
 }
 
-/* Modal body:
-   Scrollable container below the header with a max-height.
-   Enables smooth scrolling on touch devices. */
 .modal-body {
-  max-height: calc(90vh - 4rem); /* Adjust header height as needed */
+  max-height: calc(90vh - 4rem);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 1rem;
 }
 
-/* Modal buttons styling */
 #modalContent button {
   width: auto;
   padding: 0.5rem 1rem;
@@ -182,17 +185,17 @@ body.editor-page .hero-subtitle {
   border-radius: 0.25rem;
   cursor: pointer;
   margin-right: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #modalContent button:hover {
-  opacity: 0.9;
+  background-color: var(--hover-color) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* =====================================================
    SVG ICON OVERRIDES
    ===================================================== */
-
-/* Force Edit and Delete SVG icons inside the icon container to use the specified orange color (#cd6e44). */
 .icon-container svg {
   color: #cd6e44 !important;
   stroke: #cd6e44 !important;
@@ -201,19 +204,15 @@ body.editor-page .hero-subtitle {
 /* =====================================================
    JSON MANAGER CONTROLS OVERRIDES
    ===================================================== */
-
-/* Make the JSON Manager controls section sticky so that it remains at the top,
-   and add a light orange separator under the controls. */
 #json-manager .controls {
   position: sticky;
   top: 0;
   background-color: #fff;
   padding: 1rem;
   z-index: 20;
-  border-bottom: 2px solid rgba(205, 110, 68, 0.5); /* Light orange separator */
+  border-bottom: 2px solid rgba(205, 110, 68, 0.5);
 }
 
-/* Override button styling in the controls section to restore normal button sizes. */
 #json-manager .controls button {
   width: auto;
   padding: 0.5rem 1rem;
@@ -222,10 +221,16 @@ body.editor-page .hero-subtitle {
   color: #fff;
   border-radius: 0.25rem;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Disabled button styling in the controls section. */
 #json-manager .controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Additional override to ensure primary nav hover works as intended */
+.nav-wrapper #navMenu a:hover {
+  color: var(--primary-color) !important;
+  transform: translateY(-2px) !important;
 }
