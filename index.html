@@ -35,18 +35,18 @@
           <ul id="navMenu" class="hidden md:flex space-x-6">
             <li><a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a></li>
             <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">JSON Editor</a></li>
-            <li><a href="/calcv1/bccv1.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
+            <li><a href="/calc/calc.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
             <li><a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Fitness AI</a></li>
-            <li><a href="/workouts/workouts.html" class="text-gray-800 hover:text-gray-600">Protocols</a></li>
+            <li><a href="/protocols/protocols.html" class="text-gray-800 hover:text-gray-600">Protocols</a></li>
           </ul>
         </div>
         <!-- Mobile Navigation Menu -->
         <ul id="navMenuMobile" class="md:hidden hidden px-4 pb-4">
           <li class="py-1"><a href="/index.html" class="block text-gray-800 hover:text-gray-600">Home</a></li>
           <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800 hover:text-gray-600">JSON Editor</a></li>
-          <li class="py-1"><a href="/calcv1/bccv1.html" class="block text-gray-800 hover:text-gray-600">Calculator</a></li>
+          <li class="py-1"><a href="/calc/calc.html" class="block text-gray-800 hover:text-gray-600">Calculator</a></li>
           <li class="py-1"><a href="/chat/chat.html" class="block text-gray-800 hover:text-gray-600">Fitness AI</a></li>
-          <li class="py-1"><a href="/workouts/workouts.html" class="block text-gray-800 hover:text-gray-600">Protocols</a></li>
+          <li class="py-1"><a href="/protocols/protocols.html" class="block text-gray-800 hover:text-gray-600">Protocols</a></li>
         </ul>
       </nav>
 
@@ -66,7 +66,6 @@
           <h2 class="section-title">
             Projects
           </h2>
-          <br>
           <div class="projects-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8">
             <div class="project-card p-6 border rounded shadow">
               <h3 class="project-title text-xl font-bold mb-4">Body Composition Calculator</h3>
@@ -75,7 +74,7 @@
                   Our calculator creates your personalized fitness roadmap by combining proven scientific formulas with your unique data.
                 </p>
               </div>
-              <a href="/calcv1/bccv1.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+              <a href="/calc/calc.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                 Build Your Plan
               </a>
             </div>
@@ -97,7 +96,7 @@
                   Our Protocol app helps users track and manage their workout routines, supplements, and fitness progress.
                 </p>
               </div>
-              <a href="/workouts/workouts.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+              <a href="/protocols/protocols.html" class="project-button inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                 Learn More
               </a>
             </div>
@@ -131,8 +130,63 @@
         </div>
       </div>
     </footer>
+  
+ <!-- Cookie Consent Notification -->
+<div id="cookieConsent" class="fixed bottom-0 left-0 w-full bg-gray-800 text-white p-4 flex items-center justify-between z-50">
+  <p class="text-sm">
+    We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies. You can accept or reject the use of cookies.
+    <a href="/legal/terms.html" class="underline text-orange-400">Learn more</a>.
+  </p>
+  <div>
+    <button id="acceptCookies" class="btn accept-btn">Accept</button>
+    <button id="rejectCookies" class="btn reject-btn ml-2">Reject</button>
+  </div>
+</div>
 
+<script>
+  // Check if cookies have been accepted or rejected
+  if (!localStorage.getItem("cookiesAccepted") && !localStorage.getItem("cookiesRejected")) {
+    document.getElementById("cookieConsent").classList.remove("hidden");
+  }
+
+  // Handle accepting cookies
+  document.getElementById("acceptCookies").addEventListener("click", function () {
+    // Store the consent in localStorage
+    localStorage.setItem("cookiesAccepted", "true");
+
+    // Hide the consent banner
+    document.getElementById("cookieConsent").classList.add("hidden");
+  });
+
+  // Handle rejecting cookies
+  document.getElementById("rejectCookies").addEventListener("click", function () {
+    // Store the rejection in localStorage
+    localStorage.setItem("cookiesRejected", "true");
+
+    // Hide the consent banner
+    document.getElementById("cookieConsent").classList.add("hidden");
+  });
+</script>
+
+
+
+  
     <!-- JavaScript Modules -->
     <script src="/nav.js"></script>
+  
+    <script>
+      // Check if cookies have been accepted
+      if (!localStorage.getItem("cookiesAccepted")) {
+        document.getElementById("cookieConsent").classList.remove("hidden");
+      }
+  
+      // Handle accepting cookies
+      document.getElementById("acceptCookies").addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "true");
+        document.getElementById("cookieConsent").classList.add("hidden");
+      });
+    </script>
+  
   </body>
-</html>
+  </html>
+  

@@ -6,7 +6,7 @@
         "use": "@vercel/static"
       },
       {
-        "src": "calcv1/**/*",
+        "src": "calc/**/*",
         "use": "@vercel/static"
       },
       {
@@ -22,7 +22,7 @@
         "use": "@vercel/static"
       },
       {
-        "src": "workouts/**/*",
+        "src": "protocols/**/*",
         "use": "@vercel/static"
       },
       {
@@ -36,8 +36,8 @@
         "dest": "/assets/$1"
       },
       {
-        "src": "/calcv1/(.*)",
-        "dest": "/calcv1/$1"
+        "src": "/calc/(.*)",
+        "dest": "/calc/$1"
       },
       {
         "src": "/chat/(.*)",
@@ -52,8 +52,8 @@
         "dest": "/legal/$1"
       },
       {
-        "src": "/workouts/(.*)",
-        "dest": "/workouts/$1"
+        "src": "/protocols/(.*)",
+        "dest": "/protocols/$1"
       },
       {
         "src": "/(.*)",

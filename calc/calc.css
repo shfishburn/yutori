@@ -1,23 +1,21 @@
-/* Custom Section Title Class for Consistent H2 Headers */
 .section-title {
-  @apply text-3xl font-bold text-gray-900 mt-6 mb-4;
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-/* --- Calculator Specific Styles --- */
-
-/* Wizard Steps */
 .wizard-step {
   display: none;
   margin-bottom: 1.5em;
 }
 
-/* Global wizard buttons style (default right alignment) */
 .wizard-buttons {
   margin-top: 1em;
   text-align: right;
 }
 
-/* Input Fields */
 input[type="number"],
 select {
   width: 100%;
@@ -28,7 +26,6 @@ select {
   border-radius: 4px;
 }
 
-/* Radio Groups */
 .radio-group {
   display: flex;
   gap: 1em;
@@ -46,7 +43,6 @@ select {
   margin-right: 0.5em;
 }
 
-/* Button Styles */
 .btn {
   background: var(--primary-color) !important;
   color: #fff;
@@ -66,13 +62,11 @@ select {
   transform: translateY(-2px) !important;
 }
 
-/* Special Button Colors */
 #newScenarioBtn,
 #disclaimerLink {
   background: var(--primary-color) !important;
 }
 
-/* Back Button Specific Styles */
 .btn[data-prev-step] {
   background: #666;
 }
@@ -81,7 +75,6 @@ select {
   background: #555;
 }
 
-/* Input Validation */
 .invalid-input {
   border: 1px solid red;
   background: #ffe6e6;
@@ -94,7 +87,6 @@ select {
   font-size: 0.85em;
 }
 
-/* Cards & Results */
 .cards-row {
   display: flex;
   gap: 1em;
@@ -111,7 +103,6 @@ select {
   background: #fafafa;
 }
 
-/* Modal Styles */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -140,12 +131,10 @@ select {
   padding: 0.4em 1em;
 }
 
-/* Critical Wizard Functionality */
 .wizard-step[style*="display:block"] {
   display: block !important;
 }
 
-/* Calculator Typography Overrides */
 #calculator h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -153,10 +142,7 @@ select {
   color: var(--text-color, #1f2937);
 }
 
-#calculator h2 {
-  /* All H2 headers should use the .section-title class now */
-  /* Remove any conflicting styling here if present */
-}
+#calculator h2 {}
 
 #calculator p {
   font-size: 1rem;
@@ -173,14 +159,12 @@ select {
   color: var(--text-color, #1f2937);
 }
 
-/* Radio Buttons Text in Calculator */
 #calculator .radio-group label {
   display: inline-flex;
   align-items: center;
   font-weight: normal;
 }
 
-/* Results Section Specific Styles */
 #step5 .btn {
   background: var(--primary-color) !important;
 }
@@ -198,7 +182,6 @@ select {
   margin-bottom: 1em;
 }
 
-/* Override for calculator wizard buttons to align left */
 .wizard-step .wizard-buttons {
   text-align: left;
 }
