@@ -1,34 +1,64 @@
-/* BEGIN: Workouts Page Specific Styles */
+/* === Workouts Page Styles === */
 
-/* Tab content display */
-.tab-content.hidden {
-    display: none;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
-  /* Active tab button styles */
-  .tab-button.active {
-    background-color: #e0e0e0; /* You can use any color to highlight the active tab */
-    color: #000;
-    font-weight: bold;
-  }
-  
-  /* Modal overrides */
-  .modal {
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  }
-  
-  .modal.modal-open {
-    display: flex !important;
-  }
-  
-  /* Additional spacing for modal form fields */
-  .form-field {
-    margin-bottom: 0.75rem;
-  }
-  
-  /* END: Workouts Page Specific Styles */
-  
+/* Hero Section Padding and Spacing */
+.hero-section {
+  margin-bottom: 2rem; /* Space after the hero section */
+}
+
+/* Tab Content Display */
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+
+/* Active Tab Button Styles */
+.tab-button.active {
+  background-color: var(--primary-color); /* Use brand orange color */
+  color: white;
+  font-weight: bold;
+}
+
+/* Modal Styling */
+.modal {
+  display: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal.modal-open {
+  display: flex !important;
+  background: rgba(0, 0, 0, 0.5); /* Modal background */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Button Style Updates */
+.btn {
+  background-color: var(--primary-color); /* Orange color */
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  background-color: var(--hover-color);
+}
+
+/* Date Picker Container and Header Color */
+#integrated-app header {
+  background: var(--primary-color); /* Orange header */
+}
+
+/* Tab Bar Button Styles */
+.tab-bar button {
+  background: transparent;
+  color: var(--primary-color); /* Ensure it's using orange */
+  padding: 0.5rem;
+  font-weight: bold;
+}
+
+.tab-bar button:hover {
+  background-color: var(--accent-color); /* Light accent color */
+}
