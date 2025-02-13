@@ -131,43 +131,68 @@
       </div>
     </footer>
   
- <!-- Cookie Consent Notification -->
-<div id="cookieConsent" class="fixed bottom-0 left-0 w-full bg-gray-800 text-white p-4 flex items-center justify-between z-50">
-  <p class="text-sm">
-    We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies. You can accept or reject the use of cookies.
-    <a href="/legal/terms.html" class="underline text-orange-400">Learn more</a>.
-  </p>
-  <div>
-    <button id="acceptCookies" class="btn accept-btn">Accept</button>
-    <button id="rejectCookies" class="btn reject-btn ml-2">Reject</button>
-  </div>
-</div>
-
-<script>
-  // Check if cookies have been accepted or rejected
-  if (!localStorage.getItem("cookiesAccepted") && !localStorage.getItem("cookiesRejected")) {
-    document.getElementById("cookieConsent").classList.remove("hidden");
-  }
-
-  // Handle accepting cookies
-  document.getElementById("acceptCookies").addEventListener("click", function () {
-    // Store the consent in localStorage
-    localStorage.setItem("cookiesAccepted", "true");
-
-    // Hide the consent banner
-    document.getElementById("cookieConsent").classList.add("hidden");
-  });
-
-  // Handle rejecting cookies
-  document.getElementById("rejectCookies").addEventListener("click", function () {
-    // Store the rejection in localStorage
-    localStorage.setItem("cookiesRejected", "true");
-
-    // Hide the consent banner
-    document.getElementById("cookieConsent").classList.add("hidden");
-  });
-</script>
-
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Cookie Consent & Visit Counter</title>
+      <!-- Inherit styles from the root styles.css -->
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+    
+      <!-- Cookie Consent Notification -->
+      <div id="cookieConsent" class="fixed bottom-0 left-0 w-full bg-gray-800 text-white p-4 flex items-center justify-between z-50">
+        <p class="text-sm">
+          We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies. You can accept or reject the use of cookies.
+          <a href="/legal/terms.html" class="underline text-orange-400">Learn more</a>.
+        </p>
+        <div>
+          <button id="acceptCookies" class="btn accept-btn">Accept</button>
+          <button id="rejectCookies" class="btn reject-btn ml-2">Reject</button>
+        </div>
+      </div>
+    
+      <script>
+        // Function to increment and store the visit count
+        function incrementVisitCount() {
+          let visits = parseInt(localStorage.getItem("visitCount") || "0", 10);
+          visits++;
+          localStorage.setItem("visitCount", visits);
+          console.log("Site visits: " + visits);
+        }
+    
+        // Check if cookies have been accepted or rejected
+        if (!localStorage.getItem("cookiesAccepted") && !localStorage.getItem("cookiesRejected")) {
+          document.getElementById("cookieConsent").classList.remove("hidden");
+        } else if (localStorage.getItem("cookiesAccepted") === "true") {
+          // Cookies already accepted; update visit count immediately
+          incrementVisitCount();
+        }
+    
+        // Handle accepting cookies
+        document.getElementById("acceptCookies").addEventListener("click", function () {
+          // Store the consent in localStorage
+          localStorage.setItem("cookiesAccepted", "true");
+          // Increment visit count
+          incrementVisitCount();
+          // Hide the consent banner
+          document.getElementById("cookieConsent").classList.add("hidden");
+        });
+    
+        // Handle rejecting cookies
+        document.getElementById("rejectCookies").addEventListener("click", function () {
+          // Store the rejection in localStorage
+          localStorage.setItem("cookiesRejected", "true");
+          // Hide the consent banner
+          document.getElementById("cookieConsent").classList.add("hidden");
+        });
+      </script>
+    
+    </body>
+    </html>
+    
 
 
   
