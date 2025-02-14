@@ -1,17 +1,112 @@
 (function () {
     "use strict";
   
-    // --- Helper: setTextContent defensively ---
-    function setTextContent(id, value) {
-      const el = document.getElementById(id);
-      if (!el) {
-        console.error(`Element with id '${id}' not found.`);
-        return;
+    /***************************************
+     * Custom Error Classes
+     ***************************************/
+    class ValidationError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "ValidationError";
       }
-      el.textContent = value;
     }
   
-    // --- Helper Functions ---
+    class StateError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "StateError";
+      }
+    }
+  
+    class DOMError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "DOMError";
+      }
+    }
+  
+    /***************************************
+     * Input Validation & Error Handling Modules
+     ***************************************/
+    function validateInput(params) {
+      if (typeof params !== "object" || params === null) {
+        throw new ValidationError("Input parameters must be provided in an object.");
+      }
+  
+      // Composite validators for strict input validation
+      const validators = {
+        initialWeight: (value) => ({
+          isValid: typeof value === "number" && isFinite(value) && value > 0,
+          message: `Initial weight must be a positive number. Received: ${value}`
+        }),
+        bodyFatPct: (value) => ({
+          isValid: typeof value === "number" && isFinite(value) && value >= 8 && value <= 40,
+          message: `Body fat percentage must be between 8% and 40%. Received: ${value}`
+        }),
+        age: (value) => ({
+          isValid: typeof value === "number" && isFinite(value) && value >= 18 && value <= 75,
+          message: `Age must be between 18 and 75. Received: ${value}`
+        }),
+        activityMultiplier: (value) => ({
+          isValid: typeof value === "number" && isFinite(value) && value >= 1,
+          message: `Activity multiplier must be >= 1. Received: ${value}`
+        }),
+        heightCm: (value) => ({
+          isValid: typeof value === "number" && isFinite(value) && value > 0,
+          message: `Height in centimeters must be positive. Received: ${value}`
+        }),
+        dietaryApproach: (value) => ({
+          isValid: ["balanced", "low-carb", "high-protein"].includes(value),
+          message: `Invalid dietary approach. Received: ${value}`
+        })
+      };
+  
+      const errors = [];
+      for (const [key, validator] of Object.entries(validators)) {
+        if (params[key] !== undefined) {
+          const result = validator(params[key]);
+          if (!result.isValid) {
+            errors.push({ field: key, message: result.message });
+          }
+        }
+      }
+  
+      if (errors.length > 0) {
+        throw new ValidationError(
+          `Validation errors: ${errors.map(e => e.message).join(", ")}`
+        );
+      }
+  
+      return Object.assign({}, params);
+    }
+  
+    function handleCalculatorError(error, context) {
+      console.error(`[${context}] ${error.message}`, {
+        errorType: error.name,
+        stack: error.stack
+      });
+      return { error: true, message: "An error occurred during calculation. Please check your input." };
+    }
+  
+    /***************************************
+     * Helper Functions
+     ***************************************/
+    function setTextContent(id, value) {
+      try {
+        const el = document.getElementById(id);
+        if (!el) {
+          throw new DOMError(`Element with id '${id}' not found.`);
+        }
+        el.textContent = value;
+      } catch (error) {
+        console.error(`Error in setTextContent for id ${id}:`, {
+          errorType: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+      }
+    }
+  
     function fmtWeight(weight, isKg) {
       if (typeof weight !== "number") {
         console.error("fmtWeight expects a number; received:", typeof weight);
@@ -20,35 +115,47 @@
       return isKg ? (weight / 2.20462).toFixed(2) + " kg" : weight.toFixed(2) + " lbs";
     }
   
-    function getBFCat(ratio) {
-      if (ratio < 0.1) return "Very Low";
-      if (ratio < 0.15) return "Excellent";
-      if (ratio < 0.2) return "Good";
-      if (ratio < 0.25) return "Fair";
-      if (ratio < 0.3) return "Poor";
-      return "Very High";
+    function getBFCat(ratio, gender) {
+      const bfPercent = ratio * 100;
+      let classifications;
+      if (gender === "male") {
+        classifications = {
+          essential: { min: 3, max: 5, name: "Essential Fat" },
+          athletic: { min: 6, max: 13, name: "Below Average/Athletes" },
+          fitness: { min: 14, max: 17, name: "General Fitness" },
+          average: { min: 18, max: 24, name: "Average/Acceptable" },
+          obese: { min: 25, max: Infinity, name: "Obese (Level I & II)" }
+        };
+      } else {
+        classifications = {
+          essential: { min: 9, max: 11, name: "Essential Fat" },
+          athletic: { min: 12, max: 19, name: "Below Average/Athletes" },
+          fitness: { min: 20, max: 24, name: "General Fitness" },
+          average: { min: 25, max: 29, name: "Average/Acceptable" },
+          obese: { min: 30, max: Infinity, name: "Obese (Level I & II)" }
+        };
+      }
+      for (let key in classifications) {
+        const cls = classifications[key];
+        if (bfPercent >= cls.min && bfPercent <= cls.max) {
+          return cls.name;
+        }
+      }
+      return "Undefined";
     }
   
-    function computeMacros(finalCals, approach) {
-      let macros = {};
-      if (approach === "balanced") {
-        macros.carbsGrams = Math.round((finalCals * 0.40) / 4);
-        macros.proteinGrams = Math.round((finalCals * 0.30) / 4);
-        macros.fatGrams = Math.round((finalCals * 0.30) / 9);
-      } else if (approach === "low-carb") {
-        macros.carbsGrams = Math.round((finalCals * 0.25) / 4);
-        macros.proteinGrams = Math.round((finalCals * 0.40) / 4);
-        macros.fatGrams = Math.round((finalCals * 0.35) / 9);
-      } else if (approach === "high-protein") {
-        macros.carbsGrams = Math.round((finalCals * 0.35) / 4);
-        macros.proteinGrams = Math.round((finalCals * 0.45) / 4);
-        macros.fatGrams = Math.round((finalCals * 0.20) / 9);
-      } else {
-        macros.carbsGrams = Math.round((finalCals * 0.40) / 4);
-        macros.proteinGrams = Math.round((finalCals * 0.30) / 4);
-        macros.fatGrams = Math.round((finalCals * 0.30) / 9);
-      }
-      return macros;
+    function calculateMacros(calories, approach) {
+      const distributions = {
+        balanced: { carbs: 0.40, protein: 0.30, fat: 0.30 },
+        "low-carb": { carbs: 0.25, protein: 0.40, fat: 0.35 },
+        "high-protein": { carbs: 0.35, protein: 0.45, fat: 0.20 }
+      };
+      const dist = distributions[approach] || distributions.balanced;
+      return {
+        protein: Math.round((calories * dist.protein) / 4),
+        carbs: Math.round((calories * dist.carbs) / 4),
+        fat: Math.round((calories * dist.fat) / 9)
+      };
     }
   
     function getAdvice(netDiff) {
@@ -57,32 +164,404 @@
       return "Calorie maintenance.";
     }
   
-    // --- Time-to-Mid-Goal Calculation (not used in current layout) ---
-    function timeToGoal(cWeight, goalWeight, finalCals, TDEE, isKg) {
-      let netDiff = TDEE - finalCals;
-      let absNetDiff = Math.abs(netDiff);
-      if (absNetDiff === 0) {
-        setTextContent("timeToGoalText", "No calorie change – time cannot be determined.");
-        return;
+    /***************************************
+     * Lean Loss Lookup Table
+     ***************************************/
+    const leanLossLookup = {
+      balanced: {
+        "-250": { fat: 90, lean: 10 },
+        "-500": { fat: 85, lean: 15 },
+        "-750": { fat: 80, lean: 20 },
+        "-1000": { fat: 75, lean: 25 }
+      },
+      "low-carb": {
+        "-250": { fat: 87, lean: 13 },
+        "-500": { fat: 82, lean: 18 },
+        "-750": { fat: 78, lean: 22 },
+        "-1000": { fat: 72, lean: 28 }
+      },
+      "high-protein": {
+        "-250": { fat: 95, lean: 5 },
+        "-500": { fat: 92, lean: 8 },
+        "-750": { fat: 88, lean: 12 },
+        "-1000": { fat: 85, lean: 15 }
       }
-      let weightDiff = Math.abs(cWeight - goalWeight);
-      let weeklyChange = (absNetDiff * 7) / 3500;
-      if (weeklyChange === 0) {
-        setTextContent("timeToGoalText", "Insufficient deficit for measurable weight change.");
-        return;
+    };
+  
+    /***************************************
+     * Simulation Function: calculate metabolic adaptation
+     ***************************************/
+    function simulateMetabolicAdaptation(params) {
+      try {
+        const validatedParams = validateInput(params);
+        const {
+          initialWeight,
+          isKg,
+          bodyFatPct,
+          age,
+          gender,
+          activityMultiplier,
+          deficitValue,
+          dietaryApproach,
+          heightCm
+        } = validatedParams;
+  
+        if (!["lose"].includes(params.weightGoal)) {
+          throw new ValidationError("Only weight loss is supported.");
+        }
+  
+        const lossRatios = leanLossLookup[dietaryApproach] && leanLossLookup[dietaryApproach][deficitValue];
+        if (!lossRatios) {
+          throw new ValidationError("Invalid dietary approach or deficit value.");
+        }
+  
+        const weightKg = isKg ? initialWeight : initialWeight / 2.20462;
+  
+        const initialStats = {
+          totalWeight: initialWeight,
+          leanMass: initialWeight * (1 - (bodyFatPct / 100)),
+          fatMass: initialWeight * (bodyFatPct / 100),
+          bodyFatPct
+        };
+  
+        const baselineRMR =
+          gender === "male"
+            ? (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5
+            : (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
+        const baselineTDEE = baselineRMR * activityMultiplier;
+  
+        // Determine target body fat percentages
+        const targetPercentages = [35, 30, 25, 20, 15, 10, 8];
+        let filteredTargets = targetPercentages.filter(targetBF => targetBF < bodyFatPct);
+        if (params.targetBFRange &&
+            typeof params.targetBFRange.min === "number" &&
+            typeof params.targetBFRange.max === "number") {
+          filteredTargets = filteredTargets.filter(bf => bf >= params.targetBFRange.min && bf <= params.targetBFRange.max);
+        }
+        if (filteredTargets.length === 0) {
+          filteredTargets = targetPercentages.filter(targetBF => targetBF < bodyFatPct);
+        }
+        const progressionStats = filteredTargets.map(targetBF => {
+          const P = targetBF / 100;
+          const fatLossPercent = lossRatios.fat / 100;
+          const leanLossPercent = lossRatios.lean / 100;
+  
+          const totalWeightLoss = (initialStats.fatMass - (P * initialStats.totalWeight)) / (fatLossPercent - P);
+          const fatLoss = totalWeightLoss * fatLossPercent;
+          const leanLoss = totalWeightLoss * leanLossPercent;
+  
+          const finalTotalWeight = initialStats.totalWeight - totalWeightLoss;
+          const finalLeanMass = initialStats.leanMass - leanLoss;
+          const finalFatMass = initialStats.fatMass - fatLoss;
+          const finalWeightKg = isKg ? finalTotalWeight : finalTotalWeight / 2.20462;
+          const rmr =
+            gender === "male"
+              ? (10 * finalWeightKg) + (6.25 * heightCm) - (5 * age) + 5
+              : (10 * finalWeightKg) + (6.25 * heightCm) - (5 * age) - 161;
+          const tdee = rmr * activityMultiplier;
+          const targetCalories = tdee + Number(deficitValue);
+          const minCal = gender === "male" ? 1500 : 1200;
+          const finalCalories = Math.max(targetCalories, minCal);
+          const macros = calculateMacros(finalCalories, dietaryApproach);
+  
+          return {
+            targetBF,
+            totalWeight: finalTotalWeight,
+            leanMass: finalLeanMass,
+            fatMass: finalFatMass,
+            bodyFatPercent: (finalFatMass / finalTotalWeight) * 100,
+            totalLoss: totalWeightLoss,
+            fatLoss,
+            leanLoss,
+            rmr,
+            tdee,
+            targetCalories: finalCalories,
+            macros
+          };
+        });
+  
+        return {
+          initialStats,
+          progressionStats,
+          lossRatios,
+          baselineRMR,
+          baselineTDEE
+        };
+      } catch (error) {
+        return handleCalculatorError(error, "simulateMetabolicAdaptation");
       }
-      let weeks = (weightDiff / 2) / weeklyChange;
-      weeks = Math.round(weeks * 10) / 10;
-      setTextContent("timeToGoalText", weeks + " weeks to mid-goal");
     }
   
-    // --- Chart Rendering ---
+    /***************************************
+     * Helper: Populate Goal Body Fat Options Based on Gender
+     ***************************************/
+    function populateGoalBodyFatOptions(gender) {
+      let options;
+      if (gender === "male") {
+        options = [
+          { value: "athletic", label: "Below Average/Athletes (6-13%)" },
+          { value: "fitness", label: "General Fitness (14-17%)" },
+          { value: "average", label: "Average/Acceptable (18-24%)" },
+          { value: "obese", label: "Obese (25% or more)" }
+        ];
+      } else { // female
+        options = [
+          { value: "athletic", label: "Below Average/Athletes (12-19%)" },
+          { value: "fitness", label: "General Fitness (20-24%)" },
+          { value: "average", label: "Average/Acceptable (25-29%)" },
+          { value: "obese", label: "Obese (30% or more)" }
+        ];
+      }
+      const goalSelect = document.getElementById("fatGoalCategorySelect");
+      if (goalSelect) {
+        goalSelect.innerHTML = "";
+        options.forEach(opt => {
+          const optionEl = document.createElement("option");
+          optionEl.value = opt.value;
+          optionEl.textContent = opt.label;
+          goalSelect.appendChild(optionEl);
+        });
+      }
+    }
+  
+    // Call the function on gender change (if the gender input is updated by the user)
+    document.querySelectorAll('input[name="gender"]').forEach(radio => {
+      radio.addEventListener("change", function () {
+        populateGoalBodyFatOptions(this.value);
+      });
+    });
+  
+    /***************************************
+     * UI & Navigation Functions
+     ***************************************/
+    const steps = Array.from(document.querySelectorAll(".wizard-step"));
+    let currentStepIndex = 0;
+  
+    function showStep(index) {
+      steps.forEach((s, i) => (s.style.display = i === index ? "block" : "none"));
+      currentStepIndex = index;
+    }
+  
+    function clearErrors(stepEl) {
+      stepEl.querySelectorAll(".error-message").forEach(e => e.remove());
+      stepEl.querySelectorAll(".invalid-input").forEach(inp => inp.classList.remove("invalid-input"));
+    }
+  
+    function showError(inputEl, msg) {
+      inputEl.classList.add("invalid-input");
+      const e = document.createElement("div");
+      e.className = "error-message";
+      e.textContent = msg;
+      inputEl.insertAdjacentElement("afterend", e);
+    }
+  
+    function validateCurrentStep() {
+      clearErrors(steps[currentStepIndex]);
+  
+      const unit = document.querySelector('input[name="unit"]:checked')?.value;
+      const heightInput = document.getElementById("heightInput");
+      const ageInput = document.getElementById("ageInput");
+      const weightInput = document.getElementById("totalWeightInput");
+      const bfInput = document.getElementById("bodyFatPctInput");
+  
+      const heightVal = parseFloat(heightInput.value);
+      const ageVal = parseInt(ageInput.value || "", 10);
+      const weightVal = parseFloat(weightInput.value);
+      const bfVal = parseFloat(bfInput.value);
+  
+      if (!unit) {
+        showError(heightInput, "Please select a unit (lbs or kg).");
+        return false;
+      }
+  
+      if (isNaN(ageVal) || ageVal < 18 || ageVal > 75) {
+        showError(ageInput, "Age must be between 18 and 75.");
+        return false;
+      }
+  
+      if (isNaN(bfVal) || bfVal < 8 || bfVal > 40) {
+        showError(bfInput, "BF% must be between 8% and 40%.");
+        return false;
+      }
+  
+      if (unit === "lbs") {
+        if (isNaN(heightVal) || heightVal < 60 || heightVal > 84) {
+          showError(heightInput, "Height must be between 60 and 84 inches.");
+          return false;
+        }
+        if (isNaN(weightVal) || weightVal < 100 || weightVal > 400) {
+          showError(weightInput, "Weight must be between 100 and 400 lbs.");
+          return false;
+        }
+      } else if (unit === "kg") {
+        if (isNaN(heightVal) || heightVal < 152 || heightVal > 213) {
+          showError(heightInput, "Height must be between 152 and 213 cm.");
+          return false;
+        }
+        if (isNaN(weightVal) || weightVal < 45 || weightVal > 181) {
+          showError(weightInput, "Weight must be between 45 and 181 kg.");
+          return false;
+        }
+      }
+  
+      return true;
+    }
+  
+    function doFinalCalculation() {
+      try {
+        const unit = document.querySelector('input[name="unit"]:checked').value;
+        const isKg = unit === "kg";
+        const weightVal = parseFloat(document.getElementById("totalWeightInput").value);
+        const bfVal = parseFloat(document.getElementById("bodyFatPctInput").value);
+        const ageVal = parseInt(document.getElementById("ageInput").value) || 30;
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const heightVal = parseFloat(document.getElementById("heightInput").value);
+        const heightCm = unit === "lbs" ? (heightVal * 2.54) : heightVal;
+        const af = parseFloat(document.getElementById("activityLevelSelect").value) || 1.55;
+        const dailyAdjVal = document.getElementById("dailyAdjustmentSelect").value;
+        const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
+  
+        // Populate Goal Body Fat % options based on gender
+        populateGoalBodyFatOptions(gender);
+  
+        const simParams = {
+          initialWeight: weightVal,
+          isKg: false,
+          bodyFatPct: bfVal,
+          age: ageVal,
+          gender: gender,
+          activityMultiplier: af,
+          weightGoal: "lose",
+          deficitValue: String(dailyAdjVal),
+          dietaryApproach: dietary,
+          targetBFRange: { min: 15, max: 20 },
+          heightCm: heightCm
+        };
+  
+        const simResult = simulateMetabolicAdaptation(simParams);
+        if (simResult.error) {
+          console.error("Calculation halted:", simResult.error);
+          return;
+        }
+        
+        // Update "Current Composition" card (baseline values)
+        const currentStats = simResult.initialStats;
+        setTextContent("currentWeightSpan", fmtWeight(currentStats.totalWeight, false));
+        setTextContent("currentLeanSpan", fmtWeight(currentStats.leanMass, false));
+        setTextContent("currentFatSpan", fmtWeight(currentStats.fatMass, false) + " (" + currentStats.bodyFatPct.toFixed(1) + "%)");
+        setTextContent("currentBFpctSpan", currentStats.bodyFatPct.toFixed(1) + "%");
+        setTextContent("currentBFcatSpan", getBFCat(currentStats.fatMass / currentStats.totalWeight, gender));
+  
+        // Update "About You" card with step-1 inputs
+        const unitText = (document.querySelector('input[name="unit"]:checked').value === "lbs") ? "lbs/inches" : "kg/cm";
+        setTextContent("summaryGender", gender);
+        setTextContent("summaryAge", ageVal);
+        setTextContent("summaryUnits", unitText);
+        setTextContent("summaryHeight", heightVal);
+        setTextContent("summaryTotalWeight", weightVal);
+        setTextContent("summaryBodyFatPct", bfVal + "%");
+  
+        // Compute range for projected composition from progressionStats
+        const progression = simResult.progressionStats;
+        const minProj = {
+          totalWeight: Math.min(...progression.map(s => s.totalWeight)),
+          fatMass: Math.min(...progression.map(s => s.fatMass)),
+          leanMass: Math.min(...progression.map(s => s.leanMass)),
+          bodyFatPercent: Math.min(...progression.map(s => s.bodyFatPercent))
+        };
+        const maxProj = {
+          totalWeight: Math.max(...progression.map(s => s.totalWeight)),
+          fatMass: Math.max(...progression.map(s => s.fatMass)),
+          leanMass: Math.max(...progression.map(s => s.leanMass)),
+          bodyFatPercent: Math.max(...progression.map(s => s.bodyFatPercent))
+        };
+  
+        setTextContent("goalWeightSpan", `${fmtWeight(minProj.totalWeight, false)} - ${fmtWeight(maxProj.totalWeight, false)}`);
+        setTextContent("goalFatSpan", `${fmtWeight(minProj.fatMass, false)} - ${fmtWeight(maxProj.fatMass, false)}`);
+        setTextContent("goalLeanSpan", `${fmtWeight(minProj.leanMass, false)} - ${fmtWeight(maxProj.leanMass, false)}`);
+        setTextContent("goalBFpctSpan", `${minProj.bodyFatPercent.toFixed(1)}% - ${maxProj.bodyFatPercent.toFixed(1)}%`);
+        const catMin = getBFCat(minProj.fatMass / minProj.totalWeight, gender);
+        const catMax = getBFCat(maxProj.fatMass / maxProj.totalWeight, gender);
+        setTextContent("goalBFcatSpan", catMin === catMax ? catMin : `${catMin} - ${catMax}`);
+  
+        // Build data object for Projected Composition card update
+        const projectionData = {
+          weightRange: `${fmtWeight(minProj.totalWeight, false)} - ${fmtWeight(maxProj.totalWeight, false)}`,
+          fatMassRange: `${fmtWeight(minProj.fatMass, false)} - ${fmtWeight(maxProj.fatMass, false)}`,
+          leanMassRange: `${fmtWeight(minProj.leanMass, false)} - ${fmtWeight(maxProj.leanMass, false)}`,
+          bfPercentRange: `${minProj.bodyFatPercent.toFixed(1)}% - ${maxProj.bodyFatPercent.toFixed(1)}%`,
+          category: catMin === catMax ? catMin : `${catMin} - ${catMax}`,
+          currentWeight: fmtWeight(currentStats.totalWeight, false),
+          currentBF: currentStats.bodyFatPct.toFixed(1) + "%",
+          totalWeightLoss: "N", // Replace with your computed value
+          leanMassLoss: "Y",    // Replace with your computed value
+          fatLoss: "Z",         // Replace with your computed value
+          calorieDeficit: dailyAdjVal,
+          weeklyLoss: "#s",     // Replace with computed weekly loss
+          dateA: "DATE A",      // Replace with computed start date
+          dateB: "DATE B"       // Replace with computed end date
+        };
+  
+        // Update the Projected Composition card with summary & timeline info
+        updateProjectedCompositionCard(projectionData);
+  
+        // Compute ranges for Calories & Macros from progressionStats
+        const bmrRange = {
+          min: Math.min(...progression.map(s => s.rmr)),
+          max: Math.max(...progression.map(s => s.rmr))
+        };
+        const tdeeRange = {
+          min: Math.min(...progression.map(s => s.tdee)),
+          max: Math.max(...progression.map(s => s.tdee))
+        };
+        const finalCalsRange = {
+          min: Math.min(...progression.map(s => s.targetCalories)),
+          max: Math.max(...progression.map(s => s.targetCalories))
+        };
+        const carbsRange = {
+          min: Math.min(...progression.map(s => s.macros.carbs)),
+          max: Math.max(...progression.map(s => s.macros.carbs))
+        };
+        const proteinRange = {
+          min: Math.min(...progression.map(s => s.macros.protein)),
+          max: Math.max(...progression.map(s => s.macros.protein))
+        };
+        const fatRange = {
+          min: Math.min(...progression.map(s => s.macros.fat)),
+          max: Math.max(...progression.map(s => s.macros.fat))
+        };
+  
+        setTextContent("bmrSpan", `${Math.round(bmrRange.min)} - ${Math.round(bmrRange.max)} kcal/day`);
+        setTextContent("tdeeSpan", `${Math.round(tdeeRange.min)} - ${Math.round(tdeeRange.max)} kcal/day`);
+        setTextContent("finalCalsSpan", `${Math.round(finalCalsRange.min)} - ${Math.round(finalCalsRange.max)} kcal/day`);
+        setTextContent("carbsSpan", `${carbsRange.min} - ${carbsRange.max} g`);
+        setTextContent("proteinSpan", `${proteinRange.min} - ${proteinRange.max} g`);
+        setTextContent("fatSpan", `${fatRange.min} - ${fatRange.max} g`);
+  
+        const netDiff = finalCalsRange.min - simResult.baselineTDEE;
+        setTextContent("macroHealthComment", getAdvice(netDiff));
+  
+        if (typeof renderForecastCharts === "function") {
+          renderForecastCharts(simResult.progressionStats);
+        }
+      } catch (error) {
+        console.error("Error in doFinalCalculation:", {
+          errorType: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+      }
+    }
+  
+    /***************************************
+     * Chart Rendering
+     ***************************************/
     let calorieChart, macroChart, weightChart;
     function renderForecastCharts(weeklyData) {
       try {
-        const weeks = weeklyData.map(pt => pt.week);
-        const calorieTargets = weeklyData.map(pt => Math.round(pt.calorieTarget));
-        const weights = weeklyData.map(pt => Math.round(pt.weight));
+        const weeks = weeklyData.map(pt => pt.targetBF + "%");
+        const calorieTargets = weeklyData.map(pt => Math.round(pt.targetCalories));
+        const weights = weeklyData.map(pt => Math.round(pt.totalWeight));
         const proteins = weeklyData.map(pt => pt.macros.protein);
         const carbs = weeklyData.map(pt => pt.macros.carbs);
         const fats = weeklyData.map(pt => pt.macros.fat);
@@ -107,7 +586,7 @@
             responsive: true,
             plugins: { title: { display: true, text: "Calorie Forecast" } },
             scales: {
-              x: { title: { display: true, text: "Weeks" } },
+              x: { title: { display: true, text: "Target BF%" } },
               y: { title: { display: true, text: "Calories" } }
             }
           }
@@ -128,7 +607,7 @@
             responsive: true,
             plugins: { title: { display: true, text: "Macro Trajectory" } },
             scales: {
-              x: { title: { display: true, text: "Weeks" } },
+              x: { title: { display: true, text: "Target BF%" } },
               y: { title: { display: true, text: "Grams" } }
             }
           }
@@ -150,199 +629,86 @@
             responsive: true,
             plugins: { title: { display: true, text: "Weight Loss Trajectory" } },
             scales: {
-              x: { title: { display: true, text: "Weeks" } },
+              x: { title: { display: true, text: "Target BF%" } },
               y: { title: { display: true, text: "Weight (lbs)" } }
             }
           }
         });
       } catch (error) {
-        console.error("Error rendering charts:", error);
+        console.error("Error rendering charts:", {
+          errorType: error.name,
+          message: error.message,
+          stack: error.stack
+        });
       }
     }
   
-    // --- Simulation Function using Mifflin–St Jeor ---
-    function simulateMetabolicAdaptation(params) {
-      try {
-        if (typeof params !== "object") throw new Error("Input parameters must be provided in an object.");
-        const {
-          initialWeight,
-          isKg,
-          bodyFatPct,
-          leanMass,
-          age,
-          gender,
-          activityMultiplier,
-          weightGoal,
-          deficitFraction,
-          dietaryApproach,
-          carbTolerance,
-          targetBFRange,
-          forecastWeeks,
-          adaptationFactor = 0.02,
-          adaptationCap = 0.20
-        } = params;
-        if (!initialWeight || initialWeight <= 0) throw new Error("Initial weight must be positive.");
-        if (bodyFatPct < 0 || bodyFatPct > 100) throw new Error("Body fat percentage must be 0-100.");
-        if (!age || age <= 0) throw new Error("Age must be positive.");
-        if (!activityMultiplier || activityMultiplier < 1) throw new Error("Activity multiplier must be >= 1.");
-        if (!["lose"].includes(weightGoal)) throw new Error("Only weight loss is supported.");
-        if (typeof deficitFraction !== "number") throw new Error("Deficit fraction must be a number.");
-        if (!["balanced", "low-carb", "high-protein"].includes(dietaryApproach))
-          throw new Error("Invalid dietary approach.");
-        if (!targetBFRange || typeof targetBFRange.min !== "number" || typeof targetBFRange.max !== "number")
-          throw new Error("Target BF range must have min and max values.");
-        if (!forecastWeeks || forecastWeeks <= 0) throw new Error("Forecast weeks must be at least 1.");
+    /***************************************
+     * Function to update the Projected Composition Card
+     ***************************************/
+    function updateProjectedCompositionCard(data) {
+      // Update key metric ranges
+      document.getElementById("goalWeightSpan").textContent = data.weightRange;
+      document.getElementById("goalFatSpan").textContent = data.fatMassRange;
+      document.getElementById("goalLeanSpan").textContent = data.leanMassRange;
+      document.getElementById("goalBFpctSpan").textContent = data.bfPercentRange;
+      document.getElementById("goalBFcatSpan").textContent = data.category;
+      
+      // Update summary details
+      document.getElementById("currentWeightInputSpan").textContent = data.currentWeight;
+      document.getElementById("bodyFatPctInputSpan").textContent = data.currentBF;
+      document.getElementById("totalWeightLossSpan").textContent = data.totalWeightLoss;
+      document.getElementById("leanMassLossSpan").textContent = data.leanMassLoss;
+      document.getElementById("fatLossSpan").textContent = data.fatLoss;
+      
+      // Update timeline information
+      document.getElementById("calorieDeficitSpan").textContent = data.calorieDeficit;
+      document.getElementById("weeklyWeightLossSpan").textContent = data.weeklyLoss;
+      document.getElementById("dateA").textContent = data.dateA;
+      document.getElementById("dateB").textContent = data.dateB;
+    }
   
-        // Convert weight to kg if needed
-        const lbsToKg = (lbs) => lbs / 2.20462;
-        const unit = document.querySelector('input[name="unit"]:checked').value;
-        let weightKg = unit === "lbs" ? lbsToKg(initialWeight) : initialWeight;
-  
-        // Convert height to cm (if unit is lbs then height is in inches)
-        let heightInput = parseFloat(document.getElementById("heightInput").value);
-        if (isNaN(heightInput) || heightInput <= 0) throw new Error("Height must be provided.");
-        let heightCm = unit === "lbs" ? (heightInput * 2.54) : heightInput;
-  
-        // Compute RMR using Mifflin–St Jeor
-        let baselineRMR;
-        if (gender === "male") {
-          baselineRMR = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5;
-        } else {
-          baselineRMR = (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
-        }
-  
-        // For simulation, compute lean mass from total weight and BF%
-        let currentWeight = initialWeight;
-        let currentLeanMass = initialWeight * (1 - (bodyFatPct / 100));
-        const baselineTDEE = baselineRMR * activityMultiplier;
-        let initialCalTarget = baselineTDEE * (1 - deficitFraction);
-        const minCal = gender === "male" ? 1500 : 1200;
-        if (initialCalTarget < minCal) initialCalTarget = minCal;
-  
-        let leanLossPercent;
-        switch (dietaryApproach) {
-          case "high-protein":
-            leanLossPercent = 0.10;
-            break;
-          case "balanced":
-            leanLossPercent = 0.15;
-            break;
-          case "low-carb":
-            leanLossPercent = 0.20;
-            break;
-          default:
-            leanLossPercent = 0.15;
-        }
-        // For low-carb, force carb percent to 20%
-        let carbPercent = dietaryApproach === "low-carb" ? 0.20 : (carbTolerance === "Low" ? 0.20 : 0.35);
-  
-        // IMPORTANT: When calculating protein, convert lean mass (in lbs) to kg if needed
-        let proteinMultiplier = (age < 60) ? 2.2 : (gender === "male" ? 2.5 : 2.6);
-  
-        const weeklyData = [];
-        let cumulativeAdaptation = 0;
-        let currentRMR = baselineRMR;
-        let currentTDEE = baselineTDEE;
-        let currentCalTarget = initialCalTarget;
-  
-        for (let week = 1; week <= forecastWeeks; week++) {
-          const dailyCalDiff = currentTDEE - currentCalTarget;
-          const weeklyCalDiff = dailyCalDiff * 7;
-  
-          // Dynamic effective energy density: E_eff = L × 760 + (1 – L) × 3500
-          const L = leanLossPercent;
-          const E_eff = L * 760 + (1 - L) * 3500;
-  
-          // Weight change (in lbs) = weeklyCalDiff / E_eff
-          const weightChange = weeklyCalDiff / E_eff;
-          // Compute lean mass change (note: currentLeanMass is in lbs; conversion will occur when computing protein)
-          const leanMassChange = weightChange * leanLossPercent;
-  
-          currentWeight = currentWeight - weightChange;
-          currentLeanMass = currentLeanMass - leanMassChange;
-          if (currentWeight < 0) currentWeight = 0;
-          if (currentLeanMass < 0) currentLeanMass = 0;
-  
-          // Update RMR based on new weight (keep height, age, gender constant)
-          let newWeightKg = unit === "lbs" ? lbsToKg(currentWeight) : currentWeight;
-          if (gender === "male") {
-            currentRMR = (10 * newWeightKg) + (6.25 * heightCm) - (5 * age) + 5;
-          } else {
-            currentRMR = (10 * newWeightKg) + (6.25 * heightCm) - (5 * age) - 161;
-          }
-  
-          cumulativeAdaptation += adaptationFactor;
-          if (cumulativeAdaptation > adaptationCap) cumulativeAdaptation = adaptationCap;
-          currentTDEE = baselineTDEE * (1 - cumulativeAdaptation);
-          currentCalTarget = currentTDEE * (1 - deficitFraction);
-          if (currentCalTarget < minCal) currentCalTarget = minCal;
-  
-          // Compute protein target using lean mass converted to kg
-          const proteinGrams = Math.max((unit === "lbs" ? lbsToKg(currentLeanMass) : currentLeanMass) * proteinMultiplier, (0.30 * currentCalTarget) / 4);
-          const carbGrams = (currentCalTarget * carbPercent) / 4;
-          const fatGrams = (currentCalTarget - (proteinGrams * 4 + carbGrams * 4)) / 9;
-  
-          weeklyData.push({
-            week,
-            weight: currentWeight,
-            TDEE: currentTDEE,
-            calorieTarget: currentCalTarget,
-            macros: {
-              protein: Math.round(proteinGrams),
-              carbs: Math.round(carbGrams),
-              fat: Math.round(fatGrams)
-            }
+    /***************************************
+     * UI Event Listeners
+     ***************************************/
+    document.querySelectorAll("[data-next-step]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        try {
+          if (!validateCurrentStep()) return;
+          showStep(currentStepIndex + 1);
+        } catch (error) {
+          console.error("Error in next-step event:", {
+            errorType: error.name,
+            message: error.message,
+            stack: error.stack
           });
         }
+      });
+    });
   
-        return {
-          weeklyData,
-          disclaimer: "This calculator is for informational purposes only. Consult a healthcare professional before making any major changes to your diet or exercise program."
-        };
-      } catch (error) {
-        console.error("Simulation error:", error);
-        return null;
-      }
-    }
+    document.querySelectorAll("[data-prev-step]").forEach(btn => {
+      btn.addEventListener("click", () => showStep(currentStepIndex - 1));
+    });
   
-    // --- New Scenario Button ---
-    const newScenarioBtn = document.getElementById("newScenarioBtn");
-    if (newScenarioBtn) {
-      newScenarioBtn.addEventListener("click", () => {
-        if (!Array.isArray(steps)) {
-          console.error("Wizard steps array not found.");
+    document.getElementById("calculateButton").addEventListener("click", () => {
+      try {
+        clearErrors(steps[currentStepIndex]);
+        const dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
+        if (dailyAdj > 0) {
+          showError(document.getElementById("dailyAdjustmentSelect"), "For weight loss, select a deficit (negative value)");
           return;
         }
-        steps.forEach(s => s.style.display = "none");
+        doFinalCalculation();
+        showStep(2);
+      } catch (error) {
+        console.error("Error during calculateButton click:", {
+          errorType: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+      }
+    });
   
-        const numberInputs = document.querySelectorAll('input[type="number"]');
-        if (numberInputs && numberInputs.length > 0) {
-          numberInputs.forEach(inp => inp.value = "");
-        } else {
-          console.warn("No number inputs found to reset.");
-        }
-  
-        if (typeof dailyAdjustmentSelect !== "undefined" && dailyAdjustmentSelect) {
-          dailyAdjustmentSelect.value = "-250";
-        } else {
-          console.error("dailyAdjustmentSelect element not found.");
-        }
-  
-        const radioLbs = document.getElementById("radioLbs");
-        if (radioLbs) {
-          radioLbs.checked = true;
-        } else {
-          console.error("radioLbs element not found.");
-        }
-  
-        // Navigate to step 2 (index 1)
-        showStep(1);
-      });
-    } else {
-      console.error("New Scenario Button not found.");
-    }
-  
-    // --- Modal Handlers ---
     document.querySelectorAll("[data-open-modal]").forEach(a => {
       a.addEventListener("click", e => {
         e.preventDefault();
@@ -350,318 +716,85 @@
         document.getElementById(modalId).style.display = "flex";
       });
     });
+  
     document.querySelectorAll(".close-modal-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         let id = btn.getAttribute("data-close-modal");
         document.getElementById(id).style.display = "none";
       });
     });
-    document.getElementById("disclaimerLink").addEventListener("click", () => {
+  
+    document.getElementById("disclaimerLink")?.addEventListener("click", () => {
       document.getElementById("disclaimerModal").style.display = "flex";
     });
   
-    // --- Navigation & UI Handling ---
-    const steps = Array.from(document.querySelectorAll(".wizard-step"));
-    let currentStepIndex = 0;
-    function showStep(index) {
-      steps.forEach((s, i) => s.style.display = i === index ? "block" : "none");
-      currentStepIndex = index;
-    }
-    document.querySelectorAll("[data-next-step]").forEach((btn) => {
-      btn.addEventListener("click", () => { if (!validateCurrentStep()) return; showStep(currentStepIndex + 1); });
-    });
-    document.querySelectorAll("[data-prev-step]").forEach((btn) => {
-      btn.addEventListener("click", () => showStep(currentStepIndex - 1));
-    });
-  
-    // --- Calorie Adjustment Dropdown ---
-    const weightGoalRadios = document.getElementsByName("weightGoal");
-    function updateCalorieDropdown() {
-      let optionsHTML = `
-        <option value="-250" selected>Slow loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
-        <option value="-500">Moderate loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
-        <option value="-750">Rapid loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
-        <option value="-1000">Dangerous loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
-      `;
-      dailyAdjustmentSelect.innerHTML = optionsHTML;
-    }
-    updateCalorieDropdown();
-    Array.from(weightGoalRadios).forEach(r => r.addEventListener("change", updateCalorieDropdown));
-  
- // --- Basic Validation ---
-function validateCurrentStep() {
-    clearErrors(steps[currentStepIndex]);
-    if (currentStepIndex === 0) {
-      const unit = document.querySelector('input[name="unit"]:checked').value;
-      const heightInput = document.getElementById("heightInput");
-      const ageInput = document.getElementById("ageInput");
-      const weightInput = document.getElementById("totalWeightInput");
-      const bfInput = document.getElementById("bodyFatPctInput");
-  
-      const heightVal = parseFloat(heightInput.value);
-      const ageVal = parseInt(ageInput.value || "", 10);
-      const weightVal = parseFloat(weightInput.value);
-      const bfVal = parseFloat(bfInput.value);
-  
-      // Validate Age: must be between 18 and 75.
-      if (isNaN(ageVal) || ageVal < 18 || ageVal > 75) {
-        showError(ageInput, "Age must be between 18 and 75.");
-        return false;
-      }
-  
-      // Validate Body Fat Percentage: must be between 8 and 40.
-      if (isNaN(bfVal) || bfVal < 8 || bfVal > 40) {
-        showError(bfInput, "BF% must be between 8% and 40%.");
-        return false;
-      }
-  
-      if (unit === "lbs") {
-        // For imperial units: height in inches (60 to 84) and weight in pounds (100 to 400).
-        if (isNaN(heightVal) || heightVal < 60 || heightVal > 84) {
-          showError(heightInput, "Height must be between 60 and 84 inches.");
-          return false;
-        }
-        if (isNaN(weightVal) || weightVal < 100 || weightVal > 400) {
-          showError(weightInput, "Weight must be between 100 and 400 lbs.");
-          return false;
-        }
-      } else if (unit === "kg") {
-        // For metric units, convert the ranges:
-        // Height: 60" (≈152 cm) to 84" (≈213 cm)
-        // Weight: 100 lbs (≈45 kg) to 400 lbs (≈181 kg)
-        if (isNaN(heightVal) || heightVal < 152 || heightVal > 213) {
-          showError(heightInput, "Height must be between 152 and 213 cm.");
-          return false;
-        }
-        if (isNaN(weightVal) || weightVal < 45 || weightVal > 181) {
-          showError(weightInput, "Weight must be between 45 and 181 kg.");
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-  
-  
-  
-    function clearErrors(stepEl) {
-      stepEl.querySelectorAll(".error-message").forEach(e => e.remove());
-      stepEl.querySelectorAll(".invalid-input").forEach(inp => inp.classList.remove("invalid-input"));
-    }
-  
-    function showError(inputEl, msg) {
-      inputEl.classList.add("invalid-input");
-      const e = document.createElement("div");
-      e.className = "error-message";
-      e.textContent = msg;
-      inputEl.insertAdjacentElement("afterend", e);
-    }
-  
-    // --- On Calculate Button ---
-    document.getElementById("calculateButton").addEventListener("click", () => {
-      clearErrors(steps[currentStepIndex]);
-      const dailyAdj = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
-      if (dailyAdj > 0) {
-        showError(document.getElementById("dailyAdjustmentSelect"), "For weight loss, select a deficit (negative value)");
-        return;
-      }
-      doFinalCalculation();
-      showStep(2);
-    });
-  
-    // --- Final Calculation, UI Update, and Chart Rendering ---
-    function doFinalCalculation() {
-      const unit = document.querySelector('input[name="unit"]:checked').value;
-      const isKg = unit === "kg";
-      const weightVal = parseFloat(document.getElementById("totalWeightInput").value);
-      const bfVal = parseFloat(document.getElementById("bodyFatPctInput").value);
-      const ageVal = parseInt(document.getElementById("ageInput").value) || 30;
-      const gender = document.querySelector('input[name="gender"]:checked').value;
-      const heightVal = parseFloat(document.getElementById("heightInput").value);
-      const heightCm = unit === "lbs" ? (heightVal * 2.54) : heightVal;
-      const lbsToKg = (lbs) => lbs / 2.20462;
-      const weightKg = unit === "lbs" ? lbsToKg(weightVal) : weightVal;
-  
-      // Compute RMR using Mifflin–St Jeor
-      let RMR;
-      if (gender === "male") {
-        RMR = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) + 5;
-      } else {
-        RMR = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) - 161;
-      }
-  
-      // Compute lean mass from total weight and BF%
-      const leanMass = weightVal * (1 - (bfVal / 100));
-      const cWeight = unit === "lbs" ? weightVal : (weightVal * 2.20462);
-      setTextContent("currentWeightSpan", fmtWeight(cWeight, false));
-      const fatMass = weightVal * (bfVal / 100);
-      setTextContent("currentFatSpan", fmtWeight(fatMass, false) + " (" + ((fatMass / weightVal) * 100).toFixed(1) + "%)");
-      setTextContent("currentLeanSpan", fmtWeight(leanMass, false));
-      setTextContent("currentBFpctSpan", ((fatMass / weightVal) * 100).toFixed(1) + "%");
-      setTextContent("currentBFcatSpan", getBFCat(fatMass / weightVal));
-  
-      // --- Compute Goal Range (Low-High) ---
-      const fatRangeLookup = {
-        dangerouslyLow: { pLow: 0.08, pHigh: 0.10 },
-        excellent: { pLow: 0.10, pHigh: 0.15 },
-        good: { pLow: 0.15, pHigh: 0.20 },
-        fair: { pLow: 0.20, pHigh: 0.25 },
-        poor: { pLow: 0.25, pHigh: 0.30 },
-        dangerouslyHigh: { pLow: 0.30, pHigh: 0.35 }
-      };
-      const catKey = document.getElementById("fatGoalCategorySelect").value;
-      const range = fatRangeLookup[catKey] || { pLow: 0.10, pHigh: 0.15 };
-      const goalWeightLow = leanMass / (1 - range.pLow);
-      const goalWeightHigh = leanMass / (1 - range.pHigh);
-      const goalFatLow = goalWeightLow - leanMass;
-      const goalFatHigh = goalWeightHigh - leanMass;
-      const goalBFpctLow = (goalFatLow / goalWeightLow) * 100;
-      const goalBFpctHigh = (goalFatHigh / goalWeightHigh) * 100;
-  
-      setTextContent("goalWeightSpan", fmtWeight(goalWeightLow, false) + "–" + fmtWeight(goalWeightHigh, false));
-      setTextContent("goalFatSpan", fmtWeight(goalFatLow, false) + "–" + fmtWeight(goalFatHigh, false));
-      setTextContent("goalLeanSpan", fmtWeight(leanMass, false));
-      setTextContent("goalBFpctSpan", goalBFpctLow.toFixed(1) + "%–" + goalBFpctHigh.toFixed(1) + "%");
-      setTextContent("goalBFcatSpan", catKey);
-  
-      // --- Summary Settings (Settings Card) ---
-      const dietary = document.querySelector('input[name="dietaryApproach"]:checked').value;
-      setTextContent("summaryAge", document.getElementById("ageInput").value || "--");
-      setTextContent("summaryGender", gender || "--");
-      const deficitVal = document.getElementById("dailyAdjustmentSelect").value;
-      const leanLossLookup = {
-        balanced: {
-          "-250": { fat: 90, lean: 10 },
-          "-500": { fat: 85, lean: 15 },
-          "-750": { fat: 80, lean: 20 },
-          "-1000": { fat: 75, lean: 25 }
-        },
-        "low-carb": {
-          "-250": { fat: 87, lean: 13 },
-          "-500": { fat: 82, lean: 18 },
-          "-750": { fat: 78, lean: 22 },
-          "-1000": { fat: 72, lean: 28 }
-        },
-        "high-protein": {
-          "-250": { fat: 95, lean: 5 },
-          "-500": { fat: 92, lean: 8 },
-          "-750": { fat: 88, lean: 12 },
-          "-1000": { fat: 85, lean: 15 }
-        }
-      };
-      const leanInfo = leanLossLookup[dietary] ? leanLossLookup[dietary][deficitVal] : null;
-      if (leanInfo) {
-        setTextContent("summaryLeanGoalPct", leanInfo.lean + "% lean loss, " + leanInfo.fat + "% fat loss");
-      } else {
-        setTextContent("summaryLeanGoalPct", "--");
-      }
-      setTextContent("summaryWeightGoal", "Lose Weight");
-      setTextContent("summaryDietApproach", dietary);
-      const af = parseFloat(document.getElementById("activityLevelSelect").value) || 1.55;
-      setTextContent("summaryActivityLevel", af);
-      const dailyAdjVal = parseFloat(document.getElementById("dailyAdjustmentSelect").value) || 0;
-      setTextContent("summaryDailyAdj", dailyAdjVal);
-  
-      // --- Compute RMR, TDEE, and Final Calories using Mifflin–St Jeor ---
-      let RMR_final;
-      if (gender === "male") {
-        RMR_final = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) + 5;
-      } else {
-        RMR_final = (10 * weightKg) + (6.25 * heightCm) - (5 * ageVal) - 161;
-      }
-      const TDEE = RMR_final * af;
-      let finalCals = TDEE + dailyAdjVal;
-      if (finalCals < 1200) finalCals = 1200;
-  
-      // --- Run Simulation with Dynamic Energy Density ---
-      const simParams = {
-        initialWeight: cWeight,
-        isKg: false,
-        bodyFatPct: bfVal,
-        leanMass: leanMass,
-        age: ageVal,
-        gender: gender,
-        activityMultiplier: af,
-        weightGoal: "lose",
-        deficitFraction: Math.abs(parseFloat(document.getElementById("dailyAdjustmentSelect").value)) / TDEE,
-        dietaryApproach: dietary,
-        carbTolerance: "Unsure",
-        targetBFRange: { min: 15, max: 20 },
-        forecastWeeks: 16,
-        adaptationFactor: 0.02,
-        adaptationCap: 0.20
-      };
-      const simResult = simulateMetabolicAdaptation(simParams);
-      if (simResult && simResult.weeklyData) {
-        const calArray = simResult.weeklyData.map(x => x.calorieTarget);
-        const tdeeArray = simResult.weeklyData.map(x => x.TDEE);
-        const proteinArray = simResult.weeklyData.map(x => x.macros.protein);
-        const carbsArray = simResult.weeklyData.map(x => x.macros.carbs);
-        const fatArray = simResult.weeklyData.map(x => x.macros.fat);
-  
-        const finalCalsLow = Math.min(...calArray);
-        const finalCalsHigh = Math.max(...calArray);
-        const tdeeLow = Math.min(...tdeeArray);
-        const tdeeHigh = Math.max(...tdeeArray);
-        const proteinLow = Math.min(...proteinArray);
-        const proteinHigh = Math.max(...proteinArray);
-        const carbsLow = Math.min(...carbsArray);
-        const carbsHigh = Math.max(...carbsArray);
-        const fatLow = Math.min(...fatArray);
-        const fatHigh = Math.max(...fatArray);
-  
-        setTextContent("bmrSpan", Math.round(RMR_final) + " kcal/day");
-        setTextContent("tdeeSpan", Math.round(tdeeLow) + "–" + Math.round(tdeeHigh) + " kcal/day");
-        setTextContent("finalCalsSpan", Math.round(finalCalsLow) + "–" + Math.round(finalCalsHigh) + " kcal/day");
-        setTextContent("carbsSpan", Math.round(carbsLow) + "–" + Math.round(carbsHigh) + " g");
-        setTextContent("proteinSpan", Math.round(proteinLow) + "–" + Math.round(proteinHigh) + " g");
-        setTextContent("fatSpan", Math.round(fatLow) + "–" + Math.round(fatHigh) + " g");
-        setTextContent("macroHealthComment", getAdvice(finalCals - TDEE));
-  
-        renderForecastCharts(simResult.weeklyData);
-        console.log("Simulation Result:", simResult);
-  
-   // --- Additional Explanation for Goal Range Card ---
-   const weightArray = simResult.weeklyData.map(x => x.weight);
-   const initialSimWeight = cWeight;
-   const finalSimWeight = weightArray[weightArray.length - 1];
-   const avgWeeklyLoss = (initialSimWeight - finalSimWeight) / simResult.weeklyData.length;
-   const midGoalWeight = (goalWeightLow + goalWeightHigh) / 2;
-   const weeksToGoal = (cWeight - midGoalWeight) / (avgWeeklyLoss || 1);
-   const currentDate = new Date();
-   const projectedGoalDate = new Date(currentDate.getTime() + weeksToGoal * 7 * 24 * 60 * 60 * 1000);
-   const extraInfo = document.createElement("p");
-   extraInfo.className = "mt-2 text-sm text-gray-700";
-   extraInfo.textContent = `By adhering to your nutrition and activity protocols, you should lose up to to ${avgWeeklyLoss.toFixed(2)} lbs per week, ` +
-     `which will be about ${(initialSimWeight - finalSimWeight).toFixed(2)} lbs over the next ${simResult.weeklyData.length}-weeks.`;
-   const goalRangeCard = document.querySelector("#goalWeightSpan").parentElement.parentElement;
-   if (goalRangeCard) goalRangeCard.appendChild(extraInfo);
- } else {
-   console.error("No simulation data available.");
- }
-}
-  
-    // --- Unit Test: Log Simulation Result for our reference user ---
-    try {
-      const testSim = simulateMetabolicAdaptation({
-        initialWeight: 287.5,
-        isKg: false,
-        bodyFatPct: 35.7,
+    /***************************************
+     * Test Simulation: Running test cases (for development)
+     ***************************************/
+    function runTestCases() {
+      const baseParams = {
         age: 62,
         gender: "male",
+        heightInches: 72,
+        totalWeight: 288,
+        bodyFatPct: 36
+      };
+  
+      const heightCm = baseParams.heightInches * 2.54;
+  
+      const testCase1 = simulateMetabolicAdaptation({
+        initialWeight: baseParams.totalWeight,
+        isKg: false,
+        bodyFatPct: baseParams.bodyFatPct,
+        age: baseParams.age,
+        gender: baseParams.gender,
+        activityMultiplier: 1.2,
+        weightGoal: "lose",
+        deficitValue: "-250",
+        dietaryApproach: "low-carb",
+        targetBFRange: { min: 15, max: 20 },
+        heightCm: heightCm
+      });
+      console.log("Test Case 1 (Sedentary, Low-Carb, Good):", JSON.stringify(testCase1, null, 2));
+  
+      const testCase2 = simulateMetabolicAdaptation({
+        initialWeight: baseParams.totalWeight,
+        isKg: false,
+        bodyFatPct: baseParams.bodyFatPct,
+        age: baseParams.age,
+        gender: baseParams.gender,
+        activityMultiplier: 1.375,
+        weightGoal: "lose",
+        deficitValue: "-250",
+        dietaryApproach: "high-protein",
+        targetBFRange: { min: 15, max: 20 },
+        heightCm: heightCm
+      });
+      console.log("Test Case 2 (Light Activity, High-Protein, Good):", JSON.stringify(testCase2, null, 2));
+  
+      const testCase3 = simulateMetabolicAdaptation({
+        initialWeight: baseParams.totalWeight,
+        isKg: false,
+        bodyFatPct: baseParams.bodyFatPct,
+        age: baseParams.age,
+        gender: baseParams.gender,
         activityMultiplier: 1.55,
         weightGoal: "lose",
-        deficitFraction: 0.50,  // Moderate loss (~500 cal/day deficit)
-        dietaryApproach: "low-carb",
-        carbTolerance: "Unsure",
+        deficitValue: "-250",
+        dietaryApproach: "balanced",
         targetBFRange: { min: 15, max: 20 },
-        forecastWeeks: 16,
-        adaptationFactor: 0.02,
-        adaptationCap: 0.20
+        heightCm: heightCm
       });
-      console.log("Unit Test Simulation Result:", testSim);
-    } catch (error) {
-      console.error("Unit Test Simulation Error:", error);
+      console.log("Test Case 3 (Moderate Activity, Balanced, Good):", JSON.stringify(testCase3, null, 2));
     }
+  
+    runTestCases();
+  
+    // Ensure the fat goal dropdown is populated on page load with the default gender
+    document.addEventListener("DOMContentLoaded", function() {
+      const defaultGender = document.querySelector('input[name="gender"]:checked').value;
+      populateGoalBodyFatOptions(defaultGender);
+    });
+    
   })();
   

@@ -20,8 +20,8 @@
     />
     <link rel="stylesheet" href="../styles.css" />
     <link rel="stylesheet" href="calc.css" />
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js with defer for safe loading -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <!-- Inline CSS for Modals and Buttons -->
     <style>
       .modal-overlay {
@@ -47,414 +47,416 @@
     </style>
   </head>
   <body>
-     <!-- Unified Navigation -->
-  <nav class="nav-wrapper bg-white shadow">
-    <div class="container mx-auto flex items-center justify-between py-4">
-      <!-- Logo -->
-      <a href="/index.html">
-        <img src="/assets/logo_400px_wide.png" alt="Yutori Labs" class="logo h-10" />
-      </a>
-      <!-- Hamburger Icon for mobile -->
-      <button id="navToggle" class="md:hidden focus:outline-none">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-            d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-      <!-- Desktop Navigation Menu -->
-      <ul id="navMenu" class="hidden md:flex space-x-6">
-        <li><a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a></li>
-        <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">JSON Editor</a></li>
-        <li><a href="/calc/calc.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
-        <li><a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Fitness AI</a></li>
-        <li><a href="/protocols/protocols.html" class="text-gray-800 hover:text-gray-600">Protocols</a></li>
+    <noscript>
+      <div class="bg-red-100 text-red-700 p-4 text-center">
+        This calculator requires JavaScript to run. Please enable JavaScript in your browser.
+      </div>
+    </noscript>
+
+    <!-- Unified Navigation -->
+    <nav class="nav-wrapper bg-white shadow">
+      <div class="container mx-auto flex items-center justify-between py-4">
+        <!-- Logo -->
+        <a href="/index.html">
+          <img src="/assets/logo_400px_wide.png" alt="Yutori Labs" class="logo h-10" />
+        </a>
+        <!-- Hamburger Icon for mobile -->
+        <button id="navToggle" class="md:hidden focus:outline-none" aria-label="Toggle Navigation" aria-controls="navMenuMobile">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <!-- Desktop Navigation Menu -->
+        <ul id="navMenu" class="hidden md:flex space-x-6">
+          <li><a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a></li>
+          <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">JSON Editor</a></li>
+          <li><a href="/calc/calc.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
+          <li><a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Fitness AI</a></li>
+          <li><a href="/protocols/protocols.html" class="text-gray-800 hover:text-gray-600">Protocols</a></li>
+        </ul>
+      </div>
+      <!-- Mobile Navigation Menu -->
+      <ul id="navMenuMobile" class="md:hidden hidden px-4 pb-4">
+        <li class="py-1"><a href="/index.html" class="block text-gray-800 hover:text-gray-600">Home</a></li>
+        <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800 hover:text-gray-600">JSON Editor</a></li>
+        <li class="py-1"><a href="/calc/calc.html" class="block text-gray-800 hover:text-gray-600">Calculator</a></li>
+        <li class="py-1"><a href="/chat/chat.html" class="block text-gray-800 hover:text-gray-600">Fitness AI</a></li>
+        <li class="py-1"><a href="/protocols/protocols.html" class="block text-gray-800 hover:text-gray-600">Protocols</a></li>
       </ul>
-    </div>
-    <!-- Mobile Navigation Menu -->
-    <ul id="navMenuMobile" class="md:hidden hidden px-4 pb-4">
-      <li class="py-1"><a href="/index.html" class="block text-gray-800 hover:text-gray-600">Home</a></li>
-      <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800 hover:text-gray-600">JSON Editor</a></li>
-      <li class="py-1"><a href="/calc/calc.html" class="block text-gray-800 hover:text-gray-600">Calculator</a></li>
-      <li class="py-1"><a href="/chat/chat.html" class="block text-gray-800 hover:text-gray-600">Fitness</a></li>
-      <li class="py-1"><a href="/protocols/protocols.html" class="block text-gray-800 hover:text-gray-600">Protocols</a></li>
-    </ul>
-  </nav>
+    </nav>
+
     <!-- Hero Section -->
     <section class="hero-section py-10">
       <div class="container mx-auto">
         <div class="hero-content">
-           <h1 class="hero-title text-4xl font-bold text-left">Body Composition Calculator</h1>
+          <h1 class="hero-title text-4xl font-bold text-left">Body Composition Calculator</h1>
           <p class="hero-subtitle mt-4 text-lg text-left">Build your science-informed weight loss plan.</p>
         </div>
       </div>
     </section>
 
-    
-
+    <!-- Calculator Section Wrapped in a Form for Better Semantics -->
     <section id="calculator" class="projects-section">
       <div class="container">
+        <form id="calculatorForm" novalidate>
+          <!-- Optional Global Error Container -->
+          <div id="globalErrorContainer" role="alert" class="hidden text-red-500 mb-4"></div>
 
+          <!-- STEP 1: Your Information (Merged Inputs) -->
+          <div class="wizard-step" id="step1" style="display: block;">
+            <h2 class="section-title">Step 1: Build Your Profile</h2>
 
-        <!-- STEP 1: Your Information (Merged Inputs) -->
-        <div class="wizard-step" id="step1" style="display: block;">
-          <h2 class="section-title">
-            Step 1: Build Your Profile
-          </h2>
-          
+            <h3 class="text-lg font-semibold mb-2">Welcome!</h3>
+            <div class="indented-section ml-6">
+              <p>
+                Enter your age, gender, weight, body fat percentage, and height. This basic info is your starting point for creating a plan that’s uniquely yours. In Step 2, you'll fine-tune your journey by choosing your dietary approach, activity level, calorie deficit, and target fat range.
+              </p>
+              <p><strong>Let's get started!</strong></p>
+            </div>
 
-          <h3 class="text-lg font-semibold mb-2">Welcome!</h3>
-          <div class="indented-section" style="margin-left: 22px;">
-            <p>
-              Enter your age, gender, weight, body fat percentage, and height. This basic info is your starting point for creating a plan that’s uniquely yours. In Step 2, you'll fine-tune your journey by choosing your dietary approach, activity level, calorie deficit, and target fat range.
-            </p>
-            <p><strong>Let's get started!</strong></p>
-          </div>
-
-          <h3 class="text-lg font-semibold mb-2">About You</h3>
-          <div class="indented-section" style="margin-left: 22px;">
-            <div class="mb-4">
-              <label>Gender (assigned at birth):</label>
-              <div class="radio-group">
-                <label>
-                  <input type="radio" name="gender" value="male" id="radioMale" checked />
-                  Male
-                </label>
-                <label>
-                  <input type="radio" name="gender" value="female" id="radioFemale" />
-                  Female
-                </label>
-              </div>
-
+            <h3 class="text-lg font-semibold mb-2">About You</h3>
+            <div class="indented-section ml-6">
               <div class="mb-4">
-                <label>Age (18 to 75):</label>
+                <label for="radioMale">Gender (assigned at birth):</label>
+                <div class="radio-group">
+                  <label>
+                    <input type="radio" name="gender" value="male" id="radioMale" checked />
+                    Male
+                  </label>
+                  <label>
+                    <input type="radio" name="gender" value="female" id="radioFemale" />
+                    Female
+                  </label>
+                </div>
+              </div>
+              <div class="mb-4">
+                <label for="ageInput">Age (18 to 75):</label>
                 <input
                   type="number"
                   id="ageInput"
+                  name="age"
                   min="18"
                   max="75"
+                  required
                   class="mb-2"
                   placeholder="e.g., 18 to 75"
                 />
               </div>
             </div>
-          </div>
 
-          <h3 class="text-lg font-semibold mb-1">Your Body</h3>
-          <div class="indented-section" style="margin-left: 22px;">
-            <div class="mb-4">
-              <label class="block">Select Units (pounds or kilograms):</label>
-              <div class="radio-group">
-                <label>
-                  <input type="radio" name="unit" value="lbs" id="radioLbs" checked />
-                  lbs/inches
-                </label>
-                <label>
-                  <input type="radio" name="unit" value="kg" id="radioKg" />
-                  kg/cm
-                </label>
+            <h3 class="text-lg font-semibold mb-1">Your Body</h3>
+            <div class="indented-section ml-6">
+              <div class="mb-4">
+                <label class="block">Select Units (pounds or kilograms):</label>
+                <div class="radio-group">
+                  <label>
+                    <input type="radio" name="unit" value="lbs" id="radioLbs" checked />
+                    lbs/inches
+                  </label>
+                  <label>
+                    <input type="radio" name="unit" value="kg" id="radioKg" />
+                    kg/cm
+                  </label>
+                </div>
+              </div>
+              <div class="mb-4">
+                <label for="heightInput">Height (in inches or cm):</label>
+                <input
+                  type="number"
+                  id="heightInput"
+                  name="height"
+                  required
+                  class="mb-2"
+                  placeholder="e.g., 70 in or 178 cm"
+                />
+              </div>
+              <div class="mb-4">
+                <label for="totalWeightInput">Total Weight:</label>
+                <input
+                  type="number"
+                  id="totalWeightInput"
+                  name="weight"
+                  required
+                  class="mb-2"
+                  placeholder="e.g., pounds or kilograms"
+                />
+              </div>
+              <div class="mb-4">
+                <label for="bodyFatPctInput">Body Fat (%):</label>
+                <input
+                  type="number"
+                  id="bodyFatPctInput"
+                  name="bodyFat"
+                  step="0.1"
+                  required
+                  class="mb-2"
+                  placeholder="e.g., 25 for 25% body fat"
+                />
+              </div>
+              <div class="wizard-buttons">
+                <p>Tap <strong>Next</strong> to enter your goals!</p>
+                <button type="button" class="btn" data-next-step>Next</button>
               </div>
             </div>
-            <div class="mb-4">
-              <label>Height (in inches or cm):</label>
-              <input
-                type="number"
-                id="heightInput"
-                class="mb-2"
-                placeholder="e.g., 70 in or 178 cm"
-              />
+          </div>
+
+          <!-- STEP 2: Goals & Activity -->
+          <div class="wizard-step" id="step2">
+            <h2 class="section-title">Step 2: Tailor Your Weight Loss Strategy</h2>
+            <p>
+              Now it's time to fine-tune your strategy. In this step, you'll select how you want to eat and move—choosing your dietary approach, activity level, and calorie deficit—and set your target fat range.
+            </p>
+            <h3 class="text-lg font-semibold mb-2">Nutrition &amp; Fitness Goals</h3>
+            <div class="indented-section ml-6">
+              <!-- Dietary Approach -->
+              <label class="inline-flex items-center">
+                <span>Dietary Approach:</span>
+                <a href="#" data-open-modal="dietaryApproachModal" class="ml-1" aria-label="More Info on Dietary Approach">
+                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                </a>
+              </label>
+              <div class="radio-group mb-4">
+                <label>
+                  <input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" checked />
+                  Low-Carb
+                </label>
+                <label>
+                  <input type="radio" name="dietaryApproach" value="high-protein" id="highProtein" />
+                  High-Protein
+                </label>
+                <label>
+                  <input type="radio" name="dietaryApproach" value="balanced" id="balancedMacros" />
+                  Balanced
+                </label>
+              </div>
+
+              <!-- Activity Info -->
+              <label class="inline-flex items-center">
+                <span>Daily Activity Level:</span>
+                <a href="#" data-open-modal="activityLevelModal" class="ml-1" aria-label="More Info on Activity Level">
+                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                </a>
+              </label>
+              <select id="activityLevelSelect" name="activity" class="mb-4" required>
+                <option value="1.2">Sedentary (1.2 x RMR ≈ TDEE)</option>
+                <option value="1.375">Light (1.375 x RMR ≈ TDEE)</option>
+                <option value="1.55" selected>Moderate (1.55 x RMR ≈ TDEE)</option>
+                <option value="1.725">Very Active (1.725 x RMR ≈ TDEE)</option>
+                <option value="1.9">Extremely Active (1.9 x RMR ≈ TDEE)</option>
+              </select>
+
+              <!-- Calorie Deficit Info -->
+              <label class="inline-flex items-center">
+                <span>Daily Calorie Deficit:</span>
+                <a href="#" data-open-modal="calorieDeficitModal" class="ml-1" aria-label="More Info on Calorie Deficit">
+                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                </a>
+              </label>
+              <select id="dailyAdjustmentSelect" name="deficit" class="mb-4" required>
+                <option value="-250" selected>Slow Loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
+                <option value="-500">Moderate Loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
+                <option value="-750">Rapid Loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
+                <option value="-1000">Dangerous Loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
+              </select>
+
+              <!-- Fat % Goal -->
+              <label class="inline-flex items-center">
+                <span>Body Fat Goal %:</span>
+                <a href="#" data-open-modal="fatRangeModal" class="ml-1" aria-label="More Info on Fat% Range">
+                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                </a>
+              </label>
+    <!-- Fat % Goal in Step 2 -->
+<label class="inline-flex items-center">
+    <span>Body Fat Goal %:</span>
+    <a href="#" data-open-modal="fatRangeModal" class="ml-1" aria-label="More Info on Fat% Range">
+      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+    </a>
+  </label>
+  <select id="fatGoalCategorySelect" name="fatGoal" class="mb-4" required></select>
+  
             </div>
-            <div class="mb-4">
-              <label>Total Weight:</label>
-              <input
-                type="number"
-                id="totalWeightInput"
-                class="mb-2"
-                placeholder="e.g., pounds or kilograms"
-              />
-            </div>
-            <div class="mb-4">
-              <label>Body Fat (%):</label>
-              <input
-                type="number"
-                id="bodyFatPctInput"
-                step="0.1"
-                class="mb-2"
-                placeholder="e.g., 25 for 25% body fat"
-              />
-            </div>
+
             <div class="wizard-buttons">
-              <p>Tap <strong>Next</strong> to enter your goals!</p>
-              <button type="button" class="btn" data-next-step>Next</button>
+              <p>Tap <strong>Calculate</strong> to see your results!</p>
+              <button type="button" class="btn" data-prev-step>Back</button>
+              <button type="button" class="btn" id="calculateButton">Calculate</button>
             </div>
           </div>
-        </div>
 
-        <!-- STEP 2: Goals & Activity -->
-        <div class="wizard-step" id="step2">
-
-          <h2 class="section-title">
-            Step 2: Tailor Your Weight Loss Strategy
-          </h2>
-          
-          <p>
-            Now it's time to fine-tune your strategy. In this step, you'll select how you want to eat and move—choosing your dietary approach, activity level, and calorie deficit—and set your target fat range. These choices guide the calculator to adjust your calorie targets, macronutrient splits, and goal weight span, ensuring a plan that fits your lifestyle and supports safe, steady progress.
-          </p>
-          <h3 class="text-lg font-semibold mb-2">Nutrition &amp; Fitness Goals</h3>
-          <div class="indented-section" style="margin-left: 22px;">
-            <!-- Dietary Approach -->
-            <label class="inline-flex items-center whitespace-nowrap">
-              <span>Dietary Approach:</span>
-              <a href="#" data-open-modal="dietaryApproachModal" class="ml-1">
-                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-              </a>
-            </label>
-            <div class="radio-group mb-4">
-              <label>
-                <input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" checked />
-                Low-Carb
-              </label>
-              <label>
-                <input type="radio" name="dietaryApproach" value="high-protein" id="highProtein" />
-                High-Protein
-              </label>
-              <label>
-                <input type="radio" name="dietaryApproach" value="balanced" id="balancedMacros" />
-                Balanced
-              </label>
-            </div>
-
-            <!-- Activity Info -->
-            <label class="inline-flex items-center whitespace-nowrap">
-              <span>Daily Activity Level:</span>
-              <a href="#" data-open-modal="activityLevelModal" class="ml-1">
-                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-              </a>
-            </label>
-            <select id="activityLevelSelect" class="mb-4">
-              <option value="1.2">Sedentary (1.2 x RMR ≈ TDEE)</option>
-              <option value="1.375">Light (1.375 x RMR ≈ TDEE)</option>
-              <option value="1.55" selected>Moderate (1.55 x RMR ≈ TDEE)</option>
-              <option value="1.725">Very Active (1.725 x RMR ≈ TDEE)</option>
-              <option value="1.9">Extremely Active (1.9 x RMR ≈ TDEE)</option>
-            </select>
-
-            <!-- Calorie Deficit Info -->
-            <label class="inline-flex items-center whitespace-nowrap">
-              <span>Daily Calorie Deficit:</span>
-              <a href="#" data-open-modal="calorieDeficitModal" class="ml-1">
-                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-              </a>
-            </label>
-            <select id="dailyAdjustmentSelect" class="mb-4">
-              <option value="-250">Slow loss: (~250 cal/day ≈ 0.5 lb/week)</option>
-              <option value="-500" selected>Moderate loss: (~500 cal/day ≈ 1 lb/week)</option>
-              <option value="-750">Rapid loss: (~750 cal/day ≈ 1.5 lb/week)</option>
-              <option value="-1000">Aggressive loss: (~1,000+ cal/day ≈ 2 lb/week or more)</option>
-            </select>
-
-            <!-- Fat % Goal -->
-            <label class="inline-flex items-center whitespace-nowrap">
-              <span>Body Fat Goal %:</span>
-              <a href="#" data-open-modal="fatRangeModal" class="ml-1">
-                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-              </a>
-            </label>
-            <select id="fatGoalCategorySelect" class="mb-4">
-              <option value="dangerouslyLow">Dangerously Low: (~8% or under)</option>
-              <option value="excellent">Excellent: (~10–15%)</option>
-              <option value="good" selected>Good: (~15–20%)</option>
-              <option value="fair">Fair: (~20–25%)</option>
-              <option value="poor">Poor: (~25–30%)</option>
-              <option value="dangerouslyHigh">Excessive: (~30% or over)</option>
-            </select>
-          </div>
-
-          <div class="wizard-buttons">
-            <p>Tap <strong>Calculate</strong> to see your results!</p>
-            <button type="button" class="btn" data-prev-step>Back</button>
-            <button type="button" class="btn" id="calculateButton">Calculate</button>
-          </div>
-        </div>
-
-        <!-- STEP 3: Results -->
-        <div class="wizard-step" id="step3">
-          <div class="max-w-4xl mx-auto p-4">
-            <!-- 2×2 Grid: Current &amp; Goal Body Composition -->
-            <h2 class="section-title">Current Body Composition</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Settings Card (Left) -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">About You</h3>
-                <p>Here's a summary of your baseline personal metrics that informed these calculations.</p>
-                <ul class="space-y-1 text-sm">
-                  <li><strong>Goal:</strong> <span id="summaryWeightGoal">Lose Weight</span></li>
-                  <li><strong>Age:</strong> <span id="summaryAge">--</span></li>
-                  <li><strong>Gender:</strong> <span id="summaryGender">--</span></li>
-                  <li><strong>Dietary Approach:</strong> <span id="summaryDietApproach">--</span></li>
-                  <li><strong>Activity:</strong> <span id="summaryActivityLevel">--</span></li>
-                  <li><strong>Daily Calorie Deficit:</strong> <span id="summaryDailyAdj">--</span></li>
-                  <li><strong>Lean Goal:</strong> <span id="summaryLeanGoalPct">--</span></li>
-                </ul>
+          <!-- STEP 3: Results -->
+          <div class="wizard-step" id="step3">
+            <div class="max-w-4xl mx-auto p-4">
+              <!-- 2×2 Grid: Current &amp; Goal Body Composition -->
+              <h2 class="section-title">Current Body Composition</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Settings Card (Left) -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1">About You</h3>
+                  <p>Summary of your baseline metrics:</p>
+                  <ul class="space-y-1 text-sm">
+                    <li><strong>Gender:</strong> <span id="summaryGender">--</span></li>
+                    <li><strong>Age:</strong> <span id="summaryAge">--</span></li>
+                    <li><strong>Units:</strong> <span id="summaryUnits">--</span></li>
+                    <li><strong>Height:</strong> <span id="summaryHeight">--</span></li>
+                    <li><strong>Total Weight:</strong> <span id="summaryTotalWeight">--</span></li>
+                    <li><strong>Body Fat %:</strong> <span id="summaryBodyFatPct">--</span></li>
+                  </ul>
+                </div>
+                <!-- Current Composition Card (Right) -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
+                    Today's Composition
+                    <a href="#" data-open-modal="bodyCompModal" class="ml-1" aria-label="More Info on Body Composition">
+                      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                    </a>
+                  </h3>
+                  <p>Analysis based on your measurements:</p>
+                  <ul class="space-y-1 text-sm">
+                    <li><strong>Total Weight:</strong> <span id="currentWeightSpan">--</span></li>
+                    <li><strong>Weight from Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
+                    <li><strong>Weight from Fat:</strong> <span id="currentFatSpan">--</span></li>
+                    <li><strong>Current Body Fat %:</strong> <span id="currentBFpctSpan">--</span></li>
+                    <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
+                  </ul>
+                </div>
               </div>
-              <!-- Current Composition Card (Right) -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
-                  Today's Composition
-                  <a href="#" data-open-modal="bodyCompModal" class="ml-1">
-                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-                  </a>
-                </h3>
-                <p>Using your provided measurements and metrics, this analysis reflects your current body composition distribution and key physiological markers.</p>
-                <ul class="space-y-1 text-sm">
-                  <li><strong>Weight:</strong> <span id="currentWeightSpan">--</span></li>
-                  <li><strong>Fat Mass:</strong> <span id="currentFatSpan">--</span></li>
-                  <li><strong>Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
-                  <li><strong>BF%:</strong> <span id="currentBFpctSpan">--</span></li>
-                  <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
-                </ul>
-              </div>
-            </div>
 
-            <h2 class="section-title">Projected Body Composition</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Goal Card (Left) -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
-                  Projected Composition
-                  <a href="#" data-open-modal="goalRangeModal" class="ml-1">
-                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-                  </a>
-                </h3>
-                <p>
-                <ul class="space-y-1 text-sm">
-                  <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
-                  <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
-                  <li><strong>Lean Mass:</strong> <span id="goalLeanSpan">--</span></li>
-                  <li><strong>BF%:</strong> <span id="goalBFpctSpan">--</span></li>
-                  <li><strong>Category:</strong> <span id="goalBFcatSpan">--</span></li>
-                </ul>
+              <h2 class="section-title">Projected Body Composition</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Goal Card (Left) -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
+                    Projected Composition
+                    <a href="#" data-open-modal="goalRangeModal" class="ml-1" aria-label="More Info on Goal Range">
+                      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                    </a>
+                  </h3>
+                  <ul class="space-y-1 text-sm">
+                    <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
+                    <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
+                    <li><strong>Lean Mass:</strong> <span id="goalLeanSpan">--</span></li>
+                    <li><strong>BF%:</strong> <span id="goalBFpctSpan">--</span></li>
+                  </ul>
+                  <br>
+                  <div class="summary">
+                    <strong>Summary:</strong>
+                    <p>
+                      From your current weight of <span id="currentWeightInputSpan">--</span> and body fat % of <span id="bodyFatPctInputSpan">--</span>, you will lose <span id="totalWeightLossSpan">--</span> pounds of total weight, <span id="leanMassLossSpan">--</span> pounds of lean mass, and <span id="fatLossSpan">--</span> pounds of body fat. Your body fat % will be in the <span id="goalBFcatSpan">--</span> range.
+                    </p>
+                  </div>
+                  <div class="timeline">
+                    <strong>Timeline:</strong>
+                    <p>
+                      Based on your calorie deficit goal of <span id="calorieDeficitSpan">--</span> calories per day, you should lose <span id="weeklyWeightLossSpan">--</span> per week. You will reach your goal weight between <span id="dateA">--</span> and <span id="dateB">--</span>.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <!-- Nutrition Card (Right) -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
-                  Calories & Macros
-                  <a href="#" data-open-modal="calorieMacroModal" class="ml-1">
-                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-                  </a>
-                </h3>
-                <p>Your personalized calorie and macronutrient targets have been calibrated to optimize progress toward your fitness goal.</p>
-                <ul class="space-y-1 text-sm">
-                  <li><strong>BMR:</strong> <span id="bmrSpan">--</span></li>
-                  <li><strong>TDEE:</strong> <span id="tdeeSpan">--</span></li>
-                  <li>
-                    <strong>Final Cals:</strong> <span id="finalCalsSpan">--</span>
-                    (<span id="deficitOrSurplusLine">--</span>)
-                  </li>
-                  <li><strong>Carbs:</strong> <span id="carbsSpan">--</span></li>
-                  <li><strong>Protein:</strong> <span id="proteinSpan">--</span></li>
-                  <li><strong>Fat:</strong> <span id="fatSpan">--</span></li>
-                  <li id="macroHealthComment" class="italic">--</li>
-                </ul>
+              
+                <!-- Nutrition Card (Right) -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
+                    Calories &amp; Macros
+                    <a href="#" data-open-modal="calorieMacroModal" class="ml-1" aria-label="More Info on Calories &amp; Macros">
+                      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                    </a>
+                  </h3>
+                  <p>Your personalized calorie and macronutrient targets:</p>
+                  <ul class="space-y-1 text-sm">
+                    <li><strong>BMR:</strong> <span id="bmrSpan">--</span></li>
+                    <li><strong>TDEE:</strong> <span id="tdeeSpan">--</span></li>
+                    <li>
+                      <strong>Final Cals:</strong> <span id="finalCalsSpan">--</span>
+                      (<span id="deficitOrSurplusLine">--</span>)
+                    </li>
+                    <li><strong>Carbs:</strong> <span id="carbsSpan">--</span></li>
+                    <li><strong>Protein:</strong> <span id="proteinSpan">--</span></li>
+                    <li><strong>Fat:</strong> <span id="fatSpan">--</span></li>
+                    <li id="macroHealthComment" class="italic">--</li>
+                  </ul>
+                </div>
               </div>
-            </div>
 
-            <!-- Charts: Stacked Vertically -->
-            <h2 class="section-title">
-              Charts
-              <a href="#" data-open-modal="forecastModal" class="ml-1">
-                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block align-middle" />
-              </a>
-            </h2>
-            
-            <div class="grid grid-cols-1 gap-6">
-              <!-- Weight Loss Trajectory Chart -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">Weight Loss Trajectory</h3>
-                <h4 class="text-sm font-medium text-gray-600 mb-2">Projected Weight Over Time</h4>
-                <canvas id="weightChart" class="w-full h-64"></canvas>
+              <!-- Charts Section -->
+              <h2 class="section-title">
+                Charts
+                <a href="#" data-open-modal="forecastModal" class="ml-1" aria-label="More Info on Forecast Charts">
+                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                </a>
+              </h2>
+              <div class="grid grid-cols-1 gap-6">
+                <!-- Weight Loss Trajectory Chart -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1">Weight Loss Trajectory</h3>
+                  <h4 class="text-sm font-medium text-gray-600 mb-2">Projected Weight Over Time</h4>
+                  <canvas id="weightChart" class="w-full h-64"></canvas>
+                </div>
+                <!-- Calorie Forecast Chart -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1">Calorie Forecast</h3>
+                  <h4 class="text-sm font-medium text-gray-600 mb-2">Daily Calorie Target</h4>
+                  <canvas id="calorieChart" class="w-full h-64"></canvas>
+                </div>
+                <!-- Macro Trajectory Chart -->
+                <div class="bg-white shadow rounded p-4">
+                  <h3 class="text-xl font-semibold mb-1">Macro Trajectory</h3>
+                  <h4 class="text-sm font-medium text-gray-600 mb-2">Protein, Carbs &amp; Fat (g)</h4>
+                  <canvas id="macroChart" class="w-full h-64"></canvas>
+                </div>
               </div>
-              <!-- Calorie Forecast Chart -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">Calorie Forecast</h3>
-                <h4 class="text-sm font-medium text-gray-600 mb-2">Daily Calorie Target</h4>
-                <canvas id="calorieChart" class="w-full h-64"></canvas>
-              </div>
-              <!-- Macro Trajectory Chart -->
-              <div class="bg-white shadow rounded p-4">
-                <h3 class="text-xl font-semibold mb-1">Macro Trajectory</h3>
-                <h4 class="text-sm font-medium text-gray-600 mb-2">Protein, Carbs &amp; Fat (g)</h4>
-                <canvas id="macroChart" class="w-full h-64"></canvas>
-              </div>
-            </div>
 
-            <!-- Bottom Buttons -->
-            <div class="mt-6 text-left">
-              <button class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn">
-                Back
-              </button>
-              <button class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">
-                Disclaimer
-              </button>
+              <!-- Bottom Buttons -->
+              <div class="mt-6 text-left">
+                <button type="button" class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn" data-prev-step>
+                  Back
+                </button>
+                <button type="button" class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">
+                  Disclaimer
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </section>
 
-    <div class="modal-overlay" id="bodyCompModal">
+    <!-- Modals with ARIA roles for accessibility -->
+    <div class="modal-overlay" id="bodyCompModal" role="dialog" aria-modal="true" aria-labelledby="bodyCompModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Body Composition Details</h3>
+        <h3 id="bodyCompModalTitle" class="text-2xl font-bold mb-2">Body Composition Details</h3>
         <div class="modal-body">
           <p>
-            Your body composition is more than just numbers—it’s a personalized snapshot of your current status. Here you can see your total weight, fat mass, lean mass, and body fat percentage, all of which form the blueprint for setting realistic, science-based fitness goals.
+            Your body composition is more than just numbers—it’s a snapshot of your current status. Here you can see your weight, fat mass, lean mass, and body fat percentage.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="bodyCompModal">Close</button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="forecastModal">
+    <div class="modal-overlay" id="forecastModal" role="dialog" aria-modal="true" aria-labelledby="forecastModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Forecast Charts Explanation</h3>
+        <h3 id="forecastModalTitle" class="text-2xl font-bold mb-2">Forecast Charts Explanation</h3>
         <div class="modal-body">
           <p>
-            Your forecast charts provide a dynamic preview of your personalized journey. They map out your predicted weight loss trajectory, set daily calorie targets, and outline your macronutrient needs over time. As your body adapts metabolically, these charts update in real time—ensuring every step of your plan remains aligned with your evolving goals.
+            Your forecast charts provide a dynamic preview of your personalized journey, mapping your predicted weight loss trajectory, daily calorie targets, and macronutrient needs over time.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="forecastModal">Close</button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="explanationModal">
+    <div class="modal-overlay" id="explanationModal" role="dialog" aria-modal="true" aria-labelledby="explanationModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">How Are These Figures Calculated?</h3>
+        <h3 id="explanationModalTitle" class="text-2xl font-bold mb-2">How Are These Figures Calculated?</h3>
         <div class="modal-body">
           <p>
-            Our system tailors your numbers using a blend of your personal data and proven scientific equations. Here’s the breakdown:
+            Our system tailors your numbers using your personal data and scientific equations. For example, your RMR is calculated using the Mifflin–St Jeor equation.
           </p>
           <ul class="list-disc pl-6 mb-4">
-            <li>
-              <strong>Personal Settings:</strong> Your total weight, height, age, and gender form the basis of your calculation.
-            </li>
-            <li>
-              <strong>Resting Metabolic Rate (RMR):</strong> We calculate your RMR using the Mifflin–St Jeor equation:
-              <ul class="list-disc pl-6 mt-2">
-                <li>
-                  <em>For males: (10 × weight in kg) + (6.25 × height in cm) – (5 × age) + 5</em>
-                </li>
-                <li>
-                  <em>For females: (10 × weight in kg) + (6.25 × height in cm) – (5 × age) – 161</em>
-                </li>
-              </ul>
-            </li>
-            <li>
-              Your Total Daily Energy Expenditure (TDEE) is determined by multiplying your RMR by an activity multiplier that reflects your lifestyle.
-            </li>
-            <li>
-              Finally, your goal weight range is set by applying your target body fat percentages, ensuring a realistic, personalized roadmap for progress.
-            </li>
+            <li><strong>For males:</strong> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) + 5</li>
+            <li><strong>For females:</strong> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) – 161</li>
           </ul>
         </div>
         <button class="btn close-modal-btn" data-close-modal="explanationModal">Close</button>
@@ -462,37 +464,17 @@
     </div>
 
     <!-- Explanation Modal for Goal Range -->
-    <div class="modal-overlay" id="goalRangeModal">
+    <div class="modal-overlay" id="goalRangeModal" role="dialog" aria-modal="true" aria-labelledby="goalRangeModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Goal Range Explanation</h3>
+        <h3 id="goalRangeModalTitle" class="text-2xl font-bold mb-2">Goal Range Explanation</h3>
         <div class="modal-body">
           <p>
-            Your goal weight range isn’t set by chance—it’s determined by your body’s unique composition. We start by calculating your lean mass, which is your total weight multiplied by the fraction of your body that isn’t fat:
+            Your goal weight range is determined by calculating your lean mass and applying your target body fat percentages:
           </p>
           <ul class="list-disc pl-6 mb-4">
-            <li>
-              <strong>Lean Mass = Total Weight × (1 – Body Fat Percentage)</strong>
-            </li>
-          </ul>
-          <p>
-            Then, using your target body fat percentages, we fine-tune your ideal weight range with these formulas:
-          </p>
-          <ul class="list-disc pl-6 mb-4">
-            <li>
-              <em>Goal Weight Low = Lean Mass ÷ (1 – Lower Target BF%)</em>
-            </li>
-            <li>
-              <em>Goal Weight High = Lean Mass ÷ (1 – Higher Target BF%)</em>
-            </li>
-          </ul>
-          <p>
-            For example, a 72" athletic male user might have the following stats at a "Good" body fat%:
-          </p>
-          <ul class="list-disc list-inside mb-4">
-            <li><strong>Weight:</strong> 218.35 lbs – 232.00 lbs</li>
-            <li><strong>Fat Mass:</strong> 32.75 lbs – 46.40 lbs</li>
-            <li><strong>Lean Mass:</strong> 185.60 lbs</li>
-            <li><strong>Body Fat Percentage:</strong> 15.0% – 20.0% (GOOD)</li>
+            <li><strong>Lean Mass = Total Weight × (1 – Body Fat Percentage)</strong></li>
+            <li><em>Goal Weight Low = Lean Mass ÷ (1 – Lower Target BF%)</em></li>
+            <li><em>Goal Weight High = Lean Mass ÷ (1 – Higher Target BF%)</em></li>
           </ul>
         </div>
         <button class="btn close-modal-btn" data-close-modal="goalRangeModal">Close</button>
@@ -500,46 +482,22 @@
     </div>
 
     <!-- Explanation Modal for Calories &amp; Macros -->
-    <div class="modal-overlay" id="calorieMacroModal">
+    <div class="modal-overlay" id="calorieMacroModal" role="dialog" aria-modal="true" aria-labelledby="calorieMacroModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Calories &amp; Macronutrients Explanation</h3>
+        <h3 id="calorieMacroModalTitle" class="text-2xl font-bold mb-2">Calories &amp; Macronutrients Explanation</h3>
         <div class="modal-body">
           <p>
-            Your Resting Metabolic Rate (RMR) isn’t just a static figure—it’s a personalized reflection of your body's baseline energy needs. It is sensitive to factors such as age, gender, height, and body composition, ensuring that the calculated calorie baseline is tailored to you.
+            Your RMR is calculated using your personal measurements. Your TDEE is determined by multiplying your RMR by an activity multiplier, then adjusted by your calorie deficit.
           </p>
-          <br />
           <ul class="list-disc pl-6 mb-4">
-            <li>
-              <em>For males: (10 × weight in kg) + (6.25 × height in cm) – (5 × age) + 5</em>
-            </li>
-            <li>
-              <em>For females: (10 × weight in kg) + (6.25 × height in cm) – (5 × age) – 161</em>
-            </li>
-          </ul>
-          <br />
-          <p>
-            Next, your Total Daily Energy Expenditure (TDEE) is finely tuned by multiplying your RMR by an activity multiplier that reflects your lifestyle, after which a chosen calorie deficit is applied.
-          </p>
-          <br />
-          <p>
-            We then recalibrate your macronutrient targets using a dynamic effective energy density formula:
-          </p>
-          <br />
-          <ul class="list-disc pl-6 mb-4">
-            <li>
-              <em>E_eff = L × 760 + (1 – L) × 3500</em>
-              <br />
-              <span class="text-sm">
-                where <em>L</em> is the fraction of weight loss that is lean tissue.
-              </span>
-            </li>
-            <br />
+            <li><em>For males:</em> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) + 5</li>
+            <li><em>For females:</em> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) – 161</li>
           </ul>
           <p>
-            For more in-depth details on determining your ideal calorie needs,
-            <a href="https://www.verywellhealth.com/how-many-calories-do-i-need-8417837" target="_blank" rel="noopener noreferrer">
-              click here
-            </a>.
+            Your macronutrient targets are then computed based on a dynamic energy density formula.
+          </p>
+          <p>
+            For more details, please consult the provided link.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="calorieMacroModal">Close</button>
@@ -547,31 +505,29 @@
     </div>
 
     <!-- Other Modals -->
-    <!-- Removed stray weightGoalModal -->
-
-    <div class="modal-overlay" id="dietaryApproachModal">
+    <div class="modal-overlay" id="dietaryApproachModal" role="dialog" aria-modal="true" aria-labelledby="dietaryApproachModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Dietary Approach</h3>
+        <h3 id="dietaryApproachModalTitle" class="text-2xl font-bold mb-2">Dietary Approach</h3>
         <div class="modal-body">
           <div class="option">
             <p>
-              Your dietary choice doesn’t just shape your meal plan—it fine-tunes the calculator’s predictions, adjusting macronutrient targets and lean mass preservation to map your unique journey.
+              Your dietary choice fine-tunes the calculator’s predictions and macronutrient targets.
             </p>
             <h4 class="text-xl font-semibold">Low-Carb</h4>
             <p>
-              When you choose low-carb, you’re embracing whole foods by cutting sugars and refined grains. Our calculator then shifts its gears—boosting your protein and fat targets (with a 25% carb and 40% protein allocation) and adjusting for a higher lean mass loss rate. Your body’s blueprint is recalibrated to burn fat for fuel while protecting muscle in a calorie deficit.
+              Emphasizes higher protein and fat targets with reduced carbohydrate allocation.
             </p>
           </div>
           <div class="option">
             <h4 class="text-xl font-semibold">High-Protein</h4>
             <p>
-              A high-protein path gives your body the building blocks it needs. The calculator honors this choice by allocating up to 45% of your calories to protein and reducing the lean mass loss rate. This means more calories go toward muscle repair and recovery, ensuring that while you lose weight, you keep what matters most.
+              Allocates up to 45% of calories to protein, reducing lean mass loss.
             </p>
           </div>
           <div class="option">
             <h4 class="text-xl font-semibold">Balanced</h4>
             <p>
-              The balanced approach is a middle road—a mix of 40% carbs, 30% protein, and 30% fats. It nudges your body toward a steady, sustainable energy flow while setting a moderate rate of lean mass loss. This option blends the best of both worlds, aligning your calorie deficit with a natural, wholesome eating philosophy.
+              A middle road with balanced macronutrient distribution.
             </p>
           </div>
         </div>
@@ -579,93 +535,61 @@
       </div>
     </div>
 
-    <div class="modal-overlay" id="activityLevelModal">
+    <div class="modal-overlay" id="activityLevelModal" role="dialog" aria-modal="true" aria-labelledby="activityLevelModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Activity Level</h3>
+        <h3 id="activityLevelModalTitle" class="text-2xl font-bold mb-2">Activity Level</h3>
         <div class="modal-body">
           <p>
-            Think of your body as a well-tuned engine. When you select your activity level, you’re telling our calculator how hard your engine works.
-          </p>
-          <br />
-          <p>
-            We multiply your Resting Metabolic Rate by your activity factor to determine your Total Daily Energy Expenditure—the true fuel your body uses each day. In other words, a higher activity level means more calories burned, setting a higher calorie target even in a deficit. This adjustment ensures your plan perfectly matches the rhythm of your lifestyle.
+            Your activity level multiplies your RMR to determine your TDEE.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="activityLevelModal">Exit</button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="calorieDeficitModal">
+    <div class="modal-overlay" id="calorieDeficitModal" role="dialog" aria-modal="true" aria-labelledby="calorieDeficitModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Calorie Deficit</h3>
+        <h3 id="calorieDeficitModalTitle" class="text-2xl font-bold mb-2">Calorie Deficit</h3>
         <div class="modal-body">
           <p>
-            Choosing a calorie deficit means you’re eating fewer calories than you burn, nudging your body to use stored energy for weight loss.
-          </p>
-          <br />
-          <p>
-            Our calculator subtracts this deficit from your total daily energy needs to set a personalized target. But be careful—if you cut calories too steeply or for too long, your body may slow its metabolism to protect itself.
-          </p>
-          <br />
-          <p>
-            We simulate this metabolic adaptation so you get a realistic, balanced plan that supports safe, steady progress.
+            Selecting a calorie deficit tells the calculator to subtract calories from your TDEE.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="calorieDeficitModal">Exit</button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="fatRangeModal">
+    <div class="modal-overlay" id="fatRangeModal" role="dialog" aria-modal="true" aria-labelledby="fatRangeModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Fat% Range</h3>
+        <h3 id="fatRangeModalTitle" class="text-2xl font-bold mb-2">Fat% Range</h3>
         <div class="modal-body">
           <p>
-            Choosing a fat range sets your body composition goal. Our calculator uses your lean mass and the range you pick to determine your ideal weight span.
+            Your target fat percentage helps tailor your ideal weight span.
           </p>
-          <br />
-          <p>Here’s what each range means:</p>
-          <br />
           <ul class="list-disc list-inside">
-            <li>
-              <strong>Dangerously Low (8–10%):</strong> Extremely lean, common in elite athletes—but may be unsustainable for most.
-            </li>
-            <li>
-              <strong>Excellent (10–15%):</strong> A very fit and lean target, great for performance and aesthetics.
-            </li>
-            <li>
-              <strong>Good (15–20%):</strong> A balanced range for overall health and everyday energy.
-            </li>
-            <li>
-              <strong>Fair (20–25%):</strong> A moderate goal, suggesting room for improvement while staying realistic.
-            </li>
-            <li>
-              <strong>Poor (25–30%):</strong> Higher body fat that may need extra attention for better health.
-            </li>
-            <li>
-              <strong>Excessive (30–35%):</strong> Levels that could risk your health if maintained.
-            </li>
+            <li><strong>Dangerously Low:</strong> 8–10%</li>
+            <li><strong>Excellent:</strong> 10–15%</li>
+            <li><strong>Good:</strong> 15–20%</li>
+            <li><strong>Fair:</strong> 20–25%</li>
+            <li><strong>Poor:</strong> 25–30%</li>
+            <li><strong>Excessive:</strong> 30–35%</li>
           </ul>
-          <br />
-          <p>
-            This selection helps our calculator tailor your weight-loss plan, ensuring your goals match a safe and sustainable body composition.
-          </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="fatRangeModal">Exit</button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="disclaimerModal">
+    <div class="modal-overlay" id="disclaimerModal" role="dialog" aria-modal="true" aria-labelledby="disclaimerModalTitle">
       <div class="modal-content">
-        <h3 class="text-2xl font-bold mb-2">Disclaimer</h3>
+        <h3 id="disclaimerModalTitle" class="text-2xl font-bold mb-2">Disclaimer</h3>
         <div class="modal-body">
           <p>
-            Remember, this journey is as unique as the garden you tend. Our estimates are rooted in today’s research, but they aren’t a one-size-fits-all prescription. Just as every harvest is different, your body may respond in its own time. For guidance that’s as personal as your own path, consult a healthcare professional.
+            These calculations are estimates and should not replace professional medical advice.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="disclaimerModal">Exit</button>
       </div>
     </div>
-
 
     <!-- Footer Section -->
     <footer class="footer-section">
@@ -674,19 +598,13 @@
           <a href="/legal/privacy.html" class="text-orange-600">Privacy Policy</a>
           <br />
           <a href="/legal/terms.html" class="text-orange-600">Terms of Service</a>
-          <br />
-          <br />
+          <br /><br />
           <p>&copy; 2025 Yutori Labs, LLC</p>
         </div>
       </div>
     </footer>
-  
-          
-          
-          <p>&copy; 20025 Yutori Labs, LLC</p>
-        </div>
-      </div>
-    </footer>
-    
+
+    <!-- Updated script reference with defer -->
+    <script src="/calc/calc.js" defer></script>
   </body>
 </html>
