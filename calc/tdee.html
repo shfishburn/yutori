@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BMR &amp; TDEE Calculator</title>
+  <style>
+    /* Basic Reset & Typography */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    h1, h2 {
+      margin: 0 0 10px;
+    }
+    p {
+      margin: 10px 0;
+    }
+    /* Wizard Container & Steps */
+    #wizard {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .wizard-step {
+      display: none;
+    }
+    .wizard-step.active {
+      display: block;
+    }
+    .step-buttons {
+      margin-top: 15px;
+    }
+    .step-buttons button {
+      padding: 8px 12px;
+      margin-right: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+    .step-buttons button:hover {
+      background-color: #0056b3;
+    }
+    .step-buttons button[disabled] {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    /* Progress Bar */
+    #progress-bar {
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    #progress {
+      height: 100%;
+      width: 0;
+      background: #007bff;
+      transition: width 0.3s;
+    }
+    #progress-text {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    /* Form Inputs */
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input[type="number"],
+    select {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px;
+      margin-bottom: 5px;
+      box-sizing: border-box;
+    }
+    .tooltip {
+      font-size: 0.9rem;
+      color: #555;
+      margin-left: 5px;
+      cursor: help;
+    }
+    /* Exercise Cards for Step 4 */
+    .exercise-card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .exercise-card h4 {
+      margin: 0 0 5px;
+    }
+    .exercise-card .remove-btn {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+    .exercise-card .calc-cals {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+    /* Total Daily Burn Summary */
+    #totalExerciseBurn {
+      font-weight: bold;
+      margin-top: 10px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+    /* Error Styling */
+    .error-message {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 3px;
+    }
+    .error-input {
+      border-color: red;
+      background-color: #ffe6e6;
+    }
+    /* Results Card */
+    .results-card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fff;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    /* Unit Test Results */
+    #testResults {
+      background: #eef;
+      border: 1px solid #99f;
+      padding: 10px;
+      margin-top: 20px;
+      font-family: monospace;
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+      input[type="number"], select {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>BMR &amp; TDEE Calculator</h1>
+    <p>
+      Use our wizard to determine your caloric needs.
+      <span class="tooltip" title="BMR: Basal Metabolic Rate; TDEE: Total Daily Energy Expenditure; MET: Metabolic Equivalent">[?]</span>
+    </p>
+    <!-- Progress Indicators -->
+    <div id="progress-text">Step 1 of 4</div>
+    <div id="progress-bar">
+      <div id="progress"></div>
+    </div>
+    <div id="wizard">
+      <!-- Step 1: Body Composition & Unit Selection -->
+      <section class="wizard-step active" data-step="1">
+        <h2>Step 1: Body Composition</h2>
+        <label for="unitSystem">Unit System:</label>
+        <select id="unitSystem" aria-label="Select Unit System">
+          <option value="imperial" selected>Imperial</option>
+          <option value="metric">Metric</option>
+        </select>
+        <!-- Imperial Weight -->
+        <div id="imperialWeight">
+          <label for="weightLb">Weight (lb):</label>
+          <input type="number" id="weightLb" placeholder="e.g., 207" step="0.1" min="0" />
+          <div id="error-weightLb" class="error-message"></div>
+        </div>
+        <!-- Metric Weight -->
+        <div id="metricWeight" style="display: none;">
+          <label for="weightKg">Weight (kg):</label>
+          <input type="number" id="weightKg" placeholder="e.g., 94" step="0.1" min="0" />
+          <div id="error-weightKg" class="error-message"></div>
+        </div>
+        <label for="bodyFat">
+          Body Fat %:
+          <span class="tooltip" title="If you provide a valid body-fat %, we use the Katch–McArdle formula; otherwise, we use Mifflin–St Jeor.">[?]</span>
+        </label>
+        <input type="number" id="bodyFat" placeholder="e.g., 17" step="0.1" min="0" max="100" />
+        <div id="error-bodyFat" class="error-message"></div>
+      </section>
+      <!-- Step 2: Mifflin–St Jeor Inputs -->
+      <section class="wizard-step" data-step="2">
+        <h2>Step 2: Mifflin–St Jeor Inputs</h2>
+        <label for="gender">Gender:</label>
+        <select id="gender" aria-label="Select Gender">
+          <option value="">--Select--</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <div id="error-gender" class="error-message"></div>
+        <label for="age">Age (years):</label>
+        <input type="number" id="age" placeholder="e.g., 62" step="1" min="0" />
+        <div id="error-age" class="error-message"></div>
+        <!-- Imperial Height -->
+        <div id="imperialHeight">
+          <label for="feetSelect">Height (Feet):</label>
+          <select id="feetSelect">
+            <option value="4">4 ft</option>
+            <option value="5" selected>5 ft</option>
+            <option value="6">6 ft</option>
+            <option value="7">7 ft</option>
+          </select>
+          <label for="inchSelect">Height (Inches):</label>
+          <select id="inchSelect">
+            <option value="0">0 in</option>
+            <option value="1">1 in</option>
+            <option value="2">2 in</option>
+            <option value="3">3 in</option>
+            <option value="4">4 in</option>
+            <option value="5">5 in</option>
+            <option value="6">6 in</option>
+            <option value="7">7 in</option>
+            <option value="8">8 in</option>
+            <option value="9">9 in</option>
+            <option value="10">10 in</option>
+            <option value="11">11 in</option>
+          </select>
+          <div id="error-imperialHeight" class="error-message"></div>
+        </div>
+        <!-- Metric Height -->
+        <div id="metricHeight" style="display: none;">
+          <label for="heightCm">Height (cm):</label>
+          <input type="number" id="heightCm" placeholder="e.g., 170" step="0.1" min="0" />
+          <div id="error-heightCm" class="error-message"></div>
+        </div>
+      </section>
+      <!-- Step 3: Occupational Activity -->
+      <section class="wizard-step" data-step="3">
+        <h2>Step 3: Occupational Activity</h2>
+        <label for="jobActivity">Activity Level:</label>
+        <select id="jobActivity" aria-label="Select Occupational Activity Level">
+          <option value="1.00">Desk Job (mostly seated)</option>
+          <option value="1.10">Light Activity (some walking)</option>
+          <option value="1.20">Moderate (on feet most of the time)</option>
+          <option value="1.35">High (manual labor)</option>
+          <option value="1.50">Strenuous (heavy labor)</option>
+        </select>
+      </section>
+      <!-- Step 4: Enhanced Daily Exercises/Activities -->
+      <section class="wizard-step" data-step="4">
+        <h2>Step 4: Daily Exercises/Activities</h2>
+        <p>
+          Add your exercise sessions with detailed parameters for a scientifically based calorie burn estimate.
+          <span class="tooltip" title="MET: Metabolic Equivalent; Intensity: Relative exertion multiplier; Duration: Minutes per session; Frequency: Days per week">[?]</span>
+        </p>
+        <div id="exerciseList">
+          <!-- Dynamic exercise entries will appear here -->
+        </div>
+        <button type="button" id="addExerciseBtn">Add Exercise</button>
+        <button type="button" id="resetExercisesBtn" style="margin-left:10px;">Reset Exercises</button>
+        <div id="totalExerciseBurn">Total Daily Exercise Burn: ~0 kcal</div>
+      </section>
+      <!-- Navigation Buttons -->
+      <div class="step-buttons">
+        <button type="button" id="backBtn" disabled>Back</button>
+        <button type="button" id="nextBtn">Next</button>
+        <button type="button" id="calcBtn" style="display: none;">Calculate TDEE</button>
+      </div>
+    </div>
+    <!-- Results Section -->
+    <div id="results"></div>
+    <!-- Unit Test Results (hidden by default) -->
+    <div id="testResults" style="display:none;"></div>
+    <!-- Disclaimer -->
+    <div style="margin-top: 30px; font-size: 0.9rem;">
+      <strong>Disclaimer about MET Values:</strong>
+      <ul>
+        <li>MET values are estimates; actual burn varies by intensity, fitness level, etc.</li>
+        <li>1 MET ≈ 3.5 ml O₂/kg/min (energy expended at rest).</li>
+      </ul>
+      <strong>Additional Notes:</strong>
+      <ul>
+        <li>Consult a healthcare or fitness professional when starting a new program.</li>
+        <li>These formulas provide approximate estimates, not exact prescriptions.</li>
+      </ul>
+    </div>
+  </main>
+  <script>
+    /* ===== Global Variables & Predefined Exercise Options ===== */
+    const totalSteps = 4;
+    let currentStep = 1;
+    // Updated exercise options: separate entries for casual vs. treadmill walking
+    const exerciseOptions = [
+      { name: "Casual Walking", defaultMET: 2.0 },
+      { name: "Treadmill Walking", defaultMET: 3.5 },
+      { name: "Running", defaultMET: 7 },
+      { name: "Cycling", defaultMET: 9 },
+      { name: "Swimming", defaultMET: 8 },
+      { name: "Strength Training", defaultMET: 5 },
+      { name: "HIIT", defaultMET: 12 },
+      { name: "Custom", defaultMET: 0 }
+    ];
+    let exerciseCount = 0;
+
+    /* ===== Local Storage Helpers ===== */
+    function saveToLocal(key, value) {
+      localStorage.setItem(key, value);
+    }
+    function loadFromLocal(key) {
+      return localStorage.getItem(key);
+    }
+
+    /* ===== Initialization ===== */
+    document.addEventListener("DOMContentLoaded", () => {
+      // Unit system toggle
+      const unitSystemEl = document.getElementById("unitSystem");
+      unitSystemEl.addEventListener("change", toggleUnitSystem);
+      const savedUnit = loadFromLocal("unitSystem");
+      if (savedUnit) {
+        unitSystemEl.value = savedUnit;
+        toggleUnitSystem();
+      }
+      // Save basic input values
+      ["weightLb", "weightKg", "bodyFat", "gender", "age", "feetSelect", "inchSelect", "heightCm", "jobActivity"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener("input", () => saveToLocal(id, el.value));
+          const savedVal = loadFromLocal(id);
+          if (savedVal) el.value = savedVal;
+        }
+      });
+      // Step 4: Add exercise row functionality
+      document.getElementById("addExerciseBtn").addEventListener("click", addExerciseRow);
+      document.getElementById("resetExercisesBtn").addEventListener("click", resetExercises);
+      // Wizard navigation
+      document.getElementById("nextBtn").addEventListener("click", nextStep);
+      document.getElementById("backBtn").addEventListener("click", prevStep);
+      document.getElementById("calcBtn").addEventListener("click", calculateTDEE);
+      updateProgress();
+
+      // Run unit tests if URL contains ?runTests=true
+      if (new URLSearchParams(window.location.search).get("runTests") === "true") {
+        document.getElementById("testResults").style.display = "block";
+        runTests();
+      }
+    });
+
+    /* ===== Unit Test Functions ===== */
+    function assertEqual(actual, expected, message) {
+      if (actual === expected) {
+        return `PASS: ${message}\n`;
+      } else {
+        return `FAIL: ${message}. Expected ${expected} but got ${actual}\n`;
+      }
+    }
+
+    function runTests() {
+      let output = "";
+      try {
+        // Test getWeightKg for imperial
+        document.getElementById("unitSystem").value = "imperial";
+        toggleUnitSystem();
+        document.getElementById("weightLb").value = 200;
+        const weightKgImperial = getWeightKg();
+        output += assertEqual(
+          Math.round(weightKgImperial * 1000) / 1000,
+          Math.round(200 * 0.45359237 * 1000) / 1000,
+          "Imperial weight conversion (200 lb)"
+        );
+
+        // Test getWeightKg for metric
+        document.getElementById("unitSystem").value = "metric";
+        toggleUnitSystem();
+        document.getElementById("weightKg").value = 90;
+        const weightKgMetric = getWeightKg();
+        output += assertEqual(
+          Math.round(weightKgMetric * 1000) / 1000,
+          90,
+          "Metric weight conversion (90 kg)"
+        );
+
+        // Test updateExerciseCals with a simple exercise (Casual Walking, 2.0 MET)
+        document.getElementById("unitSystem").value = "metric";
+        toggleUnitSystem();
+        document.getElementById("weightKg").value = 70;
+        addExerciseRow();
+        // For exercise 1, default type is "Casual Walking" (2.0 MET)
+        document.getElementById("exDuration-1").value = 30; // 30 minutes
+        document.getElementById("exFrequency-1").value = 7; // every day
+        document.getElementById("exIntensity-1").value = 1;
+        updateExerciseCals("1");
+        const exText = document.getElementById("exCals-1").textContent;
+        // Expected daily burn: 2.0 * 1 * 70 * (30/60) * (7/7) = 70 kcal
+        output += assertEqual(
+          exText.includes("70"),
+          true,
+          "Casual Walking exercise burn calculation"
+        );
+
+      } catch (err) {
+        output += "Error during tests: " + err.message + "\n";
+      }
+      document.getElementById("testResults").textContent = output;
+      console.log(output);
+    }
+
+    /* ===== Unit System Toggle ===== */
+    function toggleUnitSystem() {
+      const system = document.getElementById("unitSystem").value;
+      saveToLocal("unitSystem", system);
+      if (system === "imperial") {
+        document.getElementById("imperialWeight").style.display = "block";
+        document.getElementById("metricWeight").style.display = "none";
+        document.getElementById("imperialHeight").style.display = "block";
+        document.getElementById("metricHeight").style.display = "none";
+      } else {
+        document.getElementById("imperialWeight").style.display = "none";
+        document.getElementById("metricWeight").style.display = "block";
+        document.getElementById("imperialHeight").style.display = "none";
+        document.getElementById("metricHeight").style.display = "block";
+      }
+      updateAllExerciseCals();
+    }
+
+    /* ===== Add Dynamic Exercise Row ===== */
+    function addExerciseRow() {
+      exerciseCount++;
+      const container = document.getElementById("exerciseList");
+      const card = document.createElement("div");
+      card.className = "exercise-card";
+      card.id = "exercise-" + exerciseCount;
+      card.innerHTML = `
+        <button type="button" class="remove-btn" onclick="removeExercise('${card.id}')">Remove</button>
+        <h4>Exercise ${exerciseCount}</h4>
+        <label>Exercise Type:
+          <span class="tooltip" title="Select a predefined exercise or choose 'Custom' to enter your own MET value.">[?]</span>
+        </label>
+        <select id="exType-${exerciseCount}" onchange="onExerciseTypeChange('${exerciseCount}')">
+          ${exerciseOptions.map(opt => `<option value="${opt.defaultMET}">${opt.name}</option>`).join('')}
+        </select>
+        <div id="customMETContainer-${exerciseCount}" style="display: none;">
+          <label>Enter MET Value:
+            <span class="tooltip" title="A MET value >1.0 indicates higher exertion than rest.">[?]</span>
+          </label>
+          <input type="number" id="customMET-${exerciseCount}" placeholder="e.g., 6" step="0.1" min="0">
+        </div>
+        <label>Duration (minutes):
+          <span class="tooltip" title="How long is each session?">[?]</span>
+        </label>
+        <input type="number" id="exDuration-${exerciseCount}" placeholder="e.g., 30" step="1" min="0" oninput="updateExerciseCals('${exerciseCount}')">
+        <label>Days per Week:
+          <span class="tooltip" title="How many days do you do this exercise per week?">[?]</span>
+        </label>
+        <input type="number" id="exFrequency-${exerciseCount}" placeholder="e.g., 3" step="1" min="0" max="7" oninput="updateExerciseCals('${exerciseCount}')">
+        <label>Intensity Factor:
+          <span class="tooltip" title="Multiply by a value >1 for increased effort (e.g., uphill or high RPE)">[?]</span>
+        </label>
+        <input type="number" id="exIntensity-${exerciseCount}" placeholder="e.g., 1" step="0.1" min="0.1" value="1" oninput="updateExerciseCals('${exerciseCount}')">
+        <div class="calc-cals" id="exCals-${exerciseCount}"></div>
+      `;
+      container.appendChild(card);
+    }
+    function removeExercise(cardId) {
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.remove();
+        updateTotalExerciseBurn();
+      }
+    }
+    function resetExercises() {
+      document.getElementById("exerciseList").innerHTML = "";
+      exerciseCount = 0;
+      updateTotalExerciseBurn();
+    }
+    function onExerciseTypeChange(id) {
+      const exTypeEl = document.getElementById("exType-" + id);
+      const customContainer = document.getElementById("customMETContainer-" + id);
+      if (parseFloat(exTypeEl.value) === 0) {
+        customContainer.style.display = "block";
+      } else {
+        customContainer.style.display = "none";
+      }
+      updateExerciseCals(id);
+    }
+    /* ===== Update Individual & Total Exercise Calories ===== */
+    function updateExerciseCals(id) {
+      try {
+        const weightKg = getWeightKg();
+        const exTypeEl = document.getElementById("exType-" + id);
+        let metValue = parseFloat(exTypeEl.value);
+        if (metValue === 0) {
+          metValue = parseFloat(document.getElementById("customMET-" + id).value) || 0;
+        }
+        const duration = parseFloat(document.getElementById("exDuration-" + id).value) || 0;
+        const frequency = parseFloat(document.getElementById("exFrequency-" + id).value) || 0;
+        const intensity = parseFloat(document.getElementById("exIntensity-" + id).value) || 1;
+        const cals = metValue * intensity * weightKg * (duration / 60) * (frequency / 7);
+        const displayEl = document.getElementById("exCals-" + id);
+        displayEl.textContent = cals > 0 ? `Daily Burn: ~${Math.round(cals)} kcal` : "";
+        updateTotalExerciseBurn();
+      } catch (error) {
+        console.error("Error updating exercise calories:", error);
+      }
+    }
+    function updateAllExerciseCals() {
+      document.querySelectorAll("[id^='exCals-']").forEach(el => {
+        const id = el.id.split("-")[1];
+        updateExerciseCals(id);
+      });
+    }
+    function updateTotalExerciseBurn() {
+      let total = 0;
+      document.querySelectorAll("[id^='exCals-']").forEach(el => {
+        const text = el.textContent;
+        const match = text.match(/~(\d+)/);
+        if (match) total += parseInt(match[1], 10);
+      });
+      document.getElementById("totalExerciseBurn").textContent = `Total Daily Exercise Burn: ~${total} kcal`;
+    }
+    /* ===== Wizard Navigation ===== */
+    function showStep(n) {
+      document.querySelectorAll(".wizard-step").forEach(step => step.classList.remove("active"));
+      const current = document.querySelector(`.wizard-step[data-step="${n}"]`);
+      if (current) current.classList.add("active");
+      document.getElementById("backBtn").disabled = n === 1;
+      document.getElementById("nextBtn").style.display = n === totalSteps ? "none" : "inline-block";
+      document.getElementById("calcBtn").style.display = n === totalSteps ? "inline-block" : "none";
+      updateProgress();
+    }
+    function nextStep() {
+      if (validateStep(currentStep)) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    }
+    function prevStep() {
+      currentStep--;
+      showStep(currentStep);
+    }
+    function updateProgress() {
+      const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+      document.getElementById("progress").style.width = percent + "%";
+      document.getElementById("progress-text").textContent = `Step ${currentStep} of ${totalSteps}`;
+    }
+    /* ===== Input Validation ===== */
+    function validateStep(step) {
+      let valid = true;
+      clearStepErrors(step);
+      if (step === 1) {
+        const unit = document.getElementById("unitSystem").value;
+        if (unit === "imperial") {
+          const weightLb = parseFloat(document.getElementById("weightLb").value);
+          if (!weightLb || weightLb <= 0) {
+            showError("Please enter a valid weight in lb.", "weightLb");
+            valid = false;
+          }
+        } else {
+          const weightKg = parseFloat(document.getElementById("weightKg").value);
+          if (!weightKg || weightKg <= 0) {
+            showError("Please enter a valid weight in kg.", "weightKg");
+            valid = false;
+          }
+        }
+        const bodyFat = document.getElementById("bodyFat").value;
+        if (bodyFat !== "" && (bodyFat < 0 || bodyFat > 100)) {
+          showError("Body fat % must be between 0 and 100.", "bodyFat");
+          valid = false;
+        }
+      } else if (step === 2) {
+        const gender = document.getElementById("gender").value;
+        if (!gender) {
+          showError("Select a gender.", "gender");
+          valid = false;
+        }
+        const age = parseFloat(document.getElementById("age").value);
+        if (!age || age <= 0) {
+          showError("Enter a valid age.", "age");
+          valid = false;
+        }
+        const unit = document.getElementById("unitSystem").value;
+        if (unit === "imperial") {
+          const feet = parseInt(document.getElementById("feetSelect").value, 10);
+          const inches = parseInt(document.getElementById("inchSelect").value, 10);
+          if (!feet && !inches) {
+            showError("Enter a valid height (ft + in).", "feetSelect");
+            valid = false;
+          }
+        } else {
+          const heightCm = parseFloat(document.getElementById("heightCm").value);
+          if (!heightCm || heightCm <= 0) {
+            showError("Enter a valid height in cm.", "heightCm");
+            valid = false;
+          }
+        }
+      }
+      return valid;
+    }
+    function clearStepErrors(step) {
+      const stepEl = document.querySelector(`.wizard-step[data-step="${step}"]`);
+      if (stepEl) {
+        stepEl.querySelectorAll(".error-message").forEach(el => (el.textContent = ""));
+        stepEl.querySelectorAll("input, select").forEach(el => el.classList.remove("error-input"));
+      }
+    }
+    function showError(message, elementId) {
+      const errorEl = document.getElementById("error-" + elementId);
+      if (errorEl) errorEl.textContent = message;
+      const inputEl = document.getElementById(elementId);
+      if (inputEl) inputEl.classList.add("error-input");
+    }
+    /* ===== Helper: Get Weight in Kg ===== */
+    function getWeightKg() {
+      const unit = document.getElementById("unitSystem").value;
+      let weightKg = 0;
+      if (unit === "imperial") {
+        const weightLb = parseFloat(document.getElementById("weightLb").value) || 0;
+        weightKg = weightLb * 0.45359237;
+      } else {
+        weightKg = parseFloat(document.getElementById("weightKg").value) || 0;
+      }
+      return weightKg;
+    }
+    /* ===== Final TDEE Calculation ===== */
+    function calculateTDEE() {
+      try {
+        document.getElementById("results").innerHTML = "";
+        if (!validateStep(currentStep)) return;
+        const unit = document.getElementById("unitSystem").value;
+        const weightKg = getWeightKg();
+        let bodyFat = document.getElementById("bodyFat").value;
+        bodyFat = bodyFat === "" ? null : parseFloat(bodyFat);
+        let bmr = 0;
+        let formulaUsed = "";
+        if (bodyFat !== null && bodyFat > 0 && bodyFat < 100) {
+          formulaUsed = "Katch–McArdle";
+          const leanBodyMassKg = weightKg * (1 - bodyFat / 100);
+          bmr = 370 + 21.6 * leanBodyMassKg;
+        } else {
+          formulaUsed = "Mifflin–St Jeor";
+          const gender = document.getElementById("gender").value;
+          const age = parseFloat(document.getElementById("age").value);
+          let heightCm = 0;
+          if (unit === "imperial") {
+            const feet = parseInt(document.getElementById("feetSelect").value, 10);
+            const inches = parseInt(document.getElementById("inchSelect").value, 10);
+            heightCm = ((feet * 12) + inches) * 2.54;
+          } else {
+            heightCm = parseFloat(document.getElementById("heightCm").value);
+          }
+          bmr =
+            gender === "male"
+              ? 10 * weightKg + 6.25 * heightCm - 5 * age + 5
+              : 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+        }
+        bmr = Math.round(bmr);
+        // Sum all dynamic exercise burns
+        let totalExerciseCals = 0;
+        document.querySelectorAll("[id^='exCals-']").forEach(el => {
+          const text = el.textContent;
+          const match = text.match(/~(\d+)/);
+          if (match) totalExerciseCals += parseInt(match[1], 10);
+        });
+        totalExerciseCals = Math.round(totalExerciseCals);
+        const jobMultiplier = parseFloat(document.getElementById("jobActivity").value) || 1.0;
+        const baselineCals = bmr * jobMultiplier;
+        const tdee = Math.round(baselineCals + totalExerciseCals);
+        const ratio = tdee / bmr;
+        let activityLabel = "";
+        let approxMultiplier = "";
+        if (ratio < 1.2) {
+          activityLabel = "Below Sedentary";
+          approxMultiplier = "<1.2";
+        } else if (ratio < 1.3) {
+          activityLabel = "Sedentary";
+          approxMultiplier = "1.2";
+        } else if (ratio < 1.5) {
+          activityLabel = "Lightly Active";
+          approxMultiplier = "1.375";
+        } else if (ratio < 1.7) {
+          activityLabel = "Moderately Active";
+          approxMultiplier = "1.55";
+        } else if (ratio < 1.9) {
+          activityLabel = "Very Active";
+          approxMultiplier = "1.725";
+        } else {
+          activityLabel = "Extremely Active";
+          approxMultiplier = "1.9+";
+        }
+        const resultsHTML = `
+          <div class="results-card">
+            <h2>Results</h2>
+            <p><strong>Formula Used:</strong> ${formulaUsed}</p>
+            <p><strong>BMR:</strong> ~${bmr} kcal/day</p>
+            <p><strong>Occupational Baseline:</strong> ~${Math.round(baselineCals)} kcal/day</p>
+            <p><strong>Exercise Calories:</strong> ~${totalExerciseCals} kcal/day</p>
+            <p><strong>Estimated TDEE:</strong> ~${tdee} kcal/day</p>
+            <p><strong>Overall Activity Level:</strong> ${activityLabel} <small>(${approxMultiplier})</small></p>
+          </div>
+        `;
+        document.getElementById("results").innerHTML = resultsHTML;
+      } catch (error) {
+        document.getElementById("results").innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+        console.error("Error in calculateTDEE:", error);
+      }
+    }
+  </script>
+</body>
+</html>

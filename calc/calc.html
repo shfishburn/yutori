@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="calc.css" />
     <!-- Chart.js with defer for safe loading -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <!-- Inline CSS for Modals and Buttons -->
+    <!-- Inline CSS for Modals, Buttons, and Chart Containers -->
     <style>
       .modal-overlay {
         position: fixed;
@@ -44,6 +44,25 @@
         width: 90%;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
+      /* Chart container for responsiveness */
+      .chart-container {
+        position: relative;
+        height: 50vh;
+        min-height: 300px;
+        margin-bottom: 2rem;
+      }
+      @media (max-width: 768px) {
+        .chart-container {
+          height: 40vh;
+          min-height: 250px;
+        }
+      }
+      /* Loading indicator for charts */
+      .chart-loading {
+        text-align: center;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
     </style>
   </head>
   <body>
@@ -63,7 +82,7 @@
         <!-- Hamburger Icon for mobile -->
         <button id="navToggle" class="md:hidden focus:outline-none" aria-label="Toggle Navigation" aria-controls="navMenuMobile">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
@@ -91,30 +110,30 @@
       <div class="container mx-auto">
         <div class="hero-content">
           <h1 class="hero-title text-4xl font-bold text-left">Body Composition Calculator</h1>
-          <p class="hero-subtitle mt-4 text-lg text-left">Build your science-informed weight loss plan.</p>
+          <p class="hero-subtitle mt-4 text-lg text-left">
+            Build your science-informed weight loss plan.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- Calculator Section Wrapped in a Form for Better Semantics -->
+    <!-- Calculator Section Wrapped in a Form -->
     <section id="calculator" class="projects-section">
       <div class="container">
         <form id="calculatorForm" novalidate>
-          <!-- Optional Global Error Container -->
+          <!-- Global Error Container -->
           <div id="globalErrorContainer" role="alert" class="hidden text-red-500 mb-4"></div>
 
-          <!-- STEP 1: Your Information (Merged Inputs) -->
+          <!-- STEP 1: Your Information -->
           <div class="wizard-step" id="step1" style="display: block;">
             <h2 class="section-title">Step 1: Build Your Profile</h2>
-
             <h3 class="text-lg font-semibold mb-2">Welcome!</h3>
             <div class="indented-section ml-6">
               <p>
-                Enter your age, gender, weight, body fat percentage, and height. This basic info is your starting point for creating a plan that’s uniquely yours. In Step 2, you'll fine-tune your journey by choosing your dietary approach, activity level, calorie deficit, and target fat range.
+                Enter your age, gender, weight, body fat percentage, and height. This is your starting point.
               </p>
               <p><strong>Let's get started!</strong></p>
             </div>
-
             <h3 class="text-lg font-semibold mb-2">About You</h3>
             <div class="indented-section ml-6">
               <div class="mb-4">
@@ -132,19 +151,9 @@
               </div>
               <div class="mb-4">
                 <label for="ageInput">Age (18 to 75):</label>
-                <input
-                  type="number"
-                  id="ageInput"
-                  name="age"
-                  min="18"
-                  max="75"
-                  required
-                  class="mb-2"
-                  placeholder="e.g., 18 to 75"
-                />
+                <input type="number" id="ageInput" name="age" min="18" max="75" required placeholder="e.g., 18 to 75" class="mb-2" />
               </div>
             </div>
-
             <h3 class="text-lg font-semibold mb-1">Your Body</h3>
             <div class="indented-section ml-6">
               <div class="mb-4">
@@ -162,37 +171,15 @@
               </div>
               <div class="mb-4">
                 <label for="heightInput">Height (in inches or cm):</label>
-                <input
-                  type="number"
-                  id="heightInput"
-                  name="height"
-                  required
-                  class="mb-2"
-                  placeholder="e.g., 70 in or 178 cm"
-                />
+                <input type="number" id="heightInput" name="height" required placeholder="e.g., 70 in or 178 cm" class="mb-2" />
               </div>
               <div class="mb-4">
                 <label for="totalWeightInput">Total Weight:</label>
-                <input
-                  type="number"
-                  id="totalWeightInput"
-                  name="weight"
-                  required
-                  class="mb-2"
-                  placeholder="e.g., pounds or kilograms"
-                />
+                <input type="number" id="totalWeightInput" name="weight" required placeholder="e.g., pounds or kilograms" class="mb-2" />
               </div>
               <div class="mb-4">
                 <label for="bodyFatPctInput">Body Fat (%):</label>
-                <input
-                  type="number"
-                  id="bodyFatPctInput"
-                  name="bodyFat"
-                  step="0.1"
-                  required
-                  class="mb-2"
-                  placeholder="e.g., 25 for 25% body fat"
-                />
+                <input type="number" id="bodyFatPctInput" name="bodyFat" step="0.1" required placeholder="e.g., 25 for 25% body fat" class="mb-2" />
               </div>
               <div class="wizard-buttons">
                 <p>Tap <strong>Next</strong> to enter your goals!</p>
@@ -205,7 +192,7 @@
           <div class="wizard-step" id="step2">
             <h2 class="section-title">Step 2: Tailor Your Weight Loss Strategy</h2>
             <p>
-              Now it's time to fine-tune your strategy. In this step, you'll select how you want to eat and move—choosing your dietary approach, activity level, and calorie deficit—and set your target fat range.
+              Select your dietary approach, activity level, calorie deficit, and body fat goal.
             </p>
             <h3 class="text-lg font-semibold mb-2">Nutrition &amp; Fitness Goals</h3>
             <div class="indented-section ml-6">
@@ -231,7 +218,7 @@
                 </label>
               </div>
 
-              <!-- Activity Info -->
+              <!-- Activity Level -->
               <label class="inline-flex items-center">
                 <span>Daily Activity Level:</span>
                 <a href="#" data-open-modal="activityLevelModal" class="ml-1" aria-label="More Info on Activity Level">
@@ -246,7 +233,7 @@
                 <option value="1.9">Extremely Active (1.9 x RMR ≈ TDEE)</option>
               </select>
 
-              <!-- Calorie Deficit Info -->
+              <!-- Calorie Deficit -->
               <label class="inline-flex items-center">
                 <span>Daily Calorie Deficit:</span>
                 <a href="#" data-open-modal="calorieDeficitModal" class="ml-1" aria-label="More Info on Calorie Deficit">
@@ -254,30 +241,23 @@
                 </a>
               </label>
               <select id="dailyAdjustmentSelect" name="deficit" class="mb-4" required>
-                <option value="-250" selected>Slow Loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
+                <option value="-250">Slow Loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
                 <option value="-500">Moderate Loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
-                <option value="-750">Rapid Loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
+                <option value="-750" selected>Rapid Loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
                 <option value="-1000">Dangerous Loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
               </select>
 
-              <!-- Fat % Goal -->
+              <!-- Body Fat Goal -->
               <label class="inline-flex items-center">
                 <span>Body Fat Goal %:</span>
-                <a href="#" data-open-modal="fatRangeModal" class="ml-1" aria-label="More Info on Fat% Range">
+                <a href="#" data-open-modal="fatRangeModal" class="ml-1" aria-label="More Info on Body Fat Goal">
                   <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
                 </a>
               </label>
-    <!-- Fat % Goal in Step 2 -->
-<label class="inline-flex items-center">
-    <span>Body Fat Goal %:</span>
-    <a href="#" data-open-modal="fatRangeModal" class="ml-1" aria-label="More Info on Fat% Range">
-      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-    </a>
-  </label>
-  <select id="fatGoalCategorySelect" name="fatGoal" class="mb-4" required></select>
-  
+              <select id="fatGoalCategorySelect" name="fatGoal" class="mb-4" required>
+                <option value="" disabled selected>Select a Body Fat Goal</option>
+              </select>
             </div>
-
             <div class="wizard-buttons">
               <p>Tap <strong>Calculate</strong> to see your results!</p>
               <button type="button" class="btn" data-prev-step>Back</button>
@@ -285,150 +265,164 @@
             </div>
           </div>
 
-          <!-- STEP 3: Results -->
+          <!-- STEP 3: Results (Cards Stacked Vertically) -->
           <div class="wizard-step" id="step3">
-            <div class="max-w-4xl mx-auto p-4">
-              <!-- 2×2 Grid: Current &amp; Goal Body Composition -->
-              <h2 class="section-title">Current Body Composition</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Settings Card (Left) -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1">About You</h3>
-                  <p>Summary of your baseline metrics:</p>
-                  <ul class="space-y-1 text-sm">
-                    <li><strong>Gender:</strong> <span id="summaryGender">--</span></li>
-                    <li><strong>Age:</strong> <span id="summaryAge">--</span></li>
-                    <li><strong>Units:</strong> <span id="summaryUnits">--</span></li>
-                    <li><strong>Height:</strong> <span id="summaryHeight">--</span></li>
-                    <li><strong>Total Weight:</strong> <span id="summaryTotalWeight">--</span></li>
-                    <li><strong>Body Fat %:</strong> <span id="summaryBodyFatPct">--</span></li>
-                  </ul>
+            <div class="max-w-4xl mx-auto p-4 space-y-6">
+              <!-- About You Card (Baseline + Step 2 Selections) -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1">About You</h3>
+                <p>Summary of your baseline metrics and selected goals:</p>
+                <ul class="space-y-1 text-sm">
+                  <li><strong>Gender:</strong> <span id="summaryGender">--</span></li>
+                  <li><strong>Age:</strong> <span id="summaryAge">--</span></li>
+                  <li><strong>Units:</strong> <span id="summaryUnits">--</span></li>
+                  <li><strong>Height:</strong> <span id="summaryHeight">--</span></li>
+                  <li><strong>Total Weight:</strong> <span id="summaryTotalWeight">--</span></li>
+                  <li><strong>Body Fat %:</strong> <span id="summaryBodyFatPct">--</span></li>
+                  <li><strong>Dietary Approach:</strong> <span id="summaryDietary">--</span></li>
+                  <li><strong>Activity Level:</strong> <span id="summaryActivity">--</span></li>
+                  <li><strong>Calorie Deficit:</strong> <span id="summaryCalorieDeficit">--</span></li>
+                  <li><strong>Body Fat Goal:</strong> <span id="summaryFatGoal">--</span></li>
+                </ul>
+              </div>
+              <!-- Today's Composition Card -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
+                  Today's Composition
+                  <a href="#" data-open-modal="bodyCompModal" class="ml-1" aria-label="More Info on Body Composition">
+                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                  </a>
+                </h3>
+                <p>Analysis based on your current measurements:</p>
+                <ul class="space-y-1 text-sm">
+                  <li><strong>Total Weight:</strong> <span id="currentWeightSpan">--</span></li>
+                  <li><strong>Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
+                  <li><strong>Fat Mass:</strong> <span id="currentFatSpan">--</span></li>
+                  <li><strong>Body Fat %:</strong> <span id="currentBFpctSpan">--</span></li>
+                  <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
+                </ul>
+              </div>
+              <!-- Projected Composition Card with Ranges -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
+                  Projected Composition
+                  <a href="#" data-open-modal="goalRangeModal" class="ml-1" aria-label="More Info on Goal Range">
+                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                  </a>
+                </h3>
+                <ul class="space-y-1 text-sm">
+                  <li>
+                    <strong>Weight:</strong>
+                    <span id="goalWeightSpan">--</span>
+                  </li>
+                  <li>
+                    <strong>Fat Mass:</strong>
+                    <span id="goalFatSpan">--</span>
+                  </li>
+                  <li>
+                    <strong>Lean Mass:</strong>
+                    <span id="goalLeanSpan">--</span>
+                  </li>
+                  <li>
+                    <strong>BF%:</strong>
+                    <span id="goalBFpctSpan">--</span>
+                  </li>
+                </ul>
+                <br />
+                <div class="summary">
+                  <strong>Summary:</strong>
+                  <p>
+                    From your current weight of <span id="currentWeightInputSpan">--</span> and body fat % of
+                    <span id="bodyFatPctInputSpan">--</span>, you will lose
+                    <span id="totalWeightLossSpan">--</span> lbs total, including
+                    <span id="leanMassLossSpan">--</span> lbs of lean mass and
+                    <span id="fatLossSpan">--</span> lbs of fat.
+                  </p>
+                  <p>Your projected BF% range: <span id="goalBFcatSpan">--</span></p>
                 </div>
-                <!-- Current Composition Card (Right) -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
-                    Today's Composition
-                    <a href="#" data-open-modal="bodyCompModal" class="ml-1" aria-label="More Info on Body Composition">
-                      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                    </a>
-                  </h3>
-                  <p>Analysis based on your measurements:</p>
-                  <ul class="space-y-1 text-sm">
-                    <li><strong>Total Weight:</strong> <span id="currentWeightSpan">--</span></li>
-                    <li><strong>Weight from Lean Mass:</strong> <span id="currentLeanSpan">--</span></li>
-                    <li><strong>Weight from Fat:</strong> <span id="currentFatSpan">--</span></li>
-                    <li><strong>Current Body Fat %:</strong> <span id="currentBFpctSpan">--</span></li>
-                    <li><strong>Category:</strong> <span id="currentBFcatSpan">--</span></li>
-                  </ul>
+                <div class="timeline">
+                  <strong>Timeline:</strong>
+                  <p>
+                    Based on your calorie deficit goal of <span id="calorieDeficitSpan">--</span> cal/day,
+                    you should lose <span id="weeklyWeightLossSpan">--</span> lbs per week.
+                    You will reach your goal between <span id="startDate">--</span> and <span id="endDate">--</span>.
+                  </p>
                 </div>
               </div>
-
-              <h2 class="section-title">Projected Body Composition</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Goal Card (Left) -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
-                    Projected Composition
-                    <a href="#" data-open-modal="goalRangeModal" class="ml-1" aria-label="More Info on Goal Range">
-                      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                    </a>
-                  </h3>
-                  <ul class="space-y-1 text-sm">
-                    <li><strong>Weight:</strong> <span id="goalWeightSpan">--</span></li>
-                    <li><strong>Fat Mass:</strong> <span id="goalFatSpan">--</span></li>
-                    <li><strong>Lean Mass:</strong> <span id="goalLeanSpan">--</span></li>
-                    <li><strong>BF%:</strong> <span id="goalBFpctSpan">--</span></li>
-                  </ul>
-                  <br>
-                  <div class="summary">
-                    <strong>Summary:</strong>
-                    <p>
-                      From your current weight of <span id="currentWeightInputSpan">--</span> and body fat % of <span id="bodyFatPctInputSpan">--</span>, you will lose <span id="totalWeightLossSpan">--</span> pounds of total weight, <span id="leanMassLossSpan">--</span> pounds of lean mass, and <span id="fatLossSpan">--</span> pounds of body fat. Your body fat % will be in the <span id="goalBFcatSpan">--</span> range.
-                    </p>
-                  </div>
-                  <div class="timeline">
-                    <strong>Timeline:</strong>
-                    <p>
-                      Based on your calorie deficit goal of <span id="calorieDeficitSpan">--</span> calories per day, you should lose <span id="weeklyWeightLossSpan">--</span> per week. You will reach your goal weight between <span id="dateA">--</span> and <span id="dateB">--</span>.
-                    </p>
-                  </div>
+              <!-- Calories & Macros Card with Ranges -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
+                  Calories &amp; Macros
+                  <a href="#" data-open-modal="calorieMacroModal" class="ml-1" aria-label="More Info on Calories &amp; Macros">
+                    <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+                  </a>
+                </h3>
+                <p>Your personalized calorie and macronutrient targets (range):</p>
+                <ul class="space-y-1 text-sm">
+                  <li><strong>BMR:</strong> <span id="bmrSpan">--</span></li>
+                  <li><strong>TDEE:</strong> <span id="tdeeSpan">--</span></li>
+                  <li>
+                    <strong>Final Cals:</strong> <span id="finalCalsSpan">--</span>
+                    (<span id="deficitOrSurplusLine">--</span>)
+                  </li>
+                  <li><strong>Carbs:</strong> <span id="carbsSpan">--</span></li>
+                  <li><strong>Protein:</strong> <span id="proteinSpan">--</span></li>
+                  <li><strong>Fat:</strong> <span id="fatSpan">--</span></li>
+                  <li id="macroHealthComment" class="italic">--</li>
+                </ul>
+              </div>
+            </div>
+            <!-- Charts Section -->
+            <h2 class="section-title">
+              Charts
+              <a href="#" data-open-modal="forecastModal" class="ml-1" aria-label="More Info on Forecast Charts">
+                <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
+              </a>
+            </h2>
+            <div class="grid grid-cols-1 gap-6">
+              <!-- Weight Loss Trajectory Chart -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1">Weight Loss Trajectory</h3>
+                <h4 class="text-sm font-medium text-gray-600 mb-2">Projected Weight Over Time</h4>
+                <div class="chart-container">
+                  <canvas id="weightChart" role="img" aria-label="Weight loss trajectory chart"></canvas>
                 </div>
               </div>
-              
-                <!-- Nutrition Card (Right) -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1 inline-flex items-center">
-                    Calories &amp; Macros
-                    <a href="#" data-open-modal="calorieMacroModal" class="ml-1" aria-label="More Info on Calories &amp; Macros">
-                      <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                    </a>
-                  </h3>
-                  <p>Your personalized calorie and macronutrient targets:</p>
-                  <ul class="space-y-1 text-sm">
-                    <li><strong>BMR:</strong> <span id="bmrSpan">--</span></li>
-                    <li><strong>TDEE:</strong> <span id="tdeeSpan">--</span></li>
-                    <li>
-                      <strong>Final Cals:</strong> <span id="finalCalsSpan">--</span>
-                      (<span id="deficitOrSurplusLine">--</span>)
-                    </li>
-                    <li><strong>Carbs:</strong> <span id="carbsSpan">--</span></li>
-                    <li><strong>Protein:</strong> <span id="proteinSpan">--</span></li>
-                    <li><strong>Fat:</strong> <span id="fatSpan">--</span></li>
-                    <li id="macroHealthComment" class="italic">--</li>
-                  </ul>
+              <!-- Calorie Forecast Chart -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1">Calorie Forecast</h3>
+                <h4 class="text-sm font-medium text-gray-600 mb-2">Daily Calorie Target</h4>
+                <div class="chart-container">
+                  <canvas id="calorieChart" role="img" aria-label="Calorie forecast chart"></canvas>
                 </div>
               </div>
-
-              <!-- Charts Section -->
-              <h2 class="section-title">
-                Charts
-                <a href="#" data-open-modal="forecastModal" class="ml-1" aria-label="More Info on Forecast Charts">
-                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                </a>
-              </h2>
-              <div class="grid grid-cols-1 gap-6">
-                <!-- Weight Loss Trajectory Chart -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1">Weight Loss Trajectory</h3>
-                  <h4 class="text-sm font-medium text-gray-600 mb-2">Projected Weight Over Time</h4>
-                  <canvas id="weightChart" class="w-full h-64"></canvas>
-                </div>
-                <!-- Calorie Forecast Chart -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1">Calorie Forecast</h3>
-                  <h4 class="text-sm font-medium text-gray-600 mb-2">Daily Calorie Target</h4>
-                  <canvas id="calorieChart" class="w-full h-64"></canvas>
-                </div>
-                <!-- Macro Trajectory Chart -->
-                <div class="bg-white shadow rounded p-4">
-                  <h3 class="text-xl font-semibold mb-1">Macro Trajectory</h3>
-                  <h4 class="text-sm font-medium text-gray-600 mb-2">Protein, Carbs &amp; Fat (g)</h4>
-                  <canvas id="macroChart" class="w-full h-64"></canvas>
+              <!-- Macro Trajectory Chart -->
+              <div class="bg-white shadow rounded p-4">
+                <h3 class="text-xl font-semibold mb-1">Macro Trajectory</h3>
+                <h4 class="text-sm font-medium text-gray-600 mb-2">Protein, Carbs &amp; Fat (g)</h4>
+                <div class="chart-container">
+                  <canvas id="macroChart" role="img" aria-label="Macro trajectory chart"></canvas>
                 </div>
               </div>
-
-              <!-- Bottom Buttons -->
-              <div class="mt-6 text-left">
-                <button type="button" class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn" data-prev-step>
-                  Back
-                </button>
-                <button type="button" class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">
-                  Disclaimer
-                </button>
-              </div>
+            </div>
+            <!-- Bottom Buttons -->
+            <div class="mt-6 text-left">
+              <button type="button" class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn" data-prev-step>Back</button>
+              <button type="button" class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">Disclaimer</button>
             </div>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- Modals with ARIA roles for accessibility -->
+    <!-- Modals -->
     <div class="modal-overlay" id="bodyCompModal" role="dialog" aria-modal="true" aria-labelledby="bodyCompModalTitle">
       <div class="modal-content">
         <h3 id="bodyCompModalTitle" class="text-2xl font-bold mb-2">Body Composition Details</h3>
         <div class="modal-body">
           <p>
-            Your body composition is more than just numbers—it’s a snapshot of your current status. Here you can see your weight, fat mass, lean mass, and body fat percentage.
+            Your body composition is more than just numbers—it’s a snapshot of your current status.
+            Here you can see your weight, fat mass, lean mass, and body fat percentage.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="bodyCompModal">Close</button>
@@ -440,7 +434,8 @@
         <h3 id="forecastModalTitle" class="text-2xl font-bold mb-2">Forecast Charts Explanation</h3>
         <div class="modal-body">
           <p>
-            Your forecast charts provide a dynamic preview of your personalized journey, mapping your predicted weight loss trajectory, daily calorie targets, and macronutrient needs over time.
+            Your forecast charts provide a dynamic preview of your personalized journey,
+            mapping your predicted weight loss trajectory, daily calorie targets, and macronutrient needs over time.
           </p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="forecastModal">Close</button>
@@ -452,7 +447,8 @@
         <h3 id="explanationModalTitle" class="text-2xl font-bold mb-2">How Are These Figures Calculated?</h3>
         <div class="modal-body">
           <p>
-            Our system tailors your numbers using your personal data and scientific equations. For example, your RMR is calculated using the Mifflin–St Jeor equation.
+            Our system tailors your numbers using your personal data and scientific equations.
+            For example, your RMR is calculated using the Mifflin–St Jeor equation:
           </p>
           <ul class="list-disc pl-6 mb-4">
             <li><strong>For males:</strong> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) + 5</li>
@@ -463,7 +459,6 @@
       </div>
     </div>
 
-    <!-- Explanation Modal for Goal Range -->
     <div class="modal-overlay" id="goalRangeModal" role="dialog" aria-modal="true" aria-labelledby="goalRangeModalTitle">
       <div class="modal-content">
         <h3 id="goalRangeModalTitle" class="text-2xl font-bold mb-2">Goal Range Explanation</h3>
@@ -481,7 +476,6 @@
       </div>
     </div>
 
-    <!-- Explanation Modal for Calories &amp; Macros -->
     <div class="modal-overlay" id="calorieMacroModal" role="dialog" aria-modal="true" aria-labelledby="calorieMacroModalTitle">
       <div class="modal-content">
         <h3 id="calorieMacroModalTitle" class="text-2xl font-bold mb-2">Calories &amp; Macronutrients Explanation</h3>
@@ -493,42 +487,28 @@
             <li><em>For males:</em> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) + 5</li>
             <li><em>For females:</em> (10 × weight in kg) + (6.25 × height in cm) – (5 × age) – 161</li>
           </ul>
-          <p>
-            Your macronutrient targets are then computed based on a dynamic energy density formula.
-          </p>
-          <p>
-            For more details, please consult the provided link.
-          </p>
+          <p>Your macronutrient targets are then computed based on a dynamic energy density formula.</p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="calorieMacroModal">Close</button>
       </div>
     </div>
 
-    <!-- Other Modals -->
     <div class="modal-overlay" id="dietaryApproachModal" role="dialog" aria-modal="true" aria-labelledby="dietaryApproachModalTitle">
       <div class="modal-content">
         <h3 id="dietaryApproachModalTitle" class="text-2xl font-bold mb-2">Dietary Approach</h3>
         <div class="modal-body">
           <div class="option">
-            <p>
-              Your dietary choice fine-tunes the calculator’s predictions and macronutrient targets.
-            </p>
+            <p>Your dietary choice fine-tunes the calculator’s predictions and macronutrient targets.</p>
             <h4 class="text-xl font-semibold">Low-Carb</h4>
-            <p>
-              Emphasizes higher protein and fat targets with reduced carbohydrate allocation.
-            </p>
+            <p>Emphasizes higher protein and fat targets with reduced carbohydrate allocation.</p>
           </div>
           <div class="option">
             <h4 class="text-xl font-semibold">High-Protein</h4>
-            <p>
-              Allocates up to 45% of calories to protein, reducing lean mass loss.
-            </p>
+            <p>Allocates up to 45% of calories to protein, reducing lean mass loss.</p>
           </div>
           <div class="option">
             <h4 class="text-xl font-semibold">Balanced</h4>
-            <p>
-              A middle road with balanced macronutrient distribution.
-            </p>
+            <p>A middle road with balanced macronutrient distribution.</p>
           </div>
         </div>
         <button class="btn close-modal-btn" data-close-modal="dietaryApproachModal">Exit</button>
@@ -539,9 +519,7 @@
       <div class="modal-content">
         <h3 id="activityLevelModalTitle" class="text-2xl font-bold mb-2">Activity Level</h3>
         <div class="modal-body">
-          <p>
-            Your activity level multiplies your RMR to determine your TDEE.
-          </p>
+          <p>Your activity level multiplies your RMR to determine your TDEE.</p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="activityLevelModal">Exit</button>
       </div>
@@ -551,9 +529,7 @@
       <div class="modal-content">
         <h3 id="calorieDeficitModalTitle" class="text-2xl font-bold mb-2">Calorie Deficit</h3>
         <div class="modal-body">
-          <p>
-            Selecting a calorie deficit tells the calculator to subtract calories from your TDEE.
-          </p>
+          <p>Selecting a calorie deficit tells the calculator to subtract calories from your TDEE.</p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="calorieDeficitModal">Exit</button>
       </div>
@@ -563,9 +539,7 @@
       <div class="modal-content">
         <h3 id="fatRangeModalTitle" class="text-2xl font-bold mb-2">Fat% Range</h3>
         <div class="modal-body">
-          <p>
-            Your target fat percentage helps tailor your ideal weight span.
-          </p>
+          <p>Your target fat percentage helps tailor your ideal weight span.</p>
           <ul class="list-disc list-inside">
             <li><strong>Dangerously Low:</strong> 8–10%</li>
             <li><strong>Excellent:</strong> 10–15%</li>
@@ -583,15 +557,13 @@
       <div class="modal-content">
         <h3 id="disclaimerModalTitle" class="text-2xl font-bold mb-2">Disclaimer</h3>
         <div class="modal-body">
-          <p>
-            These calculations are estimates and should not replace professional medical advice.
-          </p>
+          <p>These calculations are estimates and should not replace professional medical advice.</p>
         </div>
         <button class="btn close-modal-btn" data-close-modal="disclaimerModal">Exit</button>
       </div>
     </div>
 
-    <!-- Footer Section -->
+    <!-- Footer -->
     <footer class="footer-section">
       <div class="container">
         <div class="footer-content">
@@ -604,7 +576,7 @@
       </div>
     </footer>
 
-    <!-- Updated script reference with defer -->
+    <!-- Updated Script Reference -->
     <script src="/calc/calc.js" defer></script>
   </body>
 </html>
