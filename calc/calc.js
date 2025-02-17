@@ -477,7 +477,13 @@
     const steps = Array.from(document.querySelectorAll(".wizard-step"));
     let currentStepIndex = 0;
     function showStep(index) {
-      steps.forEach((s, i) => (s.style.display = i === index ? "block" : "none"));
+      steps.forEach((s, i) => {
+        if (i === index) {
+          s.classList.add("active");
+        } else {
+          s.classList.remove("active");
+        }
+      });
       currentStepIndex = index;
     }
     function clearErrors(stepEl) {

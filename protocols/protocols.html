@@ -1,10 +1,3 @@
-<!-- Change Control:
-     Path: /workouts/protocols.html
-     File: protocols.html
-     Changes:
-       - Pushed to production 2025-2-12 at 2:00 pm
--->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,69 +20,49 @@
     />
     <!-- Global styles -->
     <link rel="stylesheet" href="/styles.css">
-    <!-- Workouts styles -->
+    <!-- Workouts/Supplements Page Styles -->
     <link rel="stylesheet" href="/protocols/protocols.css" />
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <!-- Our JS files (loaded with defer) -->
+    <script src="/protocols/js/charts.js" defer></script>
+    <script src="/protocols/js/modals.js" defer></script>
+    <script src="/protocols/js/protocols.js" defer></script>
+  
+    <!-- Global Nav -->
+  
+    <script src="/components/navigation.js"></script>
+    <script src="/components/pagecontents.js"></script>
   </head>
   <body>
-  <!-- Unified Navigation -->
-    <nav class="nav-wrapper bg-white shadow">
-      <div class="container mx-auto flex items-center justify-between py-4">
-        <!-- Logo -->
-        <a href="/index.html">
-          <img src="/assets/logo_400px_wide.png" alt="Yutori Labs" class="logo h-10" />
-        </a>
-        <!-- Hamburger Icon for mobile -->
-        <button id="navToggle" class="md:hidden focus:outline-none">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-        <!-- Desktop Navigation Menu -->
-        <ul id="navMenu" class="hidden md:flex space-x-6">
-          <li><a href="/index.html" class="text-gray-800 hover:text-gray-600">Home</a></li>
-          <li><a href="/editor/editor.html" class="text-gray-800 hover:text-gray-600">JSON Editor</a></li>
-          <li><a href="/calc/calc.html" class="text-gray-800 hover:text-gray-600">Calculator</a></li>
-          <li><a href="/chat/chat.html" class="text-gray-800 hover:text-gray-600">Fitness AI</a></li>
-          <li><a href="/workouts/protocols.html" class="text-gray-800 hover:text-gray-600">Protocols</a></li>
-        </ul>
-      </div>
-      <!-- Mobile Navigation Menu -->
-      <ul id="navMenuMobile" class="md:hidden hidden px-4 pb-4">
-        <li class="py-1"><a href="/index.html" class="block text-gray-800 hover:text-gray-600">Home</a></li>
-        <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800 hover:text-gray-600">JSON Editor</a></li>
-        <li class="py-1"><a href="/calc/calc.html" class="block text-gray-800 hover:text-gray-600">Calculator</a></li>
-        <li class="py-1"><a href="/chat/chat.html" class="block text-gray-800 hover:text-gray-600">Fitness</a></li>
-        <li class="py-1"><a href="/workouts/protocols.html" class="block text-gray-800 hover:text-gray-600">Protocols</a></li>
-      </ul>
-    </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section py-10">
-      <div class="container mx-auto">
-        <div class="hero-content">
-           <h1 class="hero-title text-4xl font-bold text-left">Fitness Protocols</h1>
-           <p class="hero-subtitle mt-4 text-lg text-left">Workouts and Supplements Protocols</p>
-        </div>
-      </div>
-    </section>
+
+     </head>
+     <body>
+     <!-- Navigation and Hero Placeholders -->
+     <div id="nav-placeholder"></div>
+     <div id="hero-placeholder"></div>
+
 
     <!-- Integrated Workout App -->
     <div id="integrated-app" class="container mx-auto bg-white p-6 shadow-lg rounded-lg">
       <!-- Header -->
-      <header class="flex justify-between items-center bg-blue-600 text-white p-4 rounded">
+      <header class="flex justify-between items-center bg-orange-600 text-white p-4 rounded">
         <h2 class="section-title">Workout & Supplement Tracker</h2>
-        <div class="flex items-center space-x-2">
-          <label for="datePicker" class="text-sm">Select Date:</label>
-          <input type="date" id="datePicker" class="p-2 text-gray-900 rounded">
-        </div>
       </header>
+
+      <!-- Date Picker -->
+      <div class="flex items-center space-x-2 mt-4">
+        <label for="datePicker" class="text-sm"><strong>Select Date:</strong></label>
+        <input type="date" id="datePicker" class="p-2 text-gray-900 rounded border border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300">
+      </div>
 
       <!-- Tab Navigation -->
       <div class="tab-bar flex border-b-2 mt-4">
-        <button data-tab="tab-workout" class="tab-button px-4 py-2 border-b-2 border-blue-600">Workouts</button>
-        <button data-tab="tab-supplements" class="tab-button px-4 py-2">Supplements</button>
-        <button data-tab="tab-progress" class="tab-button px-4 py-2">Progress</button>
+        <button data-tab="tab-workout" class="tab-button px-4 py-2 border-b-2 border-orange-600">Workouts</button>
+        <button data-tab="tab-supplements" class="tab-button px-4 py-2 border-b-2 border-orange-600">Supplements</button>
+        <button data-tab="tab-progress" class="tab-button px-4 py-2 border-b-2 border-orange-600">Progress</button>
       </div>
 
       <!-- Tab Content -->
@@ -97,217 +70,333 @@
         <!-- Workouts Tab -->
         <div id="tab-workout" class="tab-content active">
           <h2 class="text-xl font-semibold">Workout Plan</h2>
+          <!-- Workout Filters -->
+          <div id="workoutsFilterSection" class="filter-section mb-4 bg-gray-50 p-4 rounded-lg">
+            <div class="flex flex-wrap gap-4">
+              <div class="filter-group" data-filter-type="timeOfDay">
+                <label class="block text-sm font-medium mb-1">Time of Day</label>
+                <select class="filter-select px-3 py-2 border rounded">
+                  <option value="">All</option>
+                  <option value="Morning">Morning</option>
+                  <option value="Evening">Evening</option>
+                </select>
+              </div>
+              <div class="filter-group" data-filter-type="session">
+                <label class="block text-sm font-medium mb-1">Session Type</label>
+                <select class="filter-select px-3 py-2 border rounded">
+                  <option value="">All</option>
+                  <option value="Cardio">Cardio</option>
+                  <option value="Strength">Strength</option>
+                  <option value="Flexibility">Flexibility</option>
+                </select>
+              </div>
+              <!-- Additional workout filters can be added here -->
+            </div>
+            <div class="flex justify-between mt-4">
+              <div class="active-filters text-sm"></div>
+              <button id="clearWorkoutsFilters" class="clear-filters px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Clear Filters</button>
+            </div>
+          </div>
           <div id="workoutContainer" class="mt-4"></div>
-          <button id="addWorkoutBtn" class="btn bg-blue-500 text-white px-4 py-2 mt-4 rounded">Add Workout</button>
+          <button id="addWorkoutBtn" class="btn bg-orange-500 text-white px-4 py-2 mt-4 rounded">Add Workout</button>
         </div>
 
         <!-- Supplements Tab -->
         <div id="tab-supplements" class="tab-content hidden">
           <h2 class="text-xl font-semibold">Supplement Plan</h2>
+          <!-- Supplement Filters -->
+          <div id="supplementsFilterSection" class="filter-section mb-4 bg-gray-50 p-4 rounded-lg">
+            <div class="flex flex-wrap gap-4">
+              <div class="filter-group" data-filter-type="timeSlot">
+                <label class="block text-sm font-medium mb-1">Time Slot</label>
+                <select class="filter-select px-3 py-2 border rounded">
+                  <option value="">All</option>
+                  <option value="Morning">Morning</option>
+                  <option value="Afternoon">Afternoon</option>
+                  <option value="Evening">Evening</option>
+                </select>
+              </div>
+              <div class="filter-group" data-filter-type="type">
+                <label class="block text-sm font-medium mb-1">Supplement Type</label>
+                <select class="filter-select px-3 py-2 border rounded">
+                  <option value="">All</option>
+                  <option value="Protein">Protein</option>
+                  <option value="Vitamin">Vitamin</option>
+                  <option value="Mineral">Mineral</option>
+                  <option value="Pre-workout">Pre-workout</option>
+                </select>
+              </div>
+              <!-- Additional supplement filters can be added here -->
+            </div>
+            <div class="flex justify-between mt-4">
+              <div class="active-filters text-sm"></div>
+              <button id="clearSupplementsFilters" class="clear-filters px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Clear Filters</button>
+            </div>
+          </div>
           <div id="supplementsContainer" class="mt-4"></div>
-          <button id="addSupplementBtn" class="btn bg-blue-500 text-white px-4 py-2 mt-4 rounded">Add Supplement</button>
+          <button id="addSupplementBtn" class="btn bg-orange-500 text-white px-4 py-2 mt-4 rounded">Add Supplement</button>
         </div>
 
         <!-- Progress Tab -->
         <div id="tab-progress" class="tab-content hidden">
           <h2 class="text-xl font-semibold">Progress Summary</h2>
           <div id="progressContainer" class="mt-4">
-            <p>Daily Progress: <span id="dailyProgress">0/0</span></p>
-            <p>Weekly Progress: <span id="weeklyProgress">0/0</span></p>
-            <!-- Chart canvases -->
-            <div style="height:200px;">
-              <canvas id="dailyMETChart"></canvas>
+            <!-- Workout Progress -->
+            <div class="workout-charts mb-8">
+              <h3 class="text-lg font-medium mb-4">Workout Progress</h3>
+              <p>Daily Workouts: <span id="dailyProgress">0/0</span></p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="chart-container">
+                  <canvas id="dailyMETChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="workoutCompletionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="workoutTypeDistributionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="muscleGroupDistributionChart"></canvas>
+                </div>
+              </div>
             </div>
-            <div style="height:200px;">
-              <canvas id="dailyCompletedChart"></canvas>
+            <!-- Supplement Progress -->
+            <div class="supplement-charts">
+              <h3 class="text-lg font-medium mb-4">Supplement Progress</h3>
+              <p>Daily Supplements: <span id="supplementProgress">0/0</span></p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="chart-container">
+                  <canvas id="supplementCompletionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="supplementTypeDistributionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="supplementTimingChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="supplementTrendChart"></canvas>
+                </div>
+              </div>
             </div>
-            <div style="height:200px;">
-              <canvas id="weeklyCompletedChart"></canvas>
+            <!-- Combined Progress -->
+            <div class="combined-progress mt-8">
+              <h3 class="text-lg font-medium mb-4">Overall Progress</h3>
+              <p>Total Progress: <span id="totalProgress">0/0</span></p>
+              <div class="chart-container mx-auto">
+                <canvas id="overallProgressChart"></canvas>
+              </div>
             </div>
           </div>
         </div>
       </main>
     </div>
 
-    <!-- Modal Markup (from modals.html) -->
-    <!-- BEGIN: Workout Modal -->
-    <div id="workoutModal" class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" aria-hidden="true">
-      <div class="modal-content bg-white p-6 rounded shadow-lg max-w-lg w-full mx-4">
-        <h3 id="workoutModalTitle" class="text-xl font-semibold mb-4">Update Workout</h3>
-        <div class="mb-4">
-          <label class="mr-4">
-            <input type="radio" name="workoutAction" value="update" checked>
-            Update
-          </label>
-          <label>
-            <input type="radio" name="workoutAction" value="delete">
-            Delete
-          </label>
-        </div>
-        <form id="workoutForm">
+    <!-- Workout Modal -->
+    <div id="workoutModal" class="modal" aria-hidden="true">
+      <div class="modal-content bg-white w-full max-w-2xl mx-4 p-6 rounded-lg shadow-xl">
+        <h3 class="text-xl font-semibold mb-4">Workout Details</h3>
+        <form id="workoutForm" class="space-y-4">
+          <!-- Hidden Field -->
           <input type="hidden" id="workoutId" name="workoutId">
-          <div class="form-field mb-2">
-            <label for="workoutDayOfWeek" class="block mb-1">Day of Week:</label>
-            <select id="workoutDayOfWeek" name="workoutDayOfWeek" required>
-              <option value="1">Monday</option>
-              <option value="2">Tuesday</option>
-              <option value="3">Wednesday</option>
-              <option value="4">Thursday</option>
-              <option value="5">Friday</option>
-              <option value="6">Saturday</option>
-              <option value="7">Sunday</option>
-            </select>
+          <!-- Basic Info Section -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="workoutDayOfWeek" class="form-label">Day of Week</label>
+              <select id="workoutDayOfWeek" name="workoutDayOfWeek" required class="form-select">
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="7">Sunday</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="workoutTimeOfDay" class="form-label">Time of Day</label>
+              <select id="workoutTimeOfDay" name="workoutTimeOfDay" required class="form-select">
+                <option value="Morning">Morning</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutTimeOfDay" class="block mb-1">Time of Day:</label>
-            <select id="workoutTimeOfDay" name="workoutTimeOfDay" required>
-              <option value="Morning">Morning</option>
-              <option value="Evening">Evening</option>
-            </select>
+          <!-- Workout Type Section -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="workoutSession" class="form-label">Session Type</label>
+              <select id="workoutSession" name="workoutSession" required class="form-select">
+                <option value="Cardio">Cardio</option>
+                <option value="Strength">Strength</option>
+                <option value="Flexibility">Flexibility</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="workoutFocusArea" class="form-label">Focus Area</label>
+              <select id="workoutFocusArea" name="workoutFocusArea" required class="form-select">
+                <option value="Endurance">Endurance</option>
+                <option value="Power">Power</option>
+                <option value="Strength">Strength</option>
+              </select>
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutSession" class="block mb-1">Session:</label>
-            <input type="text" id="workoutSession" name="workoutSession" required>
+          <!-- Exercise Details -->
+          <div class="form-field">
+            <label for="workoutExercise" class="form-label">Exercise</label>
+            <input type="text" id="workoutExercise" name="workoutExercise" required class="form-input">
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutFocusArea" class="block mb-1">Focus Area:</label>
-            <input type="text" id="workoutFocusArea" name="workoutFocusArea" required>
+          <!-- Equipment Section -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="workoutMuscleExercised" class="form-label">Muscle Group</label>
+              <select id="workoutMuscleExercised" name="workoutMuscleExercised" required class="form-select">
+                <option value="Legs">Legs</option>
+                <option value="Chest">Chest</option>
+                <option value="Back">Back</option>
+                <option value="Arms">Arms</option>
+                <option value="Core">Core</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="workoutEquipment" class="form-label">Equipment</label>
+              <select id="workoutEquipment" name="workoutEquipment" required class="form-select">
+                <option value="None">None</option>
+                <option value="Dumbbells">Dumbbells</option>
+                <option value="Barbell">Barbell</option>
+                <option value="Machine">Machine</option>
+              </select>
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutExercise" class="block mb-1">Exercise:</label>
-            <input type="text" id="workoutExercise" name="workoutExercise" required>
+          <!-- Volume Section -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="form-field">
+              <label for="workoutSets" class="form-label">Sets</label>
+              <input type="number" id="workoutSets" name="workoutSets" required class="form-input" min="1">
+            </div>
+            <div class="form-field">
+              <label for="workoutReps" class="form-label">Reps/Duration</label>
+              <input type="text" id="workoutReps" name="workoutReps" required class="form-input">
+            </div>
+            <div class="form-field">
+              <label for="workoutLoad" class="form-label">Load/Weight</label>
+              <input type="text" id="workoutLoad" name="workoutLoad" class="form-input">
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutMuscleExercised" class="block mb-1">Muscle(s) Exercised:</label>
-            <input type="text" id="workoutMuscleExercised" name="workoutMuscleExercised">
+          <!-- Additional Info -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="workoutBaseMET" class="form-label">Base MET</label>
+              <input type="number" id="workoutBaseMET" name="workoutBaseMET" required class="form-input" step="0.1" min="0">
+            </div>
+            <div class="form-field">
+              <label for="workoutSortOrder" class="form-label">Sort Order</label>
+              <input type="number" id="workoutSortOrder" name="workoutSortOrder" class="form-input" min="1">
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutEquipment" class="block mb-1">Equipment:</label>
-            <input type="text" id="workoutEquipment" name="workoutEquipment">
+          <div class="form-field">
+            <label for="workoutNotes" class="form-label">Notes</label>
+            <textarea id="workoutNotes" name="workoutNotes" class="form-textarea"></textarea>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutSets" class="block mb-1">Sets:</label>
-            <input type="text" id="workoutSets" name="workoutSets">
+          <!-- Action/Radio Buttons -->
+          <div class="form-field">
+            <label class="inline-flex items-center mr-4">
+              <input type="radio" name="workoutAction" value="update" checked class="form-radio">
+              <span class="ml-2">Update</span>
+            </label>
+            <label class="inline-flex items-center">
+              <input type="radio" name="workoutAction" value="delete" class="form-radio">
+              <span class="ml-2">Delete</span>
+            </label>
           </div>
-          <div class="form-field mb-2">
-            <label for="workoutReps" class="block mb-1">Reps/Duration:</label>
-            <input type="text" id="workoutReps" name="workoutReps">
-          </div>
-          <div class="form-field mb-2">
-            <label for="workoutLoad" class="block mb-1">Load:</label>
-            <input type="text" id="workoutLoad" name="workoutLoad">
-          </div>
-          <div class="form-field mb-2">
-            <label for="workoutNotes" class="block mb-1">Notes:</label>
-            <input type="text" id="workoutNotes" name="workoutNotes">
-          </div>
-          <div class="form-field mb-2">
-            <label for="workoutBaseMET" class="block mb-1">Base MET:</label>
-            <input type="number" id="workoutBaseMET" name="workoutBaseMET" min="1" max="10" required>
-          </div>
-          <div class="form-field mb-2">
-            <label for="workoutSortOrder" class="block mb-1">Sort Order:</label>
-            <input type="number" id="workoutSortOrder" name="workoutSortOrder">
-          </div>
-          <div class="modal-buttons flex justify-end gap-2 mt-4">
-            <button type="submit" class="btn bg-blue-500 text-white">Submit</button>
-            <button type="button" id="cancelWorkoutBtn" class="btn bg-gray-500 text-white">Cancel</button>
+          <!-- Form Buttons -->
+          <div class="flex justify-end gap-2">
+            <button type="submit" class="btn-primary">Submit</button>
+            <button type="button" id="cancelWorkoutBtn" class="btn-secondary">Cancel</button>
           </div>
         </form>
       </div>
     </div>
-    <!-- END: Workout Modal -->
 
-    <!-- BEGIN: Supplement Modal -->
-    <div id="supplementModal" class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" aria-hidden="true">
-      <div class="modal-content bg-white p-6 rounded shadow-lg max-w-lg w-full mx-4">
-        <h3 id="supplementModalTitle" class="text-xl font-semibold mb-4">Update Supplement</h3>
-        <div class="mb-4">
-          <label class="mr-4">
-            <input type="radio" name="supplementAction" value="update" checked>
-            Update
-          </label>
-          <label>
-            <input type="radio" name="supplementAction" value="delete">
-            Delete
-          </label>
-        </div>
-        <form id="supplementForm">
+    <!-- Supplement Modal -->
+    <div id="supplementModal" class="modal" aria-hidden="true">
+      <div class="modal-content bg-white w-full max-w-2xl mx-4 p-6 rounded-lg shadow-xl">
+        <h3 class="text-xl font-semibold mb-4">Supplement Details</h3>
+        <form id="supplementForm" class="space-y-4">
+          <!-- Hidden Field -->
           <input type="hidden" id="supplementId" name="supplementId">
-          <div class="form-field mb-2">
-            <label for="supplementTime" class="block mb-1">Time:</label>
-            <input type="time" id="supplementTime" name="supplementTime" required>
+          <!-- Basic Info Section -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="supplementTime" class="form-label">Time</label>
+              <input type="time" id="supplementTime" name="supplementTime" required class="form-input">
+            </div>
+            <div class="form-field">
+              <label for="supplementTimeSlot" class="form-label">Time Slot</label>
+              <select id="supplementTimeSlot" name="supplementTimeSlot" required class="form-select">
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="supplementTimeSlot" class="block mb-1">Time Slot:</label>
-            <input type="text" id="supplementTimeSlot" name="supplementTimeSlot" required>
+          <!-- Supplement Type Section -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="supplementSupplier" class="form-label">Supplier</label>
+              <input type="text" id="supplementSupplier" name="supplementSupplier" required class="form-input">
+            </div>
+            <div class="form-field">
+              <label for="supplementType" class="form-label">Supplement Type</label>
+              <select id="supplementType" name="supplementType" required class="form-select">
+                <option value="Protein">Protein</option>
+                <option value="Vitamin">Vitamin</option>
+                <option value="Mineral">Mineral</option>
+                <option value="Pre-workout">Pre-workout</option>
+              </select>
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="supplementSupplier" class="block mb-1">Supplier:</label>
-            <input type="text" id="supplementSupplier" name="supplementSupplier" required>
+          <!-- Supplement Details -->
+          <div class="form-field">
+            <label for="supplementName" class="form-label">Supplement</label>
+            <input type="text" id="supplementName" name="supplementName" required class="form-input">
           </div>
-          <div class="form-field mb-2">
-            <label for="supplementName" class="block mb-1">Supplement:</label>
-            <input type="text" id="supplementName" name="supplementName" required>
+          <!-- Additional Info -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field">
+              <label for="supplementAmount" class="form-label">Amount</label>
+              <input type="text" id="supplementAmount" name="supplementAmount" class="form-input">
+            </div>
+            <div class="form-field">
+              <label for="supplementUnit" class="form-label">Unit</label>
+              <input type="text" id="supplementUnit" name="supplementUnit" class="form-input">
+            </div>
           </div>
-          <div class="form-field mb-2">
-            <label for="supplementType" class="block mb-1">Type:</label>
-            <input type="text" id="supplementType" name="supplementType">
+          <div class="form-field">
+            <label for="supplementDescription" class="form-label">Description</label>
+            <textarea id="supplementDescription" name="supplementDescription" class="form-textarea"></textarea>
           </div>
-          <div class="form-field mb-2">
-            <label for="supplementAmount" class="block mb-1">Amount:</label>
-            <input type="text" id="supplementAmount" name="supplementAmount">
+          <!-- Action/Radio Buttons -->
+          <div class="form-field">
+            <label class="inline-flex items-center mr-4">
+              <input type="radio" name="supplementAction" value="update" checked class="form-radio">
+              <span class="ml-2">Update</span>
+            </label>
+            <label class="inline-flex items-center">
+              <input type="radio" name="supplementAction" value="delete" class="form-radio">
+              <span class="ml-2">Delete</span>
+            </label>
           </div>
-          <div class="form-field mb-2">
-            <label for="supplementUnit" class="block mb-1">Unit:</label>
-            <input type="text" id="supplementUnit" name="supplementUnit">
-          </div>
-          <div class="form-field mb-2">
-            <label for="supplementDescription" class="block mb-1">Description:</label>
-            <input type="text" id="supplementDescription" name="supplementDescription">
-          </div>
-          <div class="form-field mb-2">
-            <label for="supplementURL" class="block mb-1">URL:</label>
-            <input type="url" id="supplementURL" name="supplementURL">
-          </div>
-          <div class="modal-buttons flex justify-end gap-2 mt-4">
-            <button type="submit" class="btn bg-blue-500 text-white">Submit</button>
-            <button type="button" id="cancelSupplementBtn" class="btn bg-gray-500 text-white">Cancel</button>
+          <!-- Form Buttons -->
+          <div class="flex justify-end gap-2">
+            <button type="submit" class="btn-primary">Submit</button>
+            <button type="button" id="cancelSupplementBtn" class="btn-secondary">Cancel</button>
           </div>
         </form>
       </div>
     </div>
-    <!-- END: Supplement Modal -->
 
-
- 
     <!-- Footer Section -->
-    <footer class="footer-section">
-      <div class="container">
-        <div class="footer-content">
-          <a href="/legal/privacy.html" class="text-orange-600">Privacy Policy</a>
-          <br />
-          <a href="/legal/terms.html" class="text-orange-600">Terms of Service</a>
-          <br />
-          <br />
-          <p>&copy; 2025 Yutori Labs, LLC</p>
-        </div>
-      </div>
-    </footer>
-  
 
-
-    <!-- External Libraries: Sortable.js and Chart.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" crossorigin="anonymous"></script>
-
-    <!-- Set unit test flag before loading protocols.js -->
-    <script>
-      window.runUnitTests = true;
-    </script>
-
-    <!-- Load Navigation and Application Scripts -->
-    <script src="/nav.js"></script>
-    <script src="protocols.js"></script>
+  <div id="footer-placeholder"></div>
   </body>
 </html>

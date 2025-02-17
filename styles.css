@@ -8,9 +8,9 @@
 :root {
   --container-width: 1200px;
   --container-padding: 2rem;
-  --primary-color: #cd6e44;
+  --primary-color: #cd6e44;  /* Main brand orange */
   --secondary-color: #e6a954;
-  --hover-color: #b85e3a;
+  --hover-color: #b85e3a;    /* Darker orange for hover */
   --accent-color: #f7c08a;
   --text-color: #1f2937;
   --light-text: #6b7280;
@@ -61,13 +61,14 @@ h3 {
   padding: 0 var(--container-padding);
 }
 
-/* === Navigation === */
-.nav-wrapper {
+/* === Navigation and Footer Common Styles === */
+.nav-wrapper, .footer-wrapper {
   background: var(--card-bg);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   padding: 1rem 0;
 }
 
+/* === Navigation === */
 .logo {
   max-width: 160px;
   height: auto;
@@ -106,6 +107,8 @@ h3 {
 
 .hero-content {
   max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
 }
 
 .hero-title {
@@ -191,15 +194,26 @@ h3 {
 }
 
 /* === Footer === */
-.footer-section {
-  background: #393e46;
-  color: #fff;
-  padding: 2rem 0;
+.footer-wrapper {
+  border-bottom: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   margin-top: auto;
 }
 
 .footer-content {
-  opacity: 0.8;
+  padding: 1rem 0;
+  text-align: left;
+}
+
+.footer-content a {
+  display: inline-block;
+  text-decoration: none;
+  margin: 0.5rem 0;
+  transition: all 0.2s ease;
+}
+
+.footer-content p {
+  margin-top: 1rem;
   font-size: 0.9375rem;
 }
 
@@ -209,28 +223,31 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 4px;
-  background-color: #3498db;
+  background-color: var(--primary-color);
   color: #fff;
   margin-top: 10px;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
+
 button:hover {
-  background-color: #2980b9;
+  background-color: var(--hover-color);
   opacity: 0.9;
 }
 
-/* === Global Hover Rules for .btn and .project-button === */
+/* === Global Hover Rules === */
 .btn:hover,
 .project-button:hover {
   background-color: var(--hover-color) !important;
   transform: translateY(-2px) !important;
 }
 
-/* === Global Navigation Link Hover Override === */
+/* === Navigation and Footer Link Hover === */
 #navMenu a:hover,
-#navMenuMobile a:hover {
+#navMenuMobile a:hover,
+.footer-content a:hover {
   color: var(--primary-color) !important;
   transform: translateY(-2px) !important;
+  display: inline-block;
 }
 
 /* === Responsive Adjustments === */

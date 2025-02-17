@@ -1,9 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BMR &amp; TDEE Calculator</title>
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <!-- Responsive viewport and description -->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+      <meta name="description" content="Yutori Labs - Body Composition Calculator V1" />
+      <title>Body Composition Calculator</title>
+      <!-- Include Inter font -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+      <!-- Tailwind CSS -->
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+        rel="stylesheet"
+      />
+      <link rel="stylesheet" href="../styles.css" />
+      <link rel="stylesheet" href="/tdee/tdee.css" />
+   
+  <!-- Global Nav -->
+     <script src="/components/navigation.js"></script>
+     <script src="/components/pagecontents.js"></script>
+    </head>
+    <body>
+    <!-- Navigation and Hero Placeholders -->
+    <div id="nav-placeholder"></div>
+    <div id="hero-placeholder"></div>
   <style>
     /* Basic Reset & Typography */
     body {
@@ -163,16 +190,8 @@
 </head>
 <body>
   <main>
-    <h1>BMR &amp; TDEE Calculator</h1>
-    <p>
-      Use our wizard to determine your caloric needs.
-      <span class="tooltip" title="BMR: Basal Metabolic Rate; TDEE: Total Daily Energy Expenditure; MET: Metabolic Equivalent">[?]</span>
-    </p>
-    <!-- Progress Indicators -->
-    <div id="progress-text">Step 1 of 4</div>
-    <div id="progress-bar">
-      <div id="progress"></div>
-    </div>
+    <br>
+
     <div id="wizard">
       <!-- Step 1: Body Composition & Unit Selection -->
       <section class="wizard-step active" data-step="1">
@@ -284,19 +303,8 @@
     <div id="results"></div>
     <!-- Unit Test Results (hidden by default) -->
     <div id="testResults" style="display:none;"></div>
-    <!-- Disclaimer -->
-    <div style="margin-top: 30px; font-size: 0.9rem;">
-      <strong>Disclaimer about MET Values:</strong>
-      <ul>
-        <li>MET values are estimates; actual burn varies by intensity, fitness level, etc.</li>
-        <li>1 MET ≈ 3.5 ml O₂/kg/min (energy expended at rest).</li>
-      </ul>
-      <strong>Additional Notes:</strong>
-      <ul>
-        <li>Consult a healthcare or fitness professional when starting a new program.</li>
-        <li>These formulas provide approximate estimates, not exact prescriptions.</li>
-      </ul>
-    </div>
+    <br>
+
   </main>
   <script>
     /* ===== Global Variables & Predefined Exercise Options ===== */
@@ -717,5 +725,9 @@
       }
     }
   </script>
+
+    <!-- Footer Section -->
+    <div id="footer-placeholder"></div>
+
 </body>
 </html>
