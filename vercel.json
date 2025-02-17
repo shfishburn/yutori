@@ -1,63 +1,79 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "assets/**/*",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "calc/**/*",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "chat/**/*",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "editor/**/*",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "legal/**/*",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "protocols/**/*",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "*.{html,css,js}",
-        "use": "@vercel/static"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/assets/(.*)",
-        "dest": "/assets/$1"
-      },
-      {
-        "src": "/calc/(.*)",
-        "dest": "/calc/$1"
-      },
-      {
-        "src": "/chat/(.*)",
-        "dest": "/chat/$1"
-      },
-      {
-        "src": "/editor/(.*)",
-        "dest": "/editor/$1"
-      },
-      {
-        "src": "/legal/(.*)",
-        "dest": "/legal/$1"
-      },
-      {
-        "src": "/protocols/(.*)",
-        "dest": "/protocols/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/$1"
-      }
-    ]
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "assets/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "calc/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "chat/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "editor/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "legal/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "protocols/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "tdee/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "workouts/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.{html,css,js,json}",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/calc/(.*)",
+      "dest": "/calc/$1"
+    },
+    {
+      "src": "/chat/(.*)",
+      "dest": "/chat/$1"
+    },
+    {
+      "src": "/editor/(.*)",
+      "dest": "/editor/$1"
+    },
+    {
+      "src": "/legal/(.*)",
+      "dest": "/legal/$1"
+    },
+    {
+      "src": "/protocols/(.*)",
+      "dest": "/protocols/$1"
+    },
+    {
+      "src": "/tdee/(.*)",
+      "dest": "/tdee/$1"
+    },
+    {
+      "src": "/workouts/(.*)",
+      "dest": "/workouts/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
