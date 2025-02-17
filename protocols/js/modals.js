@@ -25,47 +25,45 @@ window.app.modals = (function () {
 
   function setupModalHandlers() {
     document.addEventListener("DOMContentLoaded", () => {
-      // Ensure all modals are hidden initially
-      document.querySelectorAll(".modal").forEach(modal => {
-        modal.style.display = "none";
-        modal.setAttribute("aria-hidden", "true");
-      });
-
-      Object.entries(MODAL_SELECTORS).forEach(([type, selector]) => {
-        const modal = document.querySelector(selector);
-        if (!modal) return;
-
-        const form = modal.querySelector(`#${type}Form`);
-        const cancelBtn = modal.querySelector(`#cancel${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
-
-        if (!form || !cancelBtn) {
-          console.error(`Form or cancel button missing for modal: ${type}`);
-          return;
-        }
-
-        // Handle action selection (update/delete toggle)
-        modal.querySelectorAll(`input[name="${type}Action"]`).forEach(radio => {
-          radio.addEventListener("change", (e) => {
-            toggleFormFields(type, e.target.value);
-          });
+        document.querySelectorAll(".modal").forEach(modal => {
+            modal.style.visibility = "hidden";
+            modal.style.opacity = "0";
+            modal.style.pointerEvents = "none";
+            modal.setAttribute("aria-hidden", "true");
         });
 
-        // Cancel button closes the modal
-        cancelBtn.addEventListener("click", () => closeModal(type));
-        
-        // Clicking outside modal also closes it
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) {
-            closeModal(type);
-          }
-        });
+        Object.entries(MODAL_SELECTORS).forEach(([type, selector]) => {
+            const modal = document.querySelector(selector);
+            if (!modal) return;
 
-        // Handle form submission
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          handleModalSubmit(type);
+            const form = modal.querySelector(`#${type}Form`);
+            const cancelBtn = modal.querySelector(`#cancel${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+
+            if (!form || !cancelBtn) {
+                console.error(`Form or cancel button missing for modal: ${type}`);
+                return;
+            }
+
+            modal.querySelectorAll(`input[name="${type}Action"]`).forEach(radio => {
+                radio.addEventListener("change", (e) => {
+                    toggleFormFields(type, e.target.value);
+                });
+            });
+
+            cancelBtn.addEventListener("click", () => closeModal(type));
+
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    e.stopPropagation();
+                    closeModal(type);
+                }
+            });
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                handleModalSubmit(type);
+            });
         });
-      });
     });
   }
 
@@ -78,6 +76,9 @@ window.app.modals = (function () {
 
     modal.querySelector(`#${type}Form`)?.reset();
     modal.classList.add("modal-open");
+    modal.style.visibility = "visible";
+    modal.style.opacity = "1";
+    modal.style.pointerEvents = "auto";
     modal.style.display = "flex";
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -92,7 +93,9 @@ window.app.modals = (function () {
     if (!modal) return;
     
     modal.classList.remove("modal-open");
-    modal.style.display = "none";
+    modal.style.visibility = "hidden";
+    modal.style.opacity = "0";
+    modal.style.pointerEvents = "none";
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
@@ -127,7 +130,7 @@ window.app.modals = (function () {
       if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
       const id = form.querySelector(`#${type}Id`).value;
       window.app.state.dispatch({ type: `DELETE_${type.toUpperCase()}`, payload: { id: Number(id) } });
-      closeModal(type);
+      setTimeout(() => closeModal(type), 100);
       return;
     }
     
@@ -153,15 +156,12 @@ window.app.modals = (function () {
     closeModal(type);
   }
 
-  // Initialize modal event handlers
   setupModalHandlers();
 
-  window.app.modals = {
+  return {
     openWorkoutModal: (item) => openModal("workout", item),
     openSupplementModal: (item) => openModal("supplement", item),
     closeWorkoutModal: () => closeModal("workout"),
     closeSupplementModal: () => closeModal("supplement"),
   };
-
-  return window.app.modals;
 })();
