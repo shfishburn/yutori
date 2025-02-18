@@ -118,11 +118,11 @@ const pageContent = {
           <!-- Mobile Navigation Menu -->
           <ul id="navMenuMobile" class="md:hidden hidden px-4 pb-4">
 
+            <li class="py-1"><a href="/index.html" class="block text-gray-800">Home</a></li> 
             <li class="py-1"><a href="/calc/calc.html" class="block text-gray-800">Calculator</a></li>
             <li class="py-1"><a href="/tdee/tdee.html" class="block text-gray-800">TDEE</a></li>
             <li class="py-1"><a href="/protocols/protocols.html" class="block text-gray-800">Protocols</a></li>
             <li class="py-1"><a href="/chat/chat.html" class="block text-gray-800">Fitness AI</a></li>
-            <li class="py-1"><a href="/index.html" class="block text-gray-800">Home</a></li>
             <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800">JSON Editor</a></li>
           </ul>
         </nav>

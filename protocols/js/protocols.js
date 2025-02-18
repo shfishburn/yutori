@@ -438,23 +438,29 @@ window.app.render = (function(store) {
       // Filter by selected date
       const selectedDate = document.getElementById('datePicker')?.value;
       if (selectedDate) {
-          const dateObj = new Date(selectedDate);
-          let jsDay = dateObj.getDay(); // 0-6 (Sunday-Saturday)
-      
-          // Adjust jsDay to match the dayOfWeek from 1-7 (Monday = 1, Sunday = 7)
-          jsDay = jsDay === 0 ? 7 : jsDay;  // Convert Sunday (0) to 7
-      
-          console.log('Selected date:', selectedDate);
-          console.log('Adjusted JS day number:', jsDay); // Debug the day number
-          
-          // Filter workouts based on the adjusted jsDay
-          workouts = workouts.filter(w => w.dayOfWeek === jsDay);
-          
-          console.log('Workouts being shown:', workouts.map(w => ({day: w.dayOfWeek, exercise: w.exercise})));
+        // Create a Date object with time set to noon in local time zone
+        // This avoids timezone issues when using getDay()
+        const parts = selectedDate.split('-');
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // JavaScript months are 0-indexed
+        const day = parseInt(parts[2]);
+        
+        const dateObj = new Date(year, month, day, 12, 0, 0);
+        
+        // Get the day of week (0-6) and convert to 1-7 format for JSON
+        const jsDay = dateObj.getDay();
+        const jsonDay = jsDay === 0 ? 7 : jsDay;
+        
+        console.log('Date selected:', selectedDate);
+        console.log('JavaScript day (0-6):', jsDay);
+        console.log('JSON day format (1-7):', jsonDay);
+        
+        // Filter workouts using the converted day format
+        workouts = workouts.filter(w => w.dayOfWeek === jsonDay);
+        
+        console.log('Workouts being shown:', workouts.map(w => ({day: w.dayOfWeek, exercise: w.exercise})));
       }
       
-      
-  
       // Group workouts by timeOfDay
       const groups = workouts.reduce((acc, workout) => {
         const key = workout.timeOfDay;

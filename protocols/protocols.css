@@ -1,4 +1,3 @@
-/* === Protocols-specific styles === */
 
 /* Tab Content Display */
 #integrated-app .tab-content {
@@ -23,6 +22,49 @@
 
 #integrated-app .tab-button:hover {
   transform: translateY(-2px);
+}
+
+/* Achievement Notifications */
+#achievement-notifications {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 400px;
+  margin: 0 auto 1rem;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 50;
+}
+
+.achievement-notification {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-notification.success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.achievement-notification.milestone {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.achievement-notification.level-up {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.achievement-notification.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 /* Group Headers and Content */
@@ -143,13 +185,7 @@
   animation: slide-in 0.3s ease-out;
 }
 
-/* Focus Styles */
-.tab-button:focus,
-input[type="checkbox"]:focus,
-.group-header:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -165,6 +201,63 @@ input[type="checkbox"]:focus,
   .supplement-card {
     padding: 0.75rem;
   }
+
+  #achievement-notifications {
+    position: static;
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+}
+
+/* Chart Container Specific Styles */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Achievement Notifications Styles */
+#achievement-notifications {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.achievement-notification {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-notification.success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.achievement-notification.milestone {
+  background-color: #2196F3;
+  color: white;
+}
+
+.achievement-notification.level-up {
+  background-color: #FF9800;
+  color: white;
+}
+
+.achievement-notification.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 /* Print Styles */
@@ -181,7 +274,39 @@ input[type="checkbox"]:focus,
   }
 
   .tab-button,
-  .drag-handle {
+  .drag-handle,
+  #achievement-notifications {
     display: none;
   }
+}
+
+/* Gamification Badge Styles */
+.achievement-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.badge-bronze {
+  background-color: #CD7F32;
+  color: white;
+}
+
+.badge-silver {
+  background-color: #C0C0C0;
+  color: black;
+}
+
+.badge-gold {
+  background-color: #FFD700;
+  color: black;
+}
+
+.badge-platinum {
+  background-color: #E5E4E2;
+  color: black;
 }

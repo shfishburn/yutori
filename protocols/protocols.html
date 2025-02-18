@@ -21,9 +21,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 
     <!-- Then load application JS files -->
-
-<script src="/protocols/js/protocols.js" defer></script>
-<script src="/protocols/js/charts.js" defer></script>
+    <script src="/protocols/js/protocols.js" defer></script>
+    <script src="/protocols/js/charts.js" defer></script>
 
     <!-- Navigation component -->
     <script src="/components/navigation.js"></script>
@@ -74,12 +73,62 @@
 
         <!-- Progress Tab -->
         <div id="tab-progress" class="tab-content hidden">
-          <h2 class="text-xl font-semibold">Progress Summary</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Achievements Column -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+              <h2 class="text-xl font-semibold mb-4">Achievements</h2>
+              <div id="achievementBadges" class="space-y-2">
+                <!-- Dynamically populated achievement badges -->
+                <div class="flex items-center bg-gray-100 p-2 rounded">
+                  <span class="mr-2">🔥</span>
+                  <span>Workout Streak: <span id="currentStreak">0</span> days</span>
+                </div>
+                <div class="flex items-center bg-gray-100 p-2 rounded">
+                  <span class="mr-2">🏆</span>
+                  <span>Longest Streak: <span id="longestStreak">0</span> days</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Summary Column -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+              <h2 class="text-xl font-semibold mb-4">Progress Summary</h2>
+              <div class="space-y-2">
+                <p>Daily Workouts: <span id="dailyProgress">0/0</span></p>
+                <p>Daily Supplements: <span id="supplementProgress">0/0</span></p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                  <div id="overallProgressBar" class="bg-orange-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mastery Levels Column -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+              <h2 class="text-xl font-semibold mb-4">Mastery Levels</h2>
+              <div id="masteryLevels" class="space-y-2">
+                <div class="flex items-center">
+                  <span class="mr-2">💪</span>
+                  <span>Workout Mastery: 
+                    <span id="workoutMasteryLevel">Novice</span>
+                  </span>
+                </div>
+                <div class="flex items-center">
+                  <span class="mr-2">💊</span>
+                  <span>Supplement Mastery: 
+                    <span id="supplementMasteryLevel">Novice</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="text-xl font-semibold mt-8 mb-4">Progress Visualizations</h2>
+          
+          <!-- Existing Charts Section -->
           <div id="progressContainer" class="mt-4">
             <!-- Workout Progress -->
             <div class="workout-charts mb-8">
               <h3 class="text-lg font-medium mb-4">Workout Progress</h3>
-              <p>Daily Workouts: <span id="dailyProgress">0/0</span></p>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="chart-container">
                   <canvas id="dailyMETChart"></canvas>
@@ -99,7 +148,6 @@
             <!-- Supplement Progress -->
             <div class="supplement-charts">
               <h3 class="text-lg font-medium mb-4">Supplement Progress</h3>
-              <p>Daily Supplements: <span id="supplementProgress">0/0</span></p>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="chart-container">
                   <canvas id="supplementCompletionChart"></canvas>
@@ -115,30 +163,12 @@
                 </div>
               </div>
             </div>
-
-            <!-- Combined Progress -->
-            <div class="combined-progress mt-8">
-              <h3 class="text-lg font-medium mb-4">Overall Progress</h3>
-              <p>Total Progress: <span id="totalProgress">0/0</span></p>
-              <div class="chart-container mx-auto">
-                <canvas id="overallProgressChart"></canvas>
-              </div>
-            </div>
           </div>
         </div>
       </main>
+
+      <!-- Footer Section -->
+      <div id="footer-placeholder"></div>
     </div>
-
-    <!-- Footer Section -->
-    <div id="footer-placeholder"></div>
-
-    <style>
-      .chart-container {
-        position: relative;
-        height: 300px;
-        width: 100%;
-        margin-bottom: 1rem;
-      }
-    </style>
   </body>
 </html>
