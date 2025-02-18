@@ -109,9 +109,7 @@ const pageContent = {
             <ul id="navMenu" class="hidden md:flex space-x-6">
               <li><a href="/index.html" class="text-gray-800">Home</a></li>
               <li><a href="/calc/calc.html" class="text-gray-800">Calculator</a></li>
-              <li><a href="/tdee/tdee.html" class="text-gray-800">TDEE</a></li>
               <li><a href="/protocols/protocols.html" class="text-gray-800">Protocols</a></li>
-            <li><a href="/editor/editor.html" class="text-gray-800">JSON Editor</a></li>
             </ul>
           </div>
           <!-- Mobile Navigation Menu -->
@@ -119,9 +117,7 @@ const pageContent = {
 
             <li class="py-1"><a href="/index.html" class="block text-gray-800">Home</a></li> 
             <li class="py-1"><a href="/calc/calc.html" class="block text-gray-800">Calculator</a></li>
-            <li class="py-1"><a href="/tdee/tdee.html" class="block text-gray-800">TDEE</a></li>
             <li class="py-1"><a href="/protocols/protocols.html" class="block text-gray-800">Protocols</a></li>
-            <li class="py-1"><a href="/editor/editor.html" class="block text-gray-800">JSON Editor</a></li>
           </ul>
         </nav>
       `;
