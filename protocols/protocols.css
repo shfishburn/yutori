@@ -1,0 +1,187 @@
+/* === Protocols-specific styles === */
+
+/* Tab Content Display */
+#integrated-app .tab-content {
+  display: none;
+}
+
+#integrated-app .tab-content.active {
+  display: block;
+}
+
+/* Active Tab Button Styles */
+#integrated-app .tab-button {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+#integrated-app .tab-button.active {
+  background-color: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
+}
+
+#integrated-app .tab-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Group Headers and Content */
+.group-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.group-header:hover {
+  background-color: #e5e7eb;
+}
+
+.group-content {
+  overflow: hidden;
+  transition: height 0.3s ease-in-out;
+}
+
+/* Toggle Arrow Styles */
+.toggle-btn {
+  transition: transform 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.collapsed .toggle-btn {
+  transform: rotate(-90deg);
+}
+
+/* Card Styles */
+.workout-card,
+.supplement-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.workout-card:hover,
+.supplement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Drag Handle Styles */
+.drag-handle {
+  color: #9ca3af;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Chart Container Styles */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+/* Progress Section Styles */
+#progressContainer .workout-charts,
+#progressContainer .supplement-charts,
+#progressContainer .combined-progress {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Detail Lists Styling */
+.exercise-details,
+.supplement-details {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.detail-label {
+  color: #4b5563;
+  margin-right: 0.5rem;
+}
+
+/* Checkbox Styling */
+.workout-card input[type="checkbox"],
+.supplement-card input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border: 2px solid var(--primary-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.workout-card input[type="checkbox"]:checked,
+.supplement-card input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Animation Styles */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-container {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Focus Styles */
+.tab-button:focus,
+input[type="checkbox"]:focus,
+.group-header:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px;
+  }
+
+  #progressContainer .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workout-card,
+  .supplement-card {
+    padding: 0.75rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .chart-container {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .workout-card,
+  .supplement-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .tab-button,
+  .drag-handle {
+    display: none;
+  }
+}

@@ -2,44 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Responsive viewport and description -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <meta name="description" content="Yutori Labs - Building cutting-edge solutions for complex problems" />
     <title>Yutori Labs - Development Projects</title>
+
     <!-- Preconnect and load Inter font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
     <!-- Tailwind CSS -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <!-- Global styles -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css">
-    <!-- Workouts/Supplements Page Styles -->
     <link rel="stylesheet" href="/protocols/protocols.css" />
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+    <!-- Load Chart.js first without defer -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <!-- Our JS files (loaded with defer) -->
-    <script src="/protocols/js/charts.js" defer></script>
-    <script src="/protocols/js/modals.js" defer></script>
-    <script src="/protocols/js/protocols.js" defer></script>
-  
-    <!-- Global Nav -->
-  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+    <!-- Then load application JS files -->
+
+<script src="/protocols/js/protocols.js" defer></script>
+<script src="/protocols/js/charts.js" defer></script>
+
+    <!-- Navigation component -->
     <script src="/components/navigation.js"></script>
-    <script src="/components/pagecontents.js"></script>
   </head>
   <body>
-
-     <!-- Navigation and Hero Placeholders -->
-     <div id="nav-placeholder"></div>
-     <div id="hero-placeholder"></div>
+    <!-- Navigation and Hero Placeholders -->
+    <div id="nav-placeholder"></div>
+    <div id="hero-placeholder"></div>
 
     <!-- Integrated Workout App -->
     <div id="integrated-app" class="container mx-auto bg-white p-6 shadow-lg rounded-lg">
@@ -51,14 +43,19 @@
       <!-- Date Picker -->
       <div class="flex items-center space-x-2 mt-4">
         <label for="datePicker" class="text-sm"><strong>Select Date:</strong></label>
-        <input type="date" id="datePicker" class="p-2 text-gray-900 rounded border border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300">
+        <input type="date" 
+               id="datePicker" 
+               class="p-2 text-gray-900 rounded border border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300">
       </div>
 
       <!-- Tab Navigation -->
       <div class="tab-bar flex border-b-2 mt-4">
-        <button data-tab="tab-workout" class="tab-button px-4 py-2 border-b-2 border-orange-600">Workouts</button>
-        <button data-tab="tab-supplements" class="tab-button px-4 py-2 border-b-2 border-orange-600">Supplements</button>
-        <button data-tab="tab-progress" class="tab-button px-4 py-2 border-b-2 border-orange-600">Progress</button>
+        <button data-tab="tab-workout" 
+                class="tab-button px-4 py-2 border-b-2 border-orange-600">Workouts</button>
+        <button data-tab="tab-supplements" 
+                class="tab-button px-4 py-2 border-b-2 border-orange-600">Supplements</button>
+        <button data-tab="tab-progress" 
+                class="tab-button px-4 py-2 border-b-2 border-orange-600">Progress</button>
       </div>
 
       <!-- Tab Content -->
@@ -66,71 +63,13 @@
         <!-- Workouts Tab -->
         <div id="tab-workout" class="tab-content active">
           <h2 class="text-xl font-semibold">Workout Plan</h2>
-          <!-- Workout Filters -->
-          <div id="workoutsFilterSection" class="filter-section mb-4 bg-gray-50 p-4 rounded-lg">
-            <div class="flex flex-wrap gap-4">
-              <div class="filter-group" data-filter-type="timeOfDay">
-                <label class="block text-sm font-medium mb-1">Time of Day</label>
-                <select class="filter-select px-3 py-2 border rounded">
-                  <option value="">All</option>
-                  <option value="Morning">Morning</option>
-                  <option value="Evening">Evening</option>
-                </select>
-              </div>
-              <div class="filter-group" data-filter-type="session">
-                <label class="block text-sm font-medium mb-1">Session Type</label>
-                <select class="filter-select px-3 py-2 border rounded">
-                  <option value="">All</option>
-                  <option value="Cardio">Cardio</option>
-                  <option value="Strength">Strength</option>
-                  <option value="Flexibility">Flexibility</option>
-                </select>
-              </div>
-              <!-- Additional workout filters can be added here -->
-            </div>
-            <div class="flex justify-between mt-4">
-              <div class="active-filters text-sm"></div>
-              <button id="clearWorkoutsFilters" class="clear-filters px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Clear Filters</button>
-            </div>
-          </div>
           <div id="workoutContainer" class="mt-4"></div>
-          <button id="addWorkoutBtn" class="btn bg-orange-500 text-white px-4 py-2 mt-4 rounded">Add Workout</button>
         </div>
 
         <!-- Supplements Tab -->
         <div id="tab-supplements" class="tab-content hidden">
           <h2 class="text-xl font-semibold">Supplement Plan</h2>
-          <!-- Supplement Filters -->
-          <div id="supplementsFilterSection" class="filter-section mb-4 bg-gray-50 p-4 rounded-lg">
-            <div class="flex flex-wrap gap-4">
-              <div class="filter-group" data-filter-type="timeSlot">
-                <label class="block text-sm font-medium mb-1">Time Slot</label>
-                <select class="filter-select px-3 py-2 border rounded">
-                  <option value="">All</option>
-                  <option value="Morning">Morning</option>
-                  <option value="Afternoon">Afternoon</option>
-                  <option value="Evening">Evening</option>
-                </select>
-              </div>
-              <div class="filter-group" data-filter-type="type">
-                <label class="block text-sm font-medium mb-1">Supplement Type</label>
-                <select class="filter-select px-3 py-2 border rounded">
-                  <option value="">All</option>
-                  <option value="Protein">Protein</option>
-                  <option value="Vitamin">Vitamin</option>
-                  <option value="Mineral">Mineral</option>
-                  <option value="Pre-workout">Pre-workout</option>
-                </select>
-              </div>
-              <!-- Additional supplement filters can be added here -->
-            </div>
-            <div class="flex justify-between mt-4">
-              <div class="active-filters text-sm"></div>
-              <button id="clearSupplementsFilters" class="clear-filters px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Clear Filters</button>
-            </div>
-          </div>
           <div id="supplementsContainer" class="mt-4"></div>
-          <button id="addSupplementBtn" class="btn bg-orange-500 text-white px-4 py-2 mt-4 rounded">Add Supplement</button>
         </div>
 
         <!-- Progress Tab -->
@@ -156,6 +95,7 @@
                 </div>
               </div>
             </div>
+
             <!-- Supplement Progress -->
             <div class="supplement-charts">
               <h3 class="text-lg font-medium mb-4">Supplement Progress</h3>
@@ -175,6 +115,7 @@
                 </div>
               </div>
             </div>
+
             <!-- Combined Progress -->
             <div class="combined-progress mt-8">
               <h3 class="text-lg font-medium mb-4">Overall Progress</h3>
@@ -188,211 +129,16 @@
       </main>
     </div>
 
-    <!-- Workout Modal -->
-    <div id="workoutModal" class="modal" aria-hidden="true">
-      <div class="modal-content bg-white w-full max-w-2xl mx-4 p-6 rounded-lg shadow-xl">
-        <h3 class="text-xl font-semibold mb-4">Workout Details</h3>
-        <form id="workoutForm" class="space-y-4">
-          <!-- Hidden Field -->
-          <input type="hidden" id="workoutId" name="workoutId">
-          <!-- Basic Info Section -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="workoutDayOfWeek" class="form-label">Day of Week</label>
-              <select id="workoutDayOfWeek" name="workoutDayOfWeek" required class="form-select">
-                <option value="1">Monday</option>
-                <option value="2">Tuesday</option>
-                <option value="3">Wednesday</option>
-                <option value="4">Thursday</option>
-                <option value="5">Friday</option>
-                <option value="6">Saturday</option>
-                <option value="7">Sunday</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label for="workoutTimeOfDay" class="form-label">Time of Day</label>
-              <select id="workoutTimeOfDay" name="workoutTimeOfDay" required class="form-select">
-                <option value="Morning">Morning</option>
-                <option value="Evening">Evening</option>
-              </select>
-            </div>
-          </div>
-          <!-- Workout Type Section -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="workoutSession" class="form-label">Session Type</label>
-              <select id="workoutSession" name="workoutSession" required class="form-select">
-                <option value="Cardio">Cardio</option>
-                <option value="Strength">Strength</option>
-                <option value="Flexibility">Flexibility</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label for="workoutFocusArea" class="form-label">Focus Area</label>
-              <select id="workoutFocusArea" name="workoutFocusArea" required class="form-select">
-                <option value="Endurance">Endurance</option>
-                <option value="Power">Power</option>
-                <option value="Strength">Strength</option>
-              </select>
-            </div>
-          </div>
-          <!-- Exercise Details -->
-          <div class="form-field">
-            <label for="workoutExercise" class="form-label">Exercise</label>
-            <input type="text" id="workoutExercise" name="workoutExercise" required class="form-input">
-          </div>
-          <!-- Equipment Section -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="workoutMuscleExercised" class="form-label">Muscle Group</label>
-              <select id="workoutMuscleExercised" name="workoutMuscleExercised" required class="form-select">
-                <option value="Legs">Legs</option>
-                <option value="Chest">Chest</option>
-                <option value="Back">Back</option>
-                <option value="Arms">Arms</option>
-                <option value="Core">Core</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label for="workoutEquipment" class="form-label">Equipment</label>
-              <select id="workoutEquipment" name="workoutEquipment" required class="form-select">
-                <option value="None">None</option>
-                <option value="Dumbbells">Dumbbells</option>
-                <option value="Barbell">Barbell</option>
-                <option value="Machine">Machine</option>
-              </select>
-            </div>
-          </div>
-          <!-- Volume Section -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="form-field">
-              <label for="workoutSets" class="form-label">Sets</label>
-              <input type="number" id="workoutSets" name="workoutSets" required class="form-input" min="1">
-            </div>
-            <div class="form-field">
-              <label for="workoutReps" class="form-label">Reps/Duration</label>
-              <input type="text" id="workoutReps" name="workoutReps" required class="form-input">
-            </div>
-            <div class="form-field">
-              <label for="workoutLoad" class="form-label">Load/Weight</label>
-              <input type="text" id="workoutLoad" name="workoutLoad" class="form-input">
-            </div>
-          </div>
-          <!-- Additional Info -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="workoutBaseMET" class="form-label">Base MET</label>
-              <input type="number" id="workoutBaseMET" name="workoutBaseMET" required class="form-input" step="0.1" min="0">
-            </div>
-            <div class="form-field">
-              <label for="workoutSortOrder" class="form-label">Sort Order</label>
-              <input type="number" id="workoutSortOrder" name="workoutSortOrder" class="form-input" min="1">
-            </div>
-          </div>
-          <div class="form-field">
-            <label for="workoutNotes" class="form-label">Notes</label>
-            <textarea id="workoutNotes" name="workoutNotes" class="form-textarea"></textarea>
-          </div>
-          <!-- Action/Radio Buttons -->
-          <div class="form-field">
-            <label class="inline-flex items-center mr-4">
-              <input type="radio" name="workoutAction" value="update" checked class="form-radio">
-              <span class="ml-2">Update</span>
-            </label>
-            <label class="inline-flex items-center">
-              <input type="radio" name="workoutAction" value="delete" class="form-radio">
-              <span class="ml-2">Delete</span>
-            </label>
-          </div>
-          <!-- Form Buttons -->
-          <div class="flex justify-end gap-2">
-            <button type="submit" class="btn-primary">Submit</button>
-            <button type="button" id="cancelWorkoutBtn" class="btn-secondary">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Supplement Modal -->
-    <div id="supplementModal" class="modal" aria-hidden="true">
-      <div class="modal-content bg-white w-full max-w-2xl mx-4 p-6 rounded-lg shadow-xl">
-        <h3 class="text-xl font-semibold mb-4">Supplement Details</h3>
-        <form id="supplementForm" class="space-y-4">
-          <!-- Hidden Field -->
-          <input type="hidden" id="supplementId" name="supplementId">
-          <!-- Basic Info Section -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="supplementTime" class="form-label">Time</label>
-              <input type="time" id="supplementTime" name="supplementTime" required class="form-input">
-            </div>
-            <div class="form-field">
-              <label for="supplementTimeSlot" class="form-label">Time Slot</label>
-              <select id="supplementTimeSlot" name="supplementTimeSlot" required class="form-select">
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon</option>
-                <option value="Evening">Evening</option>
-              </select>
-            </div>
-          </div>
-          <!-- Supplement Type Section -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="supplementSupplier" class="form-label">Supplier</label>
-              <input type="text" id="supplementSupplier" name="supplementSupplier" required class="form-input">
-            </div>
-            <div class="form-field">
-              <label for="supplementType" class="form-label">Supplement Type</label>
-              <select id="supplementType" name="supplementType" required class="form-select">
-                <option value="Protein">Protein</option>
-                <option value="Vitamin">Vitamin</option>
-                <option value="Mineral">Mineral</option>
-                <option value="Pre-workout">Pre-workout</option>
-              </select>
-            </div>
-          </div>
-          <!-- Supplement Details -->
-          <div class="form-field">
-            <label for="supplementName" class="form-label">Supplement</label>
-            <input type="text" id="supplementName" name="supplementName" required class="form-input">
-          </div>
-          <!-- Additional Info -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-field">
-              <label for="supplementAmount" class="form-label">Amount</label>
-              <input type="text" id="supplementAmount" name="supplementAmount" class="form-input">
-            </div>
-            <div class="form-field">
-              <label for="supplementUnit" class="form-label">Unit</label>
-              <input type="text" id="supplementUnit" name="supplementUnit" class="form-input">
-            </div>
-          </div>
-          <div class="form-field">
-            <label for="supplementDescription" class="form-label">Description</label>
-            <textarea id="supplementDescription" name="supplementDescription" class="form-textarea"></textarea>
-          </div>
-          <!-- Action/Radio Buttons -->
-          <div class="form-field">
-            <label class="inline-flex items-center mr-4">
-              <input type="radio" name="supplementAction" value="update" checked class="form-radio">
-              <span class="ml-2">Update</span>
-            </label>
-            <label class="inline-flex items-center">
-              <input type="radio" name="supplementAction" value="delete" class="form-radio">
-              <span class="ml-2">Delete</span>
-            </label>
-          </div>
-          <!-- Form Buttons -->
-          <div class="flex justify-end gap-2">
-            <button type="submit" class="btn-primary">Submit</button>
-            <button type="button" id="cancelSupplementBtn" class="btn-secondary">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
     <!-- Footer Section -->
+    <div id="footer-placeholder"></div>
 
-  <div id="footer-placeholder"></div>
+    <style>
+      .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+    </style>
   </body>
 </html>

@@ -1225,7 +1225,7 @@
   },
   {
     "id": 245,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Morning",
     "session": "Active Recovery",
     "focusArea": "Fascial Integration",
@@ -1242,7 +1242,7 @@
   },
   {
     "id": 246,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Morning",
     "session": "Endurance",
     "focusArea": "Chain Endurance",
@@ -1259,7 +1259,7 @@
   },
   {
     "id": 247,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Evening",
     "session": "Active Recovery",
     "focusArea": "Fascial Integration",
@@ -1276,7 +1276,7 @@
   },
   {
     "id": 248,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Evening",
     "session": "Active Recovery",
     "focusArea": "Recovery Integration",
@@ -1293,7 +1293,7 @@
   },
   {
     "id": 400,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Evening",
     "session": "Recovery",
     "focusArea": "Recovery Integration",
@@ -1310,7 +1310,7 @@
   },
   {
     "id": 401,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Evening",
     "session": "Recovery",
     "focusArea": "Recovery Integration",
@@ -1327,7 +1327,7 @@
   },
   {
     "id": 402,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Evening",
     "session": "Recovery",
     "focusArea": "Recovery Integration",
@@ -1344,7 +1344,7 @@
   },
   {
     "id": 403,
-    "dayOfWeek": 7,
+    "dayOfWeek": 0,
     "timeOfDay": "Evening",
     "session": "Strength",
     "focusArea": "Core Integration",
