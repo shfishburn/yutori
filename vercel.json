@@ -44,12 +44,29 @@
   ],
   "routes": [
     {
+      "src": "/calc/population-data\\.js$",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "X-Content-Type-Options": "nosniff"
+      }
+    },
+    {
+      "src": "/calc/.*\\.js$",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "X-Content-Type-Options": "nosniff"
+      }
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/assets/$1"
     },
     {
       "src": "/calc/(.*)",
-      "dest": "/calc/$1"
+      "dest": "/calc/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
     },
     {
       "src": "/chat/(.*)",
@@ -81,6 +98,9 @@
     },
     {
       "src": "/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/$1"
     }
   ]
