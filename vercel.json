@@ -30,6 +30,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "strength/**/*",
+      "use": "@vercel/static"
+    },
+    {
       "src": "tdee/**/*",
       "use": "@vercel/static"
     },
@@ -87,6 +91,10 @@
     {
       "src": "/protocols/(.*)",
       "dest": "/protocols/$1"
+    },
+    {
+      "src": "/strength/(.*)",
+      "dest": "/strength/$1"
     },
     {
       "src": "/tdee/(.*)",
