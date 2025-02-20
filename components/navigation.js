@@ -101,7 +101,7 @@ const pageContent = {
   },
   '/strength': {
     hero: {
-      title: 'Strength Training Library',
+      title: 'Strength Training',
       subtitle: 'Comprehensive database of exercises with detailed instructions, muscle engagement information, and advanced filtering capabilities'
     }
   }
