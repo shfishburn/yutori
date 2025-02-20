@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="Yutori Labs - Exercise Library">
+    <title>Yutori Labs - Exercise Library</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind and Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    
+    <!-- Global styles -->
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="css/strength.css">
+
+    <!-- Global Navigation -->
+    <script src="/components/navigation.js"></script>
+    <script src="/components/pagecontents.js"></script>
+</head>
+<body>
+    <!-- Navigation and Hero -->
+    <div id="nav-placeholder"></div>
+    <div id="hero-placeholder"></div>
+
+    <!-- Main Content Container -->
+    <div class="container mx-auto px-4">
+        <!-- Filters Section -->
+        <section class="filters-section py-8">
+            <div id="filters" class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Anatomy Trains Filter -->
+                    <div>
+                        <label for="anatomyTrainsFilter" class="block font-semibold mb-1">Anatomy Trains:</label>
+                        <select id="anatomyTrainsFilter" multiple class="w-full"></select>
+                    </div>
+                    
+                    <!-- Muscle Group Filter -->
+                    <div>
+                        <label for="muscleGroupFilter" class="block font-semibold mb-1">Muscle Groups:</label>
+                        <select id="muscleGroupFilter" multiple class="w-full"></select>
+                    </div>
+                    
+                    <!-- Specific Muscles Filter -->
+                    <div>
+                        <label for="musclesFilter" class="block font-semibold mb-1">Specific Muscles:</label>
+                        <select id="musclesFilter" multiple class="w-full"></select>
+                    </div>
+
+                    <!-- NASM Category Filter -->
+                    <div>
+                        <label for="nasmCategoryFilter" class="block font-semibold mb-1">NASM Category:</label>
+                        <select id="nasmCategoryFilter" multiple class="w-full"></select>
+                    </div>
+
+                    <!-- Movement Type Filter -->
+                    <div>
+                        <label for="movementTypeFilter" class="block font-semibold mb-1">Movement Type:</label>
+                        <select id="movementTypeFilter" multiple class="w-full"></select>
+                    </div>
+
+                    <!-- Equipment Type Filter -->
+                    <div>
+                        <label for="equipmentTypeFilter" class="block font-semibold mb-1">Equipment Type:</label>
+                        <select id="equipmentTypeFilter" multiple class="w-full"></select>
+                    </div>
+
+                    <!-- Text Search -->
+                    <div>
+                        <label for="searchBox" class="block font-semibold mb-1">Search Exercise Name:</label>
+                        <input type="text" id="searchBox" placeholder="Type to search..." 
+                               class="w-full border border-gray-300 rounded p-2">
+                    </div>
+                </div>
+
+                <!-- Clear Filters -->
+                <div class="mt-4">
+                    <button id="clearAllFilters" class="text-primary hover:text-hover-color underline">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Count and Pagination Controls -->
+            <div class="bg-gray-50 p-4 rounded-lg shadow-sm mb-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-gray-600" id="resultsCount">
+                        <!-- This will be populated by JS -->
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <label for="itemsPerPage" class="text-sm text-gray-600">Show:</label>
+                            <select id="itemsPerPage" class="rounded border border-gray-300 text-sm p-1">
+                                <option value="10">10</option>
+                                <option value="25" selected>25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">All</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="prevPage" class="px-3 py-1 rounded text-sm bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50">Previous</button>
+                            <span class="text-sm text-gray-600">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                            <button id="nextPage" class="px-3 py-1 rounded text-sm bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercise List Section -->
+        <section class="exercises-section py-8">
+            <div id="exerciseList">
+                <!-- Exercise cards will be inserted here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="/strength/js/strength.js"></script>
+</body>
+</html>

@@ -44,14 +44,14 @@
   ],
   "routes": [
     {
-      "src": "/calc/population-data\\.js$",
+      "src": "/calc/js/population-data\\.js$",
       "headers": {
         "Content-Type": "application/javascript; charset=utf-8",
         "X-Content-Type-Options": "nosniff"
       }
     },
     {
-      "src": "/calc/.*\\.js$",
+      "src": "/calc/js/.*\\.js$",
       "headers": {
         "Content-Type": "application/javascript",
         "X-Content-Type-Options": "nosniff"

@@ -1,0 +1,164 @@
+/* Filter section */
+#filters {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .select2-container {
+      width: 100% !important;
+    }
+    
+    .grid-cols-2 {
+      grid-template-columns: 1fr;
+    }
+    
+    #filters {
+      padding: 1rem;
+    }
+  }
+  
+  /* Loading spinner */
+  .loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #3b82f6;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Status messages */
+  .status-message {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+  }
+  
+  /* Filter tags */
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+  
+  .filter-tag button {
+    margin-left: 0.5rem;
+    padding: 0.125rem;
+    line-height: 1;
+  }
+  
+  /* Card content styling */
+  .exercise-card p {
+    margin-bottom: 0.5rem;
+  }
+  
+  .exercise-card ol {
+    margin-left: 1.25rem;
+  }
+  
+  .exercise-card ol li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Section backgrounds */
+  .bg-section {
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Enhanced muscle tag styles */
+  .muscle-region-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .muscle-region-legend span {
+    display: flex;
+    align-items: center;
+  }
+  
+  .muscle-region-legend span::before {
+    content: "";
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.25rem;
+    border-radius: 50%;
+  }
+  
+  .muscle-region-upper::before {
+    background-color: #f87171;
+  }
+  
+  .muscle-region-core::before {
+    background-color: #60a5fa;
+  }
+  
+  .muscle-region-lower::before {
+    background-color: #f59e0b; /* Darker amber for better visibility */
+  }
+  
+  /* Instruction formatting */
+  .instruction-steps {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .instruction-steps li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+  
+  .instruction-label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+  
+  /* Ensure consistent card widths with 2-column layout */
+  .exercise-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  @media (min-width: 1024px) {
+    .exercise-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  /* Print styles */
+  @media print {
+    .exercise-card {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    
+    #filters {
+      display: none;
+    }
+    
+    .container {
+      max-width: none;
+      padding: 0;
+    }
+  }
