@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "strength/**/*",
+      "use": "@vercel/static"
+    },
+    {
       "src": "assets/**/*",
       "use": "@vercel/static"
     },
@@ -30,10 +34,6 @@
       "use": "@vercel/static"
     },
     {
-      "src": "strength/**/*",
-      "use": "@vercel/static"
-    },
-    {
       "src": "tdee/**/*",
       "use": "@vercel/static"
     },
@@ -47,6 +47,22 @@
     }
   ],
   "routes": [
+    {
+      "src": "/strength/strength\\.html$",
+      "dest": "/strength/strength.html"
+    },
+    {
+      "src": "/strength/$",
+      "dest": "/strength/strength.html"
+    },
+    {
+      "src": "/strength$",
+      "dest": "/strength/strength.html"
+    },
+    {
+      "src": "/strength/(.*)",
+      "dest": "/strength/$1"
+    },
     {
       "src": "/calc/js/population-data\\.js$",
       "headers": {
@@ -91,10 +107,6 @@
     {
       "src": "/protocols/(.*)",
       "dest": "/protocols/$1"
-    },
-    {
-      "src": "/strength/(.*)",
-      "dest": "/strength/$1"
     },
     {
       "src": "/tdee/(.*)",
