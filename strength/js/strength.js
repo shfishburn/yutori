@@ -143,8 +143,16 @@ $(document).ready(function() {
         console.log("Flattened exercises:", exercises);
         console.log("Total exercises found:", exercises.length);
         
+        // Extract unique anatomy trains from the loaded exercises
+        const uniqueAnatomyTrains = new Set();
+        exercises.forEach(exercise => {
+            if (exercise.details.anatomy_trains) {
+                exercise.details.anatomy_trains.forEach(train => uniqueAnatomyTrains.add(train.trim()));
+            }
+        });
+        
         // Populate all filter dropdowns
-        populateSelect($("#anatomyTrainsFilter"), ANATOMY_TRAINS);
+        populateSelect($("#anatomyTrainsFilter"), Array.from(uniqueAnatomyTrains));
         populateMuscleGroupFilter();
         populateMusclesFilter();
         populateSelect($("#nasmCategoryFilter"), NASM_CATEGORIES);
@@ -214,7 +222,9 @@ $(document).ready(function() {
 
             // Anatomy Trains filter
             if (selectedAnatomy.length > 0) {
-                if (!(d.anatomy_trains && selectedAnatomy.some(t => d.anatomy_trains.includes(t)))) return false;
+                if (!(d.anatomy_trains && selectedAnatomy.some(t => 
+                    d.anatomy_trains.map(train => train.trim()).includes(t)
+                ))) return false;
             }
 
             // Muscle Group filter
@@ -409,156 +419,31 @@ $(document).ready(function() {
     
     $("#searchBox").on("keyup", applyFilters);
 
-    // Clear filters button
-    $("#clearAllFilters").on("click", function() {
-        $("#anatomyTrainsFilter, #muscleGroupFilter, #musclesFilter, #nasmCategoryFilter, #movementTypeFilter, #equipmentTypeFilter")
-            .val(null).trigger("change");
-        $("#searchBox").val("").trigger("keyup");
-    });
+    //// Clear filters button
+$("#clearAllFilters").on("click", function() {
+    $("#anatomyTrainsFilter, #muscleGroupFilter, #musclesFilter, #nasmCategoryFilter, #movementTypeFilter, #equipmentTypeFilter")
+        .val(null).trigger("change");
+    $("#searchBox").val("").trigger("keyup");
+});
 });
 
 // Helper function to check muscle group membership
 function isMuscleBelongingToGroup(muscle, group) {
-    if (group === 'Core & Trunk' && MUSCLES['Core & Trunk'].includes(muscle)) return true;
-    if (group === 'Lower Body' && MUSCLES['Lower Body'].includes(muscle)) return true;
-    
-    const upperBodyGroups = Object.keys(MUSCLES['Upper Body']);
-    if (upperBodyGroups.includes(group)) {
-        return MUSCLES['Upper Body'][group].includes(muscle);
-    }
-    
-    return false;
+if (group === 'Core & Trunk' && MUSCLES['Core & Trunk'].includes(muscle)) return true;
+if (group === 'Lower Body' && MUSCLES['Lower Body'].includes(muscle)) return true;
+
+const upperBodyGroups = Object.keys(MUSCLES['Upper Body']);
+if (upperBodyGroups.includes(group)) {
+    return MUSCLES['Upper Body'][group].includes(muscle);
 }
 
-// Exercise card generation with improved UI structure
-function generateExerciseCard(item, d) {
-    // Format instructions into numbered list with better UI structure
-    let instructionsHtml = '';
-    
-    if (d.instructions && d.instructions !== 'N/A') {
-        // More robust parsing: split by periods and semicolons, handle multiple clauses properly
-        const steps = d.instructions
-            .replace(/; /g, '. ') // Replace semicolons with periods to handle those cases
-            .replace(/, then /g, '. Then ') // Split "then" clauses into separate steps
-            .split('.')
-            .map(step => step.trim())
-            .filter(step => step.length > 0);
-        
-        // Always display as numbered list, even for single instruction
-        instructionsHtml = `
-            <div class="space-y-4">
-                <div>
-                    <p class="text-sm font-bold text-gray-700 mb-2">Steps</p>
-                    <ol class="list-decimal pl-5 space-y-1 text-sm text-gray-600">
-                        ${steps.map(step => `<li>${step}.</li>`).join('')}
-                    </ol>
-                </div>
-                <div>
-                    <p class="text-sm font-bold text-gray-700 mb-1">Tempo</p>
-                    <p class="text-sm text-gray-600">${d.tempo_timing || 'N/A'}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-bold text-gray-700 mb-1">Tips</p>
-                    <p class="text-sm text-gray-600">${d.coach_tips || 'N/A'}</p>
-                </div>
-            </div>`;
-    } else {
-        instructionsHtml = '<p class="text-sm text-gray-600">N/A</p>';
-    }
-
-    return `
-        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-100">
-            <h4 class="text-lg font-semibold text-gray-800 mb-4">${item.name}</h4>
-            
-            <!-- Movement Classification -->
-            <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                <h5 class="text-sm font-bold text-gray-700 mb-2">Movement Classification</h5>
-                <div class="space-y-1 text-sm">
-                    <p class="text-gray-600"><span class="font-medium">NASM Category:</span> ${d.nasm_category || 'N/A'}</p>
-                    <p class="text-gray-600"><span class="font-medium">Movement Type:</span> ${d.movement_type || 'N/A'}</p>
-                    <p class="text-gray-600"><span class="font-medium">Equipment:</span> ${d.equipment_type || 'N/A'}</p>
-                </div>
-            </div>
-
-            <!-- Muscle Engagement with Legend -->
-            <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                <h5 class="text-sm font-bold text-gray-700 mb-2">Muscle Engagement</h5>
-                <div class="space-y-2">
-                    <div>
-                        <p class="text-xs font-medium text-gray-600 mb-1">Primary Muscles:</p>
-                        <div class="flex flex-wrap gap-1">
-                            ${generateMuscleTags(d.muscles?.primary || '', true)}
-                        </div>
-                    </div>
-                    <div class="border-t border-gray-200 pt-2">
-                        <p class="text-xs font-medium text-gray-600 mb-1">Secondary Muscles:</p>
-                        <div class="flex flex-wrap gap-1">
-                            ${generateMuscleTags(d.muscles?.secondary || '', false)}
-                        </div>
-                    </div>
-                    
-                    <!-- Add color legend/key with improved visibility -->
-                    <div class="border-t border-gray-200 pt-2 mt-1">
-                        <p class="text-xs font-medium text-gray-600 mb-1">Muscle Regions:</p>
-                        <div class="flex flex-wrap gap-2 text-xs">
-                            <span class="flex items-center mr-2">
-                                <span class="inline-block w-3 h-3 mr-1 rounded-full bg-red-400"></span>
-                                Upper Body
-                            </span>
-                            <span class="flex items-center mr-2">
-                                <span class="inline-block w-3 h-3 mr-1 rounded-full bg-blue-400"></span>
-                                Trunk & Core
-                            </span>
-                            <span class="flex items-center">
-                                <span class="inline-block w-3 h-3 mr-1 rounded-full bg-amber-500"></span>
-                                Lower Body
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Instructions -->
-            <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                <h5 class="text-sm font-bold text-gray-700 mb-2">Instructions</h5>
-                ${instructionsHtml}
-            </div>
-
-            <!-- Safety & Modifications -->
-            <div class="bg-red-50 rounded-lg p-4">
-                <h5 class="text-sm font-bold text-gray-700 mb-2">Safety & Modifications</h5>
-                <div class="space-y-2 text-sm">
-                    <div>
-                        <p class="font-bold text-red-700 mb-1">Safety</p>
-                        <p class="text-red-700">${d.safety_contraindications || 'N/A'}</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                        <div>
-                            <p class="font-bold text-gray-700 mb-1">Progression</p>
-                            <p class="text-gray-700">
-                                ${d.progressions_regressions?.split(';')[0]?.replace('Progress:', '').trim() || 'N/A'}
-                            </p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-gray-700 mb-1">Regression</p>
-                            <p class="text-gray-700">
-                                ${d.progressions_regressions?.split(';')[1]?.replace('regress:', '').trim() || 'N/A'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+return false;
 }
 
 // Muscle tag generation with improved styling and visual cues
-// Replace the entire generateMuscleTags function with this version
-// This ensures colors match perfectly between tags and legend
-
 function generateMuscleTags(muscles, isPrimary = true) {
     if (!muscles) return '';
-    
+
     let muscleList = [];
     
     if (typeof muscles === 'string') {
@@ -569,44 +454,35 @@ function generateMuscleTags(muscles, isPrimary = true) {
             muscleList = muscleString.split(',').map(m => m.trim());
         }
     }
-    
+
     return muscleList.map(muscle => {
-        // Default to Trunk & Core (blue)
-        let dotColor = 'bg-blue-400';
-        let borderColor = 'border-blue-400';
-        
-        // EXPLICITLY check for Lower Body muscles by name (this is the safest approach)
-        const lowerBodyMuscles = [
-            "Quadriceps", "Hamstrings", "Gluteus Maximus", "Gluteus Medius", 
-            "Gluteus Minimus", "Adductors", "Hip Flexors", "Gastrocnemius", "Soleus",
-            "Quads", "Glutes" // Include common aliases
-        ];
-        
-        if (lowerBodyMuscles.includes(muscle)) {
-            // Lower Body - AMBER (make it very visible)
-            dotColor = 'bg-amber-500';
-            borderColor = 'border-amber-500';
-        } else {
-            // Check if Upper Body muscle
-            let isUpperBody = false;
-            for (const group in MUSCLES['Upper Body']) {
-                if (MUSCLES['Upper Body'][group].includes(muscle)) {
-                    isUpperBody = true;
-                    break;
-                }
-            }
-            
-            if (isUpperBody) {
-                // Upper Body - RED
-                dotColor = 'bg-red-400';
-                borderColor = 'border-red-400';
-            }
-            // Otherwise keep as blue (default for Core & Trunk)
+        // Define all muscle groups explicitly
+        const chestMuscles = MUSCLES['Upper Body']['Chest'];
+        const backMuscles = MUSCLES['Upper Body']['Back'];
+        const shoulderMuscles = MUSCLES['Upper Body']['Shoulders'];
+        const armMuscles = MUSCLES['Upper Body']['Arms'];
+        const coreMuscles = MUSCLES['Core & Trunk'];
+        const lowerBodyMuscles = MUSCLES['Lower Body'];
+
+        // Colors for each muscle group
+        let dotColor = '';
+
+        if (chestMuscles.some(m => muscle.includes(m))) {
+            dotColor = 'bg-red-400'; // Chest
+        } else if (backMuscles.some(m => muscle.includes(m))) {
+            dotColor = 'bg-red-400'; // Back
+        } else if (shoulderMuscles.some(m => muscle.includes(m))) {
+            dotColor = 'bg-red-400'; // Shoulders
+        } else if (armMuscles.some(m => muscle.includes(m))) {
+            dotColor = 'bg-red-400'; // Arms
+        } else if (coreMuscles.some(m => muscle.includes(m))) {
+            dotColor = 'bg-blue-400'; // Core & Trunk
+        } else if (lowerBodyMuscles.some(m => muscle.includes(m))) {
+            dotColor = 'bg-amber-500'; // Lower Body
         }
-                
-        // Use white background with colored dot and border
+
         return `
-            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs ${isPrimary ? 'font-semibold' : 'font-medium'} bg-white text-gray-800 border ${borderColor}">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs ${isPrimary ? 'font-semibold' : 'font-medium'} bg-white text-gray-800 border border-gray-300">
                 <span class="mr-1 w-2 h-2 rounded-full ${dotColor}"></span>
                 ${muscle}
             </span>
@@ -616,27 +492,150 @@ function generateMuscleTags(muscles, isPrimary = true) {
 
 // Citation stripping
 function stripCitation(name) {
-    return name.replace(/\s*\[oai_citation_attribution:[^\]]+\]/g, "").trim();
+return name.replace(/\s*\[oai_citation_attribution:[^\]]+\]/g, "").trim();
 }
 
 // Exercise flattening
 function flattenExercises(obj, path = []) {
-    let result = [];
-    if (obj && typeof obj === "object") {
-        if ("id" in obj) {
-            const exerciseName = stripCitation(path[path.length - 1] || "");
-            result.push({
-                name: exerciseName,
-                details: obj,
-                category: path[0] || "",
-                subcategory: path[1] || ""
-            });
-        } else {
-            for (const key in obj) {
-                if (key === "definitions") continue;
-                result = result.concat(flattenExercises(obj[key], path.concat(key)));
-            }
+let result = [];
+if (obj && typeof obj === "object") {
+    if ("id" in obj) {
+        const exerciseName = stripCitation(path[path.length - 1] || "");
+        result.push({
+            name: exerciseName,
+            details: obj,
+            category: path[0] || "",
+            subcategory: path[1] || ""
+        });
+    } else {
+        for (const key in obj) {
+            if (key === "definitions") continue;
+            result = result.concat(flattenExercises(obj[key], path.concat(key)));
         }
     }
-    return result;
+}
+return result;
+}
+
+// Exercise card generation with detailed UI structure
+function generateExerciseCard(item, d) {
+// Format instructions into numbered list with better UI structure
+let instructionsHtml = '';
+
+if (d.instructions && d.instructions !== 'N/A') {
+    // More robust parsing: split by periods and semicolons, handle multiple clauses properly
+    const steps = d.instructions
+        .replace(/; /g, '. ') // Replace semicolons with periods to handle those cases
+        .replace(/, then /g, '. Then ') // Split "then" clauses into separate steps
+        .split('.')
+        .map(step => step.trim())
+        .filter(step => step.length > 0);
+    
+    // Always display as numbered list, even for single instruction
+    instructionsHtml = `
+        <div class="space-y-4">
+            <div>
+                <p class="text-sm font-bold text-gray-700 mb-2">Steps</p>
+                <ol class="list-decimal pl-5 space-y-1 text-sm text-gray-600">
+                    ${steps.map(step => `<li>${step}.</li>`).join('')}
+                </ol>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-gray-700 mb-1">Tempo</p>
+                <p class="text-sm text-gray-600">${d.tempo_timing || 'N/A'}</p>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-gray-700 mb-1">Tips</p>
+                <p class="text-sm text-gray-600">${d.coach_tips || 'N/A'}</p>
+            </div>
+        </div>`;
+} else {
+    instructionsHtml = '<p class="text-sm text-gray-600">N/A</p>';
+}
+
+return `
+    <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-800 mb-4">${item.name}</h4>
+        
+        <!-- Movement Classification -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+            <h5 class="text-sm font-bold text-gray-700 mb-2">Movement Classification</h5>
+            <div class="space-y-1 text-sm">
+                <p class="text-gray-600"><span class="font-medium">Anatomy Trains:</span> ${(d.anatomy_trains || []).join(', ') || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-medium">NASM Category:</span> ${d.nasm_category || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-medium">Movement Type:</span> ${d.movement_type || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-medium">Equipment:</span> ${d.equipment_type || 'N/A'}</p>
+            </div>
+        </div>
+
+        <!-- Muscle Engagement with Legend -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+            <h5 class="text-sm font-bold text-gray-700 mb-2">Muscle Engagement</h5>
+            <div class="space-y-2">
+                <div>
+                    <p class="text-xs font-medium text-gray-600 mb-1">Primary Muscles:</p>
+                    <div class="flex flex-wrap gap-1">
+                        ${generateMuscleTags(d.muscles?.primary || '', true)}
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-2">
+                    <p class="text-xs font-medium text-gray-600 mb-1">Secondary Muscles:</p>
+                    <div class="flex flex-wrap gap-1">
+                        ${generateMuscleTags(d.muscles?.secondary || '', false)}
+                    </div>
+                </div>
+                
+                <!-- Color legend/key with improved visibility -->
+                <div class="border-t border-gray-200 pt-2 mt-1">
+                    <p class="text-xs font-medium text-gray-600 mb-1">Muscle Regions:</p>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <span class="flex items-center mr-2">
+                            <span class="inline-block w-3 h-3 mr-1 rounded-full bg-red-400"></span>
+                            Upper Body
+                        </span>
+                        <span class="flex items-center mr-2">
+                            <span class="inline-block w-3 h-3 mr-1 rounded-full bg-blue-400"></span>
+                            Trunk & Core
+                        </span>
+                        <span class="flex items-center">
+                            <span class="inline-block w-3 h-3 mr-1 rounded-full bg-amber-500"></span>
+                            Lower Body
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+            <h5 class="text-sm font-bold text-gray-700 mb-2">Instructions</h5>
+            ${instructionsHtml}
+        </div>
+
+        <!-- Safety & Modifications -->
+        <div class="bg-red-50 rounded-lg p-4">
+            <h5 class="text-sm font-bold text-gray-700 mb-2">Safety & Modifications</h5>
+            <div class="space-y-2 text-sm">
+                <div>
+                    <p class="font-bold text-red-700 mb-1">Safety</p>
+                    <p class="text-red-700">${d.safety_contraindications || 'N/A'}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <p class="font-bold text-gray-700 mb-1">Progression</p>
+                        <p class="text-gray-700">
+                            ${d.progressions_regressions?.split(';')[0]?.replace('Progress:', '').trim() || 'N/A'}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-700 mb-1">Regression</p>
+                        <p class="text-gray-700">
+                            ${d.progressions_regressions?.split(';')[1]?.replace('regress:', '').trim() || 'N/A'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
 }

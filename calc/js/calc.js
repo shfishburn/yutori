@@ -1,601 +1,901 @@
-// Global configuration objects
-const ANATOMY_TRAINS = [
-  "Arm Lines",
-  "Deep Front Line",
-  "Lateral Line",
-  "Spiral Line",
-  "Superficial Back Line",
-  "Superficial Front Line"
-];
+"use strict";
 
-const NASM_CATEGORIES = [
-  "Dynamic",
-  "Pull",
-  "Push",
-  "Stabilization"
-];
+import ChartManager from "./charts.js";
+import {
+  calculateDemographicContext,
+  getPercentileDescriptor,
+  getAgeRange,
+  bodyFatPercentiles,
+  getBFCat
+} from "/calc/js/population-data.js";
 
-const MOVEMENT_TYPES = [
-  "Compound",
-  "Controlled",
-  "Dynamic",
-  "Explosive",
-  "Isometric",
-  "Isolation",
-  "Plyometric",
-  "Unilateral"
-];
-
-const MUSCLES = {
-  "Core & Trunk": [
-      "Rectus Abdominis",
-      "External Obliques", 
-      "Internal Obliques",
-      "Transverse Abdominis",
-      "Erector Spinae",
-      "Core Stabilizers",
-      "Quadratus Lumborum"
-  ],
-  "Upper Body": {
-      "Chest": [
-          "Pectoralis Major", 
-          "Upper Pectoralis Major", 
-          "Lower Pectoralis Major", 
-          "Serratus Anterior"
-      ],
-      "Back": [
-          "Latissimus Dorsi", 
-          "Upper Trapezius", 
-          "Middle Trapezius", 
-          "Lower Trapezius", 
-          "Rhomboids"
-      ],
-      "Shoulders": [
-          "Anterior Deltoid", 
-          "Lateral Deltoid", 
-          "Posterior Deltoid", 
-          "Rotator Cuff"
-      ],
-      "Arms": [
-          "Biceps Brachii", 
-          "Triceps Brachii", 
-          "Forearm Flexors",
-          "Forearm Extensors"
-      ]
-  },
-  "Lower Body": [
-      "Quadriceps", 
-      "Hamstrings", 
-      "Gluteus Maximus", 
-      "Gluteus Medius", 
-      "Gluteus Minimus",
-      "Adductors", 
-      "Hip Flexors", 
-      "Gastrocnemius", 
-      "Soleus"
-  ]
+/***************************************
+ * Global State Management
+ ***************************************/
+const state = {
+  steps: [],
+  currentStepIndex: 0,
+  chartManager: null,
+  isCalculating: false,
+  cleanupHandlers: [],
+  initialized: false
 };
 
-const MUSCLE_ALIASES = {
-  "Abs": "Rectus Abdominis",
-  "Pecs": "Pectoralis Major",
-  "Lats": "Latissimus Dorsi",
-  "Biceps": "Biceps Brachii",
-  "Triceps": "Triceps Brachii",
-  "Quads": "Quadriceps",
-  "Glutes": "Gluteus Maximus"
-};
-
-const EQUIPMENT_TYPES = {
-  "Bodyweight": [
-      "Bodyweight",
-      "Pull-Up Bar",
-      "Parallel Bars",
-      "Gymnastic Rings"
-  ],
-  "Free Weights": [
-      "Barbell",
-      "Dumbbell",
-      "Kettlebell",
-      "Medicine Ball",
-      "Sandbag"
-  ],
-  "Machines": [
-      "Cable Machine",
-      "Smith Machine",
-      "Hyperextension Bench",
-      "Stability Ball"
-  ],
-  "Resistance": [
-      "Resistance Band",
-      "TRX",
-      "Battle Ropes"
-  ],
-  "Specialty": [
-      "Ab Wheel",
-      "Plyo Box",
-      "Prowler Sled",
-      "Tractor Tire",
-      "Farmer's Yoke"
-  ]
-};
-
-// Global state variables
-let exercises = [];
-let currentPage = 1;
-let itemsPerPage = 25; // default value
-let filteredExercises = [];
-
-// Main document ready function
-$(document).ready(function() {
-  // Initialize Select2 for all filter dropdowns
-  $("#anatomyTrainsFilter, #muscleGroupFilter, #musclesFilter, #nasmCategoryFilter, #movementTypeFilter, #equipmentTypeFilter").select2({
-      placeholder: "Select options",
-      allowClear: true,
-      width: '100%'
+/**
+ * Adds an event listener and stores its removal function.
+ * @param {Element} target - The target element.
+ * @param {string} event - The event type.
+ * @param {Function} handler - The handler function.
+ * @param {Object|boolean} [options] - Optional options.
+ */
+function addEventListenerWithCleanup(target, event, handler, options) {
+  target.addEventListener(event, handler, options);
+  state.cleanupHandlers.push(() => {
+    target.removeEventListener(event, handler, options);
   });
+}
 
-  // Load and process the exercise data
-  $.getJSON("/strength/data/strength.json", function(data) {
-      console.log("Raw JSON data:", data);
-      
-      exercises = flattenExercises(data);
-      console.log("Flattened exercises:", exercises);
-      console.log("Total exercises found:", exercises.length);
-      
-      // Populate all filter dropdowns
-      populateSelect($("#anatomyTrainsFilter"), ANATOMY_TRAINS);
-      populateMuscleGroupFilter();
-      populateMusclesFilter();
-      populateSelect($("#nasmCategoryFilter"), NASM_CATEGORIES);
-      populateSelect($("#movementTypeFilter"), MOVEMENT_TYPES);
-      
-      const allEquipmentTypes = Object.values(EQUIPMENT_TYPES).flat();
-      populateSelect($("#equipmentTypeFilter"), allEquipmentTypes);
-
-      // Initial render
-      applyFilters();
-  }).fail(function(jqXHR, textStatus, errorThrown) {
-      console.error("Error loading JSON:", textStatus, errorThrown);
-      $("#exerciseList").html('<p class="text-red-600 text-center">Error loading exercises. Please try again later.</p>');
-  });
-
-  // Helper function to populate select dropdowns
-  function populateSelect($select, options) {
-      $select.empty();
-      options.forEach(option => {
-          $select.append(new Option(option, option));
-      });
+/***************************************
+ * DOM Helper Functions
+ ***************************************/
+function getElement(id) {
+  const element = document.getElementById(id);
+  if (!element) {
+    console.warn(`Element with id '${id}' not found`);
   }
+  return element;
+}
 
-  // Populate muscle group filter
-  function populateMuscleGroupFilter() {
-      const $select = $("#muscleGroupFilter");
-      $select.empty();
-      $select.append(new Option("Core & Trunk", "Core & Trunk"));
-      Object.keys(MUSCLES["Upper Body"]).forEach(category => {
-          $select.append(new Option(category, category));
-      });
-      $select.append(new Option("Lower Body", "Lower Body"));
+function setTextContent(id, text) {
+  const element = getElement(id);
+  if (element) {
+    element.textContent = text;
   }
+}
 
-  // Populate specific muscles filter
-  function populateMusclesFilter() {
-      const $select = $("#musclesFilter");
-      $select.empty();
-      MUSCLES["Core & Trunk"].forEach(muscle => {
-          $select.append(new Option(muscle, muscle));
-      });
-      Object.values(MUSCLES["Upper Body"]).forEach(muscleGroup => {
-          muscleGroup.forEach(muscle => {
-              $select.append(new Option(muscle, muscle));
-          });
-      });
-      MUSCLES["Lower Body"].forEach(muscle => {
-          $select.append(new Option(muscle, muscle));
-      });
+function showError(element, message) {
+  if (!element) return;
+  clearErrors();
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message text-red-500 text-sm mt-1";
+  errorDiv.textContent = message;
+  element.classList.add("invalid-input", "border-red-500");
+  element.parentNode.insertBefore(errorDiv, element.nextSibling);
+}
+
+function clearErrors() {
+  document.querySelectorAll(".error-message").forEach((el) => el.remove());
+  document.querySelectorAll(".invalid-input").forEach((el) => {
+    el.classList.remove("invalid-input", "border-red-500");
+  });
+}
+
+function showGlobalError(message) {
+  const container = getElement("globalErrorContainer");
+  if (container) {
+    container.textContent = message;
+    container.classList.remove("hidden");
   }
+}
 
-  // Filter application
-  function applyFilters() {
-      const selectedAnatomy = $("#anatomyTrainsFilter").val() || [];
-      const selectedMuscleGroups = $("#muscleGroupFilter").val() || [];
-      const selectedMuscles = $("#musclesFilter").val() || [];
-      const selectedNasm = $("#nasmCategoryFilter").val() || [];
-      const selectedMovement = $("#movementTypeFilter").val() || [];
-      const selectedEquip = $("#equipmentTypeFilter").val() || [];
-      const searchQuery = $("#searchBox").val().toLowerCase().trim();
+/***************************************
+ * Initialization & Setup
+ ***************************************/
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    console.log("Initializing calculator...");
 
-      filteredExercises = exercises.filter(function(item) {
-          const d = item.details;
-          
-          // Text search on exercise name
-          if (searchQuery && !item.name.toLowerCase().includes(searchQuery)) return false;
+    // Find all wizard steps.
+    state.steps = Array.from(document.querySelectorAll(".wizard-step"));
+    if (!state.steps.length) {
+      throw new Error("No wizard steps found");
+    }
 
-          // Anatomy Trains filter
-          if (selectedAnatomy.length > 0) {
-              if (!(d.anatomy_trains && selectedAnatomy.some(t => d.anatomy_trains.includes(t)))) return false;
-          }
+    // Initialize ChartManager.
+    state.chartManager = new ChartManager();
 
-          // Muscle Group filter
-          if (selectedMuscleGroups.length > 0) {
-              const hasMatchingGroup = selectedMuscleGroups.some(group => {
-                  const primaryMatch = d.muscles?.primary && 
-                      d.muscles.primary.split(',').some(m => 
-                          isMuscleBelongingToGroup(m.trim(), group)
-                      );
-                  
-                  const secondaryMatch = d.muscles?.secondary && 
-                      d.muscles.secondary.split(',').some(m => 
-                          isMuscleBelongingToGroup(m.trim(), group)
-                      );
-                  
-                  return primaryMatch || secondaryMatch;
-              });
-              
-              if (!hasMatchingGroup) return false;
-          }
+    // Set initial step (Step 1 active).
+    showStep(0);
 
-          // Specific Muscles filter
-          if (selectedMuscles.length > 0) {
-              const hasMuscleMatch = selectedMuscles.some(muscle => {
-                  const primaryMatch = d.muscles?.primary && 
-                      d.muscles.primary.split(',').some(m => 
-                          m.trim() === muscle || MUSCLE_ALIASES[m.trim()] === muscle
-                      );
-                  
-                  const secondaryMatch = d.muscles?.secondary && 
-                      d.muscles.secondary.split(',').some(m => 
-                          m.trim() === muscle || MUSCLE_ALIASES[m.trim()] === muscle
-                      );
-                  
-                  return primaryMatch || secondaryMatch;
-              });
-              
-              if (!hasMuscleMatch) return false;
-          }
+    // Populate default values for body fat options and recommendations.
+    const defaultGender =
+      document.querySelector('input[name="gender"]:checked')?.value.toLowerCase() ||
+      "male";
+    populateGoalBodyFatOptions(defaultGender);
+    updateBFRecommendation();
 
-          // NASM Category filter
-          if (selectedNasm.length > 0) {
-              if (!selectedNasm.includes(d.nasm_category)) return false;
-          }
+    // Attach event listeners.
+    attachEventListeners();
 
-          // Movement Type filter
-          if (selectedMovement.length > 0) {
-              if (d.movement_type) {
-                  const movTypes = d.movement_type.split(/,| or /).map(s => s.trim());
-                  if (!selectedMovement.every(mt => movTypes.includes(mt))) return false;
-              } else {
-                  return false;
-              }
-          }
-
-          // Equipment Type filter
-          if (selectedEquip.length > 0) {
-              if (d.equipment_type) {
-                  const eqTypes = d.equipment_type.split(/,| or /).map(s => s.trim());
-                  if (!selectedEquip.every(eq => eqTypes.includes(eq))) return false;
-              } else {
-                  return false;
-              }
-          }
-          return true;
-      });
-
-      currentPage = 1; // Reset to first page when filters change
-      renderExercises(filteredExercises);
+    state.initialized = true;
+    console.log("Calculator initialized successfully");
+  } catch (error) {
+    console.error("Initialization failed:", error);
+    showGlobalError("Failed to initialize calculator. Please refresh the page.");
   }
-
-  // Pagination and rendering
-  function renderExercises(list) {
-      const totalItems = list.length;
-      const totalPages = itemsPerPage === 'all' ? 1 : Math.ceil(totalItems / itemsPerPage);
-      
-      // Update pagination info
-      currentPage = Math.min(currentPage, totalPages);
-      if (currentPage < 1) currentPage = 1;
-      
-      // Calculate start and end indices
-      const start = itemsPerPage === 'all' ? 0 : (currentPage - 1) * itemsPerPage;
-      const end = itemsPerPage === 'all' ? totalItems : Math.min(start + itemsPerPage, totalItems);
-      
-      // Update UI elements
-      document.getElementById('currentPage').textContent = currentPage;
-      document.getElementById('totalPages').textContent = totalPages;
-      document.getElementById('resultsCount').textContent = `Showing ${start + 1}-${end} of ${totalItems} exercises`;
-
-      // Get the paginated subset of exercises
-      const paginatedList = itemsPerPage === 'all' ? list : list.slice(start, end);
-      
-      // Render the exercises
-      const $exerciseList = $("#exerciseList");
-      $exerciseList.empty();
-      
-      if (paginatedList.length === 0) {
-          $exerciseList.html('<p class="text-center text-red-600">No exercises found.</p>');
-          return;
-      }
-
-      // Group exercises by category and subcategory
-      const groupedExercises = {};
-      paginatedList.forEach(item => {
-          const category = item.category;
-          const subcategory = item.subcategory;
-          
-          if (!groupedExercises[category]) {
-              groupedExercises[category] = {};
-          }
-          if (!groupedExercises[category][subcategory]) {
-              groupedExercises[category][subcategory] = [];
-          }
-          groupedExercises[category][subcategory].push(item);
-      });
-
-      // Render grouped exercises
-      Object.entries(groupedExercises).forEach(([category, subcategories]) => {
-          // Create category container
-          const categoryDiv = $(`
-              <div class="category-section mb-12">
-                  <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">${category}</h2>
-              </div>
-          `);
-
-          // Add subcategories
-          Object.entries(subcategories).forEach(([subcategory, items]) => {
-              const subcategoryDiv = $(`
-                  <div class="subcategory-section mb-8">
-                      <h3 class="text-xl font-semibold text-gray-700 mb-4">${subcategory}</h3>
-                      <div class="exercise-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"></div>
-                  </div>
-              `);
-
-              // Sort items alphabetically by name before rendering
-              const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
-              
-              // Add exercise cards to subcategory grid
-              const exerciseGrid = subcategoryDiv.find('.exercise-grid');
-              sortedItems.forEach(item => {
-                  const cardHtml = generateExerciseCard(item, item.details);
-                  exerciseGrid.append(cardHtml);
-              });
-
-              categoryDiv.append(subcategoryDiv);
-          });
-
-          $exerciseList.append(categoryDiv);
-      });
-
-      // Enable/disable pagination buttons
-      const prevButtons = document.querySelectorAll('#prevPage');
-      const nextButtons = document.querySelectorAll('#nextPage');
-      
-      prevButtons.forEach(btn => {
-          btn.disabled = currentPage === 1;
-          btn.classList.toggle('opacity-50', currentPage === 1);
-      });
-      
-      nextButtons.forEach(btn => {
-          btn.disabled = currentPage === totalPages;
-          btn.classList.toggle('opacity-50', currentPage === totalPages);
-      });
-  }
-
-  // Event listeners
-  $("#itemsPerPage").on('change', function(e) {
-      itemsPerPage = e.target.value === 'all' ? 'all' : parseInt(e.target.value);
-      currentPage = 1;
-      renderExercises(filteredExercises);
-  });
-
-  // Pagination button handlers
-  $('#prevPage').on('click', function() {
-      if (currentPage > 1) {
-          currentPage--;
-          renderExercises(filteredExercises);
-      }
-  });
-
-  $('#nextPage').on('click', function() {
-      const totalPages = Math.ceil(filteredExercises.length / itemsPerPage);
-      if (currentPage < totalPages) {
-          currentPage++;
-          renderExercises(filteredExercises);
-      }
-  });
-
-  // Filter event handlers
-  $("#anatomyTrainsFilter, #muscleGroupFilter, #musclesFilter, #nasmCategoryFilter, #movementTypeFilter, #equipmentTypeFilter")
-      .on("change", applyFilters);
-  
-  $("#searchBox").on("keyup", applyFilters);
-
-  // Clear filters button
-  $("#clearAllFilters").on("click", function() {
-      $("#anatomyTrainsFilter, #muscleGroupFilter, #musclesFilter, #nasmCategoryFilter, #movementTypeFilter, #equipmentTypeFilter")
-          .val(null).trigger("change");
-      $("#searchBox").val("").trigger("keyup");
-  });
 });
 
-// Helper function to check muscle group membership
-function isMuscleBelongingToGroup(muscle, group) {
-  if (group === 'Core & Trunk' && MUSCLES['Core & Trunk'].includes(muscle)) return true;
-  if (group === 'Lower Body' && MUSCLES['Lower Body'].includes(muscle)) return true;
-  
-  const upperBodyGroups = Object.keys(MUSCLES['Upper Body']);
-  if (upperBodyGroups.includes(group)) {
-      return MUSCLES['Upper Body'][group].includes(muscle);
+// Cleanup event listeners on unload.
+window.addEventListener("beforeunload", () => {
+  state.cleanupHandlers.forEach(remove => remove());
+});
+
+/***************************************
+ * Navigation & Validation Functions
+ ***************************************/
+function showStep(index) {
+  if (index < 0 || index >= state.steps.length) return;
+  state.steps.forEach((step, i) => {
+    step.classList.toggle("active", i === index);
+  });
+  state.currentStepIndex = index;
+  clearErrors();
+}
+
+function validateCurrentStep() {
+  clearErrors();
+  switch (state.currentStepIndex) {
+    case 0:
+      return validateStep1();
+    case 1:
+      return validateStep2();
+    default:
+      return true;
   }
-  
-  return false;
 }
 
-// Exercise card generation with improved UI structure
-function generateExerciseCard(item, d) {
-  // Format instructions into numbered list with better UI structure
-  let instructionsHtml = '';
-  
-  if (d.instructions && d.instructions !== 'N/A') {
-      // Split instructions by periods, filter out empty strings
-      const steps = d.instructions.split('.')
-          .map(step => step.trim())
-          .filter(step => step.length > 0);
-      
-      instructionsHtml = `
-          <div class="space-y-4">
-              <div>
-                  <p class="text-sm font-bold text-gray-700 mb-2">Steps</p>
-                  ${steps.length > 1 ? 
-                      `<ol class="list-decimal pl-5 space-y-1 text-sm text-gray-600">
-                          ${steps.map(step => `<li>${step}.</li>`).join('')}
-                      </ol>` : 
-                      `<p class="text-sm text-gray-600">${d.instructions}</p>`
-                  }
-              </div>
-              <div>
-                  <p class="text-sm font-bold text-gray-700 mb-1">Tempo</p>
-                  <p class="text-sm text-gray-600">${d.tempo_timing || 'N/A'}</p>
-              </div>
-              <div>
-                  <p class="text-sm font-bold text-gray-700 mb-1">Tips</p>
-                  <p class="text-sm text-gray-600">${d.coach_tips || 'N/A'}</p>
-              </div>
-          </div>`;
-  } else {
-      instructionsHtml = '<p class="text-sm text-gray-600">N/A</p>';
+function validateStep1() {
+  const requiredFields = ["ageInput", "heightInput", "totalWeightInput", "bodyFatPctInput"];
+  let isValid = true;
+  for (const fieldId of requiredFields) {
+    const field = getElement(fieldId);
+    if (!field) continue;
+    const value = field.value?.trim();
+    if (!value) {
+      showError(field, "This field is required");
+      isValid = false;
+      continue;
+    }
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) {
+      showError(field, "Please enter a valid number");
+      isValid = false;
+      continue;
+    }
+    switch (fieldId) {
+      case "ageInput":
+        if (numValue < 18 || numValue > 75) {
+          showError(field, "Age must be between 18 and 75");
+          isValid = false;
+        }
+        break;
+      case "heightInput": {
+        const isMetric = document.querySelector('input[name="unit"]:checked')?.value === "kg";
+        const minHeight = isMetric ? 120 : 47;
+        const maxHeight = isMetric ? 220 : 87;
+        if (numValue < minHeight || numValue > maxHeight) {
+          showError(field, `Height must be between ${minHeight} and ${maxHeight} ${isMetric ? "cm" : "inches"}`);
+          isValid = false;
+        }
+        break;
+      }
+      case "bodyFatPctInput":
+        if (numValue < 5 || numValue > 60) {
+          showError(field, "Body fat % must be between 5 and 60");
+          isValid = false;
+        }
+        break;
+    }
+  }
+  return isValid;
+}
+
+function validateStep2() {
+  const fatGoalSelect = getElement("fatGoalCategorySelect");
+  if (!fatGoalSelect?.value) {
+    showError(fatGoalSelect, "Please select a body fat goal");
+    return false;
+  }
+  return true;
+}
+
+/***************************************
+ * Event Handlers & Listener Attachment
+ ***************************************/
+function attachEventListeners() {
+  // Attach age input "blur" event.
+  const ageInput = getElement("ageInput");
+  if (ageInput) {
+    ageInput.addEventListener("blur", (e) => {
+      try {
+        handleAgeChange(e);
+      } catch (error) {
+        console.error("Error in age blur handler:", error);
+      }
+    });
   }
 
-  return `
-      <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-100">
-          <h4 class="text-lg font-semibold text-gray-800 mb-4">${item.name}</h4>
-          
-          <!-- Movement Classification -->
-          <div class="bg-gray-50 rounded-lg p-4 mb-4">
-              <h5 class="text-sm font-bold text-gray-700 mb-2">Movement Classification</h5>
-              <div class="space-y-1 text-sm">
-                  <p class="text-gray-600"><span class="font-medium">NASM Category:</span> ${d.nasm_category || 'N/A'}</p>
-                  <p class="text-gray-600"><span class="font-medium">Movement Type:</span> ${d.movement_type || 'N/A'}</p>
-                  <p class="text-gray-600"><span class="font-medium">Equipment:</span> ${d.equipment_type || 'N/A'}</p>
-              </div>
-          </div>
-
-          <!-- Muscle Engagement -->
-          <div class="bg-gray-50 rounded-lg p-4 mb-4">
-              <h5 class="text-sm font-bold text-gray-700 mb-2">Muscle Engagement</h5>
-              <div class="space-y-2">
-                  <div>
-                      <p class="text-xs font-medium text-gray-600 mb-1">Primary Muscles:</p>
-                      <div class="flex flex-wrap gap-1">
-                          ${generateMuscleTags(d.muscles?.primary || '', true)}
-                      </div>
-                  </div>
-                  <div class="border-t border-gray-200 pt-2">
-                      <p class="text-xs font-medium text-gray-600 mb-1">Secondary Muscles:</p>
-                      <div class="flex flex-wrap gap-1">
-                          ${generateMuscleTags(d.muscles?.secondary || '', false)}
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          <!-- Instructions -->
-          <div class="bg-gray-50 rounded-lg p-4 mb-4">
-              <h5 class="text-sm font-bold text-gray-700 mb-2">Instructions</h5>
-              ${instructionsHtml}
-          </div>
-
-          <!-- Safety & Modifications -->
-          <div class="bg-red-50 rounded-lg p-4">
-              <h5 class="text-sm font-bold text-gray-700 mb-2">Safety & Modifications</h5>
-              <div class="space-y-2 text-sm">
-                  <div>
-                      <p class="font-bold text-red-700 mb-1">Safety</p>
-                      <p class="text-red-700">${d.safety_contraindications || 'N/A'}</p>
-                  </div>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                      <div>
-                          <p class="font-bold text-gray-700 mb-1">Progression</p>
-                          <p class="text-gray-700">
-                              ${d.progressions_regressions?.split(';')[0]?.replace('Progress:', '').trim() || 'N/A'}
-                          </p>
-                      </div>
-                      <div>
-                          <p class="font-bold text-gray-700 mb-1">Regression</p>
-                          <p class="text-gray-700">
-                              ${d.progressions_regressions?.split(';')[1]?.replace('regress:', '').trim() || 'N/A'}
-                          </p>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  `;
-}
-
-// Muscle tag generation
-function generateMuscleTags(muscles, isPrimary = true) {
-  if (!muscles) return '';
-  
-  let muscleList = [];
-  
-  if (typeof muscles === 'string') {
-      muscleList = muscles.split(',').map(m => m.trim());
-  } else if (typeof muscles === 'object') {
-      const muscleString = isPrimary ? muscles.primary : muscles.secondary;
-      if (muscleString) {
-          muscleList = muscleString.split(',').map(m => m.trim());
+  // Attach gender radio change events.
+  document.querySelectorAll('input[name="gender"]').forEach((radio) => {
+    const genderHandler = (e) => {
+      try {
+        handleGenderChange(e);
+      } catch (error) {
+        console.error("Error in gender change:", error);
       }
+    };
+    addEventListenerWithCleanup(radio, "change", genderHandler);
+  });
+
+  // Attach Next button events.
+  document.querySelectorAll("[data-next-step]").forEach((btn) => {
+    const nextHandler = (e) => {
+      e.preventDefault();
+      try {
+        if (validateCurrentStep()) {
+          console.log("[DEBUG] Validation passed, advancing to next step.");
+          showStep(state.currentStepIndex + 1);
+        } else {
+          console.log("[DEBUG] Validation failed; not advancing.");
+        }
+      } catch (error) {
+        console.error("Error on next step:", error);
+      }
+    };
+    addEventListenerWithCleanup(btn, "click", nextHandler);
+  });
+
+  // Attach Previous button events.
+  document.querySelectorAll("[data-prev-step]").forEach((btn) => {
+    const prevHandler = (e) => {
+      e.preventDefault();
+      try {
+        if (state.currentStepIndex > 0) {
+          showStep(state.currentStepIndex - 1);
+        }
+      } catch (error) {
+        console.error("Error on previous step:", error);
+      }
+    };
+    addEventListenerWithCleanup(btn, "click", prevHandler);
+  });
+
+  // Attach Calculate button event.
+  const calcButton = getElement("calculateButton");
+  if (calcButton) {
+    const calcHandler = async (e) => {
+      e.preventDefault();
+      if (state.isCalculating) return;
+      try {
+        state.isCalculating = true;
+        calcButton.disabled = true;
+        calcButton.innerHTML = '<span class="loading-spinner"></span> Calculating...';
+        await doFinalCalculation();
+      } catch (error) {
+        console.error("Calculation error:", error);
+        showError(calcButton, "Calculation failed. Please check your inputs.");
+      } finally {
+        state.isCalculating = false;
+        calcButton.disabled = false;
+        calcButton.textContent = "Calculate";
+      }
+    };
+    addEventListenerWithCleanup(calcButton, "click", calcHandler);
   }
-  
-  return muscleList.map(muscle => {
-      let muscleGroup = 'core';
-      // Check upper body muscles
-      for (const group in MUSCLES['Upper Body']) {
-          if (MUSCLES['Upper Body'][group].includes(muscle)) {
-              muscleGroup = 'upper-body';
-              break;
-          }
-      }
-      // Check lower body muscles
-      if (MUSCLES['Lower Body'].includes(muscle)) {
-          muscleGroup = 'lower-body';
-      }
-      // Check core muscles
-      if (MUSCLES['Core & Trunk'].includes(muscle)) {
-          muscleGroup = 'core';
-      }
-
-      return `
-          <span class="muscle-tag muscle-tag-${muscleGroup} ${isPrimary ? 'muscle-primary' : 'muscle-secondary'}">
-              ${muscle}
-          </span>
-      `;
-  }).join(' ');
 }
 
-// Citation stripping
-function stripCitation(name) {
-  return name.replace(/\s*\[oai_citation_attribution:[^\]]+\]/g, "").trim();
-}
-
-// Exercise flattening
-function flattenExercises(obj, path = []) {
-  let result = [];
-  if (obj && typeof obj === "object") {
-      if ("id" in obj) {
-          const exerciseName = stripCitation(path[path.length - 1] || "");
-          result.push({
-              name: exerciseName,
-              details: obj,
-              category: path[0] || "",
-              subcategory: path[1] || ""
-          });
-      } else {
-          for (const key in obj) {
-              if (key === "definitions") continue;
-              result = result.concat(flattenExercises(obj[key], path.concat(key)));
-          }
-      }
+function handleAgeChange(event) {
+  const input = event.target;
+  console.log("[DEBUG] Age blur event. Current value:", input.value);
+  const age = parseInt(input.value, 10);
+  const errorContainer = getElement("ageErrorContainer");
+  if (errorContainer) {
+    errorContainer.textContent = "";
   }
-  return result;
+  if (isNaN(age)) {
+    if (errorContainer) errorContainer.textContent = "Please enter a valid number";
+    return;
+  }
+  if (age < 18 || age > 75) {
+    if (errorContainer) errorContainer.textContent = "Age must be between 18 and 75";
+    return;
+  }
+  console.log("[DEBUG] Age valid:", age);
+  const currentGender = document.querySelector('input[name="gender"]:checked')?.value.toLowerCase();
+  if (currentGender) {
+    populateGoalBodyFatOptions(currentGender);
+    updateBFRecommendation();
+  }
 }
+
+function handleGenderChange(event) {
+  try {
+    const normalizedGender = event.target.value.toLowerCase();
+    if (!["male", "female"].includes(normalizedGender)) {
+      throw new Error(`Invalid gender: ${normalizedGender}`);
+    }
+    populateGoalBodyFatOptions(normalizedGender);
+    updateBFRecommendation();
+  } catch (error) {
+    console.error("Gender change error:", error);
+  }
+}
+
+/***************************************
+ * Calculation & Simulation Functions
+ ***************************************/
+async function doFinalCalculation() {
+  try {
+    const unit = document.querySelector('input[name="unit"]:checked')?.value;
+    if (!unit) throw new Error("Please select a unit");
+    const isMetric = unit === "kg";
+    const weightVal = parseFloat(getElement("totalWeightInput").value);
+    const bfVal = parseFloat(getElement("bodyFatPctInput").value);
+    const ageVal = parseInt(getElement("ageInput").value, 10) || 30;
+    const gender = document.querySelector('input[name="gender"]:checked')?.value.toLowerCase();
+    const heightVal = parseFloat(getElement("heightInput").value);
+    const heightCm = unit === "lbs" ? heightVal * 2.54 : heightVal;
+    const af = parseFloat(getElement("activityLevelSelect").value) || 1.55;
+    const dailyAdjVal = getElement("dailyAdjustmentSelect").value;
+    const dietary = document.querySelector('input[name="dietaryApproach"]:checked')?.value;
+    const fatGoalOption = getElement("fatGoalCategorySelect").selectedOptions[0];
+    if (!fatGoalOption) throw new Error("Please select a body fat goal");
+
+    const targetBFRange = {
+      min: Number(fatGoalOption.dataset.targetMin),
+      max: Number(fatGoalOption.dataset.targetMax)
+    };
+
+    const simParams = {
+      initialWeight: weightVal,
+      isKg: isMetric,
+      bodyFatPct: bfVal,
+      age: ageVal,
+      gender,
+      activityMultiplier: af,
+      weightGoal: "lose",
+      deficitValue: String(dailyAdjVal),
+      dietaryApproach: dietary,
+      targetBFRange,
+      heightCm
+    };
+
+    const simResultLower = await simulateDynamicMetabolicAdaptation({ ...simParams, targetBF: targetBFRange.min });
+    const simResultUpper = await simulateDynamicMetabolicAdaptation({ ...simParams, targetBF: targetBFRange.max });
+    if (simResultLower.error || simResultUpper.error) {
+      throw new Error(simResultLower.error || simResultUpper.error);
+    }
+    await updateUIWithResults(simResultLower, simResultUpper, isMetric, simParams);
+
+    try {
+      await state.chartManager.renderForecastCharts(
+        simResultLower.weeklyData,
+        simResultLower.startDate
+      );
+    } catch (error) {
+      console.error("Chart render error:", error);
+      throw new Error("Failed to render charts");
+    }
+    // Advance to Step 3.
+    showStep(2);
+  } catch (error) {
+    console.error("Calculation failed:", error);
+    showGlobalError("Calculation failed. " + error.message);
+    throw error;
+  }
+}
+
+function calculateMacros(calories, dietaryApproach) {
+  if (!calories || calories < 0) throw new Error("Invalid calorie value");
+  const macros = { protein: 0, carbs: 0, fat: 0 };
+  switch (dietaryApproach) {
+    case "low-carb":
+      macros.protein = Math.round((calories * 0.3) / 4);
+      macros.carbs = Math.round((calories * 0.2) / 4);
+      macros.fat = Math.round((calories * 0.5) / 9);
+      break;
+    case "high-protein":
+      macros.protein = Math.round((calories * 0.4) / 4);
+      macros.carbs = Math.round((calories * 0.35) / 4);
+      macros.fat = Math.round((calories * 0.25) / 9);
+      break;
+    default:
+      macros.protein = Math.round((calories * 0.3) / 4);
+      macros.carbs = Math.round((calories * 0.4) / 4);
+      macros.fat = Math.round((calories * 0.3) / 9);
+  }
+  return macros;
+}
+
+function formatMeasurement(value, type, isMetric) {
+  if (typeof value !== "number") return "--";
+  value = Math.round(value * 10) / 10;
+  switch (type) {
+    case "weight":
+      return `${value} ${isMetric ? "kg" : "lbs"}`;
+    case "length":
+      return `${value} ${isMetric ? "cm" : "in"}`;
+    default:
+      return value.toString();
+  }
+}
+
+function validateInput(params) {
+  const { initialWeight, bodyFatPct, age, gender, activityMultiplier, heightCm } = params;
+  if (!initialWeight || !bodyFatPct || !age || !gender || !activityMultiplier || !heightCm) {
+    throw new Error("Missing required parameters");
+  }
+  if (bodyFatPct < 5 || bodyFatPct > 60) {
+    throw new Error("Body fat percentage must be between 5% and 60%");
+  }
+  if (age < 18 || age > 75) {
+    throw new Error("Age must be between 18 and 75");
+  }
+  if (activityMultiplier < 1.2 || activityMultiplier > 2.0) {
+    throw new Error("Invalid activity multiplier");
+  }
+  return params;
+}
+
+/***************************************
+ * Calculation Helper Functions
+ ***************************************/
+function calculateRMR(weightKg, heightCm, age, gender) {
+  return gender === "male"
+    ? 10 * weightKg + 6.25 * heightCm - 5 * age + 5
+    : 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+}
+
+function getBFPartitionRatio(bf) {
+  if (bf > 30) return 0.9;
+  else if (bf >= 20) return 0.75;
+  return 0.6;
+}
+
+/***************************************
+ * Simulation Function
+ ***************************************/
+async function simulateDynamicMetabolicAdaptation(params) {
+  try {
+    const validatedParams = validateInput(params);
+    const {
+      initialWeight,
+      isKg,
+      bodyFatPct,
+      age,
+      gender,
+      activityMultiplier,
+      deficitValue,
+      dietaryApproach,
+      heightCm,
+      targetBFRange,
+      targetBF
+    } = validatedParams;
+    const userTargetBF = targetBF !== undefined ? targetBF : targetBFRange.min;
+    const safeMinBF = gender === "male" ? 10 : 15;
+    const effectiveTargetBF = Math.max(userTargetBF, safeMinBF);
+    
+    let currentWeight = isKg ? initialWeight * 2.20462 : initialWeight;
+    let currentFat = currentWeight * (bodyFatPct / 100);
+    let currentLean = currentWeight - currentFat;
+    let currentBF = bodyFatPct;
+    
+    console.log("[DEBUG] Starting simulation with currentBF:", currentBF, "and effectiveTargetBF:", effectiveTargetBF);
+    
+    if (currentBF <= effectiveTargetBF) {
+      console.log("[DEBUG] Current BF already meets target. Returning initial stats.");
+      return {
+        initialStats: {
+          totalWeight: initialWeight,
+          leanMass: initialWeight * (1 - bodyFatPct / 100),
+          fatMass: initialWeight * (bodyFatPct / 100),
+          bodyFatPct
+        },
+        weeklyData: [{
+          week: 0,
+          totalWeight: currentWeight,
+          leanMass: currentLean,
+          fatMass: currentFat,
+          bodyFatPercent: currentBF,
+          rmr: calculateRMR(isKg ? initialWeight : currentWeight / 2.20462, heightCm, age, gender),
+          tdee: calculateRMR(isKg ? initialWeight : currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier,
+          targetCalories: Math.max(
+            calculateRMR(isKg ? initialWeight : currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier + Number(deficitValue),
+            gender === "male" ? 1500 : 1200
+          ),
+          macros: calculateMacros(
+            Math.max(
+              calculateRMR(isKg ? initialWeight : currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier + Number(deficitValue),
+              gender === "male" ? 1500 : 1200
+            ),
+            dietaryApproach
+          ),
+          fatLoss: 0,
+          leanLoss: 0,
+          weeklyWeightLoss: 0,
+          weekDate: new Date()
+        }],
+        baselineRMR: calculateRMR(isKg ? initialWeight : currentWeight / 2.20462, heightCm, age, gender),
+        baselineTDEE: calculateRMR(isKg ? initialWeight : currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier,
+        startDate: new Date(),
+        endDate: new Date()
+      };
+    }
+    
+    const weightKg = isKg ? initialWeight : currentWeight / 2.20462;
+    const baselineRMR = calculateRMR(weightKg, heightCm, age, gender);
+    const baselineTDEE = baselineRMR * activityMultiplier;
+    const dailyDeficit = Number(deficitValue);
+    const weeklyDeficit = Math.abs(dailyDeficit) * 7;
+    const beta = 0.1;
+    const E_eff = 4000;
+    const weeklyData = [];
+    const startDate = new Date();
+    let week = 0;
+    const maxWeeks = 500;
+    
+    while (currentBF > effectiveTargetBF && week <= maxWeeks) {
+      const adaptiveLoss = beta * weeklyDeficit;
+      const effectiveDeficit = weeklyDeficit - adaptiveLoss;
+      const deltaWeight = effectiveDeficit / E_eff;
+      if (deltaWeight <= 0 || isNaN(deltaWeight)) {
+        throw new Error("Invalid weight change calculated");
+      }
+      const fatRatio = getBFPartitionRatio(currentBF);
+      const fatLoss = deltaWeight * fatRatio;
+      const leanLoss = deltaWeight - fatLoss;
+      currentWeight = Math.max(0.1, currentWeight - deltaWeight);
+      currentFat = Math.max(0, currentFat - fatLoss);
+      currentLean = Math.max(0.1, currentLean - leanLoss);
+      currentBF = (currentFat / currentWeight) * 100;
+      const currentWeightKg = currentWeight / 2.20462;
+      const currentRMR = calculateRMR(currentWeightKg, heightCm, age, gender);
+      const currentTDEE = currentRMR * activityMultiplier;
+      const targetCalories = Math.max(
+        currentTDEE + dailyDeficit,
+        gender === "male" ? 1500 : 1200
+      );
+      const weekDate = new Date(startDate);
+      weekDate.setDate(startDate.getDate() + (week + 1) * 7);
+      weeklyData.push({
+        week: week + 1,
+        totalWeight: currentWeight,
+        leanMass: currentLean,
+        fatMass: currentFat,
+        bodyFatPercent: currentBF,
+        rmr: currentRMR,
+        tdee: currentTDEE,
+        targetCalories,
+        macros: calculateMacros(targetCalories, dietaryApproach),
+        fatLoss,
+        leanLoss,
+        weeklyWeightLoss: deltaWeight,
+        weekDate
+      });
+      week++;
+    }
+    
+    if (weeklyData.length === 0) {
+      console.warn("[DEBUG] No simulation data generated; using initial stats as fallback.");
+      weeklyData.push({
+        week: 0,
+        totalWeight: currentWeight,
+        leanMass: currentLean,
+        fatMass: currentFat,
+        bodyFatPercent: currentBF,
+        rmr: calculateRMR(currentWeight / 2.20462, heightCm, age, gender),
+        tdee: calculateRMR(currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier,
+        targetCalories: Math.max(
+          calculateRMR(currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier + dailyDeficit,
+          gender === "male" ? 1500 : 1200
+        ),
+        macros: calculateMacros(
+          Math.max(
+            calculateRMR(currentWeight / 2.20462, heightCm, age, gender) * activityMultiplier + dailyDeficit,
+            gender === "male" ? 1500 : 1200
+          ),
+          dietaryApproach
+        ),
+        fatLoss: 0,
+        leanLoss: 0,
+        weeklyWeightLoss: 0,
+        weekDate: new Date()
+      });
+    }
+    
+    return {
+      initialStats: {
+        totalWeight: initialWeight,
+        leanMass: initialWeight * (1 - bodyFatPct / 100),
+        fatMass: initialWeight * (bodyFatPct / 100),
+        bodyFatPct
+      },
+      weeklyData,
+      baselineRMR,
+      baselineTDEE,
+      startDate,
+      endDate: weeklyData[weeklyData.length - 1].weekDate
+    };
+  } catch (error) {
+    console.error("Simulation failed:", error);
+    return { error: error.message };
+  }
+}
+
+/***************************************
+ * Population & UI Update Functions
+ ***************************************/
+function populateGoalBodyFatOptions(gender) {
+  try {
+    const goalSelect = getElement("fatGoalCategorySelect");
+    if (!goalSelect) return;
+    goalSelect.innerHTML = '<option value="" disabled selected>Select a Body Fat Goal</option>';
+    const ageInput = getElement("ageInput");
+    const ageVal = ageInput ? parseInt(ageInput.value, 10) : null;
+    if (!ageVal || isNaN(ageVal)) return;
+    const ageRange = getAgeRange(ageVal);
+    const demographicData = bodyFatPercentiles[gender]?.[ageRange];
+    if (!demographicData?.categories) return;
+    Object.entries(demographicData.categories).forEach(([key, data]) => {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)} (${data.range})`;
+      const rangeNumbers = data.range.match(/\d+\.?\d*/g);
+      option.dataset.targetMin = rangeNumbers ? rangeNumbers[0] : "";
+      option.dataset.targetMax = rangeNumbers && rangeNumbers[1] ? rangeNumbers[1] : (rangeNumbers ? rangeNumbers[0] : "");
+      option.dataset.range = data.range;
+      goalSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error populating body fat options:", error);
+  }
+}
+
+function updateBFRecommendation() {
+  try {
+    const ageInput = getElement("ageInput");
+    const gender = document.querySelector('input[name="gender"]:checked')?.value.toLowerCase();
+    if (!ageInput || !gender) {
+      setTextContent("recommendedBFRange", "N/A");
+      return;
+    }
+    const age = parseInt(ageInput.value, 10);
+    if (isNaN(age)) {
+      setTextContent("recommendedBFRange", "N/A");
+      return;
+    }
+    const ageRange = getAgeRange(age);
+    const data = bodyFatPercentiles[gender]?.[ageRange];
+    if (data?.categories?.average) {
+      setTextContent("recommendedBFRange", data.categories.average.range);
+    } else {
+      setTextContent("recommendedBFRange", "N/A");
+    }
+  } catch (error) {
+    console.error("BF recommendation error:", error);
+    setTextContent("recommendedBFRange", "Error");
+  }
+}
+
+/***************************************
+ * UI Update Functions for Step 3
+ ***************************************/
+function updateCurrentStats(currentStats, isMetric, gender) {
+  setTextContent("currentWeightSpan", formatMeasurement(currentStats.totalWeight, "weight", isMetric));
+  setTextContent("currentLeanSpan", formatMeasurement(currentStats.leanMass, "weight", isMetric));
+  setTextContent("currentFatSpan", `${formatMeasurement(currentStats.fatMass, "weight", isMetric)} (${currentStats.bodyFatPct.toFixed(1)}%)`);
+  setTextContent("currentBFpctSpan", `${currentStats.bodyFatPct.toFixed(1)}%`);
+  setTextContent("currentBFcatSpan", getBFCat(currentStats.fatMass / currentStats.totalWeight, gender));
+}
+
+function updateGoalRanges(finalWeekLower, finalWeekUpper, isMetric, gender) {
+  const ranges = {
+    weight: [finalWeekLower.totalWeight, finalWeekUpper.totalWeight],
+    fat: [finalWeekLower.fatMass, finalWeekUpper.fatMass],
+    lean: [finalWeekLower.leanMass, finalWeekUpper.leanMass],
+    bf: [finalWeekLower.bodyFatPercent, finalWeekUpper.bodyFatPercent]
+  };
+  Object.keys(ranges).forEach(key => {
+    ranges[key].sort((a, b) => a - b);
+  });
+  setTextContent("goalWeightSpan", `${formatMeasurement(ranges.weight[0], "weight", isMetric)} - ${formatMeasurement(ranges.weight[1], "weight", isMetric)}`);
+  setTextContent("goalFatSpan", `${formatMeasurement(ranges.fat[0], "weight", isMetric)} - ${formatMeasurement(ranges.fat[1], "weight", isMetric)}`);
+  setTextContent("goalLeanSpan", `${formatMeasurement(ranges.lean[0], "weight", isMetric)} - ${formatMeasurement(ranges.lean[1], "weight", isMetric)}`);
+  setTextContent("goalBFpctSpan", `${ranges.bf[0].toFixed(1)}% - ${ranges.bf[1].toFixed(1)}%`);
+  setTextContent("goalBFcatSpan", getBFCat(finalWeekLower.fatMass / finalWeekLower.totalWeight, gender));
+}
+
+function updateSummaryFields(params, currentStats, isMetric) {
+  const { gender, age, heightCm, dietaryApproach } = params;
+  const heightVal = isMetric ? heightCm : heightCm / 2.54;
+  const summaryUpdates = {
+    summaryGender: gender,
+    summaryAge: age,
+    summaryUnits: isMetric ? "kg/cm" : "lbs/inches",
+    summaryHeight: formatMeasurement(heightVal, "length", isMetric),
+    summaryTotalWeight: formatMeasurement(currentStats.totalWeight, "weight", isMetric),
+    summaryBodyFatPct: currentStats.bodyFatPct + "%",
+    summaryDietary: dietaryApproach,
+    summaryActivity: getElement("activityLevelSelect")?.selectedOptions[0]?.textContent || "",
+    summaryCalorieDeficit: getElement("dailyAdjustmentSelect")?.value || "",
+    summaryFatGoal: getElement("fatGoalCategorySelect")?.selectedOptions[0]?.textContent || ""
+  };
+  Object.entries(summaryUpdates).forEach(([id, value]) => {
+    setTextContent(id, value);
+  });
+}
+
+function updateTimelineFields(finalWeekLower, finalWeekUpper, simResultLower, simResultUpper, isMetric) {
+  const dateOptions = { month: "short", day: "numeric", year: "numeric" };
+  const timelineUpdates = {
+    timelineHighWeight: formatMeasurement(finalWeekUpper.totalWeight, "weight", isMetric),
+    timelineHighWeeks: `${finalWeekUpper.week} weeks`,
+    timelineHighDate: finalWeekUpper.weekDate.toLocaleDateString(undefined, dateOptions),
+    timelineLowWeight: formatMeasurement(finalWeekLower.totalWeight, "weight", isMetric),
+    timelineLowWeeks: `${finalWeekLower.week} weeks`,
+    timelineLowDate: finalWeekLower.weekDate.toLocaleDateString(undefined, dateOptions),
+    startDate: simResultLower.startDate.toLocaleDateString(undefined, dateOptions),
+    endDate: `${simResultLower.endDate.toLocaleDateString(undefined, dateOptions)} - ${simResultUpper.endDate.toLocaleDateString(undefined, dateOptions)}`
+  };
+  Object.entries(timelineUpdates).forEach(([id, value]) => {
+    setTextContent(id, value);
+  });
+}
+
+function updateLosses(simResultLower, isMetric) {
+  const finalWeek = simResultLower.weeklyData[simResultLower.weeklyData.length - 1];
+  const initialLean = simResultLower.initialStats.leanMass;
+  const initialFat  = simResultLower.initialStats.fatMass;
+  const leanLoss = initialLean - finalWeek.leanMass;
+  const fatLoss  = initialFat - finalWeek.fatMass;
+  setTextContent("leanMassLossSpan", formatMeasurement(leanLoss, "weight", isMetric));
+  setTextContent("fatLossSpan", formatMeasurement(fatLoss, "weight", isMetric));
+}
+
+/***************************************
+ * Updated Demographic Context Update Functions
+ ***************************************/
+async function updateDemographicContextWrapper(gender, age, currentStats, finalWeekLower) {
+  try {
+    const ageRange = getAgeRange(age);
+    const demographicData = bodyFatPercentiles[gender]?.[ageRange];
+    if (!demographicData) {
+      setDefaultDemographicValues();
+      return;
+    }
+    if (demographicData.categories) {
+      setTextContent("demoAverageBF", demographicData.categories.average.range);
+      setTextContent("demoFitnessBF", demographicData.categories.fitness.range);
+      const currentPercentile = getBFCat(currentStats.fatMass / currentStats.totalWeight, gender);
+      const goalPercentile = getBFCat(finalWeekLower.fatMass / finalWeekLower.totalWeight, gender);
+      setTextContent("demoCurrentBF", currentStats.bodyFatPct.toFixed(1));
+      setTextContent("demoCurrentPercentile", currentPercentile);
+      setTextContent("demoGoalBF", finalWeekLower.bodyFatPercent.toFixed(1));
+      setTextContent("demoGoalPercentile", goalPercentile);
+      const fatGoalOption = getElement("fatGoalCategorySelect")?.selectedOptions[0];
+      if (fatGoalOption) {
+        setTextContent("demoGoalBFRange", fatGoalOption.dataset.range || "--");
+        const selectedCategory = demographicData.categories[fatGoalOption.value];
+        setTextContent("demoGoalPercentileRange", selectedCategory?.percentileRange || "--");
+        setTextContent("demoGoalDescription", selectedCategory?.description || "--");
+      }
+    }
+    // --- Populate Health Risks Comparison ---
+    const currentCategoryKey = getBFCat(currentStats.fatMass / currentStats.totalWeight, gender).toLowerCase();
+    const projectedCategoryKey = getBFCat(finalWeekLower.fatMass / finalWeekLower.totalWeight, gender).toLowerCase();
+    const currentCategory = demographicData.categories[currentCategoryKey];
+    const projectedCategory = demographicData.categories[projectedCategoryKey];
+    populateCategoryRiskList(currentCategory, "currentHealthRisksList");
+    populateCategoryRiskList(projectedCategory, "projectedHealthRisksList");
+    // --- Populate Data Sources ---
+    const sourceStudies = demographicData.sourceStudies || [];
+    populateSourceStudiesList(sourceStudies);
+  } catch (error) {
+    console.error("Demographic context update error:", error);
+    setDefaultDemographicValues();
+  }
+}
+
+function populateCategoryRiskList(category, listId) {
+  const ul = getElement(listId);
+  if (!ul) return;
+  ul.innerHTML = "";
+  if (!category) {
+    ul.innerHTML = "<li>No health risk data available</li>";
+    return;
+  }
+  const liRange = document.createElement("li");
+  liRange.textContent = `Range: ${category.range}`;
+  ul.appendChild(liRange);
+  
+  const liPercentile = document.createElement("li");
+  liPercentile.textContent = `Percentile Range: ${category.percentileRange}`;
+  ul.appendChild(liPercentile);
+  
+  const liDescription = document.createElement("li");
+  liDescription.textContent = `Description: ${category.description}`;
+  ul.appendChild(liDescription);
+}
+
+function populateSourceStudiesList(studiesArray) {
+  const ul = getElement("demoSourceStudies");
+  if (!ul) return;
+  ul.innerHTML = "";
+  if (!studiesArray.length) {
+    ul.innerHTML = "<li>No source studies available</li>";
+    return;
+  }
+  studiesArray.forEach(study => {
+    const li = document.createElement("li");
+    li.textContent = `${study.name} - ${study.citation}`;
+    ul.appendChild(li);
+  });
+}
+
+function setDefaultDemographicValues() {
+  const defaults = {
+    demoAverageBF: "--",
+    demoFitnessBF: "--",
+    demoCurrentPercentile: "N/A",
+    demoGoalPercentile: "N/A",
+    demoGoalBFRange: "N/A",
+    demoGoalPercentileRange: "N/A",
+    demoGoalDescription: "N/A"
+  };
+  Object.entries(defaults).forEach(([id, value]) => {
+    setTextContent(id, value);
+  });
+}
+
+/***************************************
+ * updateUIWithResults (Defined Before Use)
+ ***************************************/
+async function updateUIWithResults(simResultLower, simResultUpper, isMetric, simParams) {
+  try {
+    const currentStats = simResultLower.initialStats;
+    updateCurrentStats(currentStats, isMetric, simParams.gender);
+    updateGoalRanges(
+      simResultLower.weeklyData[simResultLower.weeklyData.length - 1],
+      simResultUpper.weeklyData[simResultUpper.weeklyData.length - 1],
+      isMetric,
+      simParams.gender
+    );
+    updateSummaryFields(simParams, currentStats, isMetric);
+    updateTimelineFields(
+      simResultLower.weeklyData[simResultLower.weeklyData.length - 1],
+      simResultUpper.weeklyData[simResultUpper.weeklyData.length - 1],
+      simResultLower,
+      simResultUpper,
+      isMetric
+    );
+    // Set input summary values.
+    setTextContent("currentWeightInputSpan", formatMeasurement(simParams.initialWeight, "weight", isMetric));
+    setTextContent("bodyFatPctInputSpan", simParams.bodyFatPct.toFixed(1) + "%");
+    updateLosses(simResultLower, isMetric);
+    setTextContent("calorieDeficitSpan", simParams.deficitValue);
+    // Update demographic context, including health risks and source studies.
+    await updateDemographicContextWrapper(simParams.gender, simParams.age, currentStats, simResultLower.weeklyData[simResultLower.weeklyData.length - 1]);
+  } catch (error) {
+    console.error("UI update error:", error);
+    throw new Error("UI update failed");
+  }
+}
+
+/***************************************
+ * Exports for Use by Other Modules
+ ***************************************/
+export {
+  validateInput,
+  formatMeasurement,
+  calculateMacros,
+  simulateDynamicMetabolicAdaptation,
+  doFinalCalculation,
+  populateGoalBodyFatOptions,
+  updateBFRecommendation,
+  showStep,
+  validateCurrentStep,
+  showError,
+  clearErrors,
+  getElement,
+  setTextContent
+};

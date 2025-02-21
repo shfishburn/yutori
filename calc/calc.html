@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="calc.css" />
     <!-- Chart.js with defer for safe loading -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <!-- Possibly your own navigation or editor scripts -->
+    <!-- Navigation -->
     <script src="/components/navigation.js"></script>
   </head>
   <body class="font-sans">
@@ -44,504 +44,602 @@
           <!-- Global Error Container -->
           <div id="globalErrorContainer" role="alert" class="hidden text-red-500 mb-4"></div>
 
-          <!-- STEP 1: Your Information -->
+          <!-- STEP 1: Build Your Profile -->
           <div class="wizard-step active" id="step1">
-            <h2 class="section-title">Step 1: Build Your Profile</h2>
-            <h3 class="text-lg font-semibold mb-2">Welcome!</h3>
-            <div class="ml-6">
-              <p>Enter your age, gender, weight, body fat percentage, and height. This is your starting point.</p>
-              <p><strong>Let's get started!</strong></p>
-            </div>
-
-            <h3 class="text-lg font-semibold mb-2 mt-4">About You</h3>
-            <div class="ml-6">
-              <div class="mb-4">
-                <label for="radioMale">Gender (assigned at birth):</label>
-                <div class="radio-group">
-                  <label>
-                    <input type="radio" name="gender" value="male" id="radioMale" checked />
-                    Male
-                  </label>
-                  <label>
-                    <input type="radio" name="gender" value="female" id="radioFemale" />
-                    Female
-                  </label>
-                </div>
-              </div>
-              <div class="mb-4">
-                <label for="ageInput">Age (18 to 75):</label>
-                <input
-                  type="number"
-                  id="ageInput"
-                  name="age"
-                  min="18"
-                  max="75"
-                  required
-                  placeholder="e.g., 18 to 75"
-                  class="mb-2"
-                />
-              </div>
-            </div>
-
-            <h3 class="text-lg font-semibold mb-2 mt-4">Your Body</h3>
-            <div class="ml-6">
-              <div class="mb-4">
-                <label class="block">Select Units (pounds or kilograms):</label>
-                <div class="radio-group">
-                  <label>
-                    <input type="radio" name="unit" value="lbs" id="radioLbs" checked />
-                    lbs/inches
-                  </label>
-                  <label>
-                    <input type="radio" name="unit" value="kg" id="radioKg" />
-                    kg/cm
-                  </label>
-                </div>
-              </div>
-              <div class="mb-4">
-                <label for="heightInput">Height (in inches or cm):</label>
-                <input
-                  type="number"
-                  id="heightInput"
-                  name="height"
-                  required
-                  placeholder="e.g., 70 in or 178 cm"
-                  class="mb-2"
-                />
-              </div>
-              <div class="mb-4">
-                <label for="totalWeightInput">Total Weight:</label>
-                <input
-                  type="number"
-                  id="totalWeightInput"
-                  name="weight"
-                  required
-                  placeholder="e.g., pounds or kilograms"
-                  class="mb-2"
-                />
-              </div>
-              <div class="mb-4">
-                <label for="bodyFatPctInput">Body Fat (%):</label>
-                <input
-                  type="number"
-                  id="bodyFatPctInput"
-                  name="bodyFat"
-                  step="0.1"
-                  required
-                  placeholder="e.g., 25 for 25% body fat"
-                  class="mb-2"
-                />
-              </div>
-              <div class="wizard-buttons">
-                <p>Tap <strong>Next</strong> to enter your goals!</p>
-                <button type="button" class="btn" data-next-step>Next</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 2: Goals & Activity -->
-          <div class="wizard-step" id="step2">
-            <h2 class="section-title">Step 2: Tailor Your Weight Loss Strategy</h2>
-            <p>Select your dietary approach, activity level, calorie deficit, and body fat goal.</p>
-            <h3 class="text-lg font-semibold mb-2">Nutrition &amp; Fitness Goals</h3>
-            <div class="ml-6">
-              <label class="inline-flex items-center">
-                <span>Dietary Approach:</span>
-                <a
-                  href="#"
-                  data-open-modal="dietaryApproachModal"
-                  class="ml-1"
-                  aria-label="More Info on Dietary Approach"
-                >
-                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                </a>
-              </label>
-              <div class="radio-group mb-4">
-                <label>
-                  <input type="radio" name="dietaryApproach" value="low-carb" id="lowCarb" checked />
-                  Low-Carb
-                </label>
-                <label>
-                  <input type="radio" name="dietaryApproach" value="high-protein" id="highProtein" />
-                  High-Protein
-                </label>
-                <label>
-                  <input type="radio" name="dietaryApproach" value="balanced" id="balancedMacros" />
-                  Balanced
-                </label>
-              </div>
-
-              <label class="inline-flex items-center">
-                <span>Daily Activity Level:</span>
-                <a
-                  href="#"
-                  data-open-modal="activityLevelModal"
-                  class="ml-1"
-                  aria-label="More Info on Activity Level"
-                >
-                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                </a>
-              </label>
-              <select id="activityLevelSelect" name="activity" class="mb-4" required>
-                <option value="1.2">Sedentary (1.2 x RMR ≈ TDEE)</option>
-                <option value="1.375">Light (1.375 x RMR ≈ TDEE)</option>
-                <option value="1.55" selected>Moderate (1.55 x RMR ≈ TDEE)</option>
-                <option value="1.725">Very Active (1.725 x RMR ≈ TDEE)</option>
-                <option value="1.9">Extremely Active (1.9 x RMR ≈ TDEE)</option>
-              </select>
-
-              <label class="inline-flex items-center">
-                <span>Daily Calorie Deficit:</span>
-                <a
-                  href="#"
-                  data-open-modal="calorieDeficitModal"
-                  class="ml-1"
-                  aria-label="More Info on Calorie Deficit"
-                >
-                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                </a>
-              </label>
-              <select id="dailyAdjustmentSelect" name="deficit" class="mb-4" required>
-                <option value="-250">Slow Loss: (~250 cal/day deficit) ≈ 0.5 lb/week</option>
-                <option value="-500">Moderate Loss: (~500 cal/day deficit) ≈ 1 lb/week</option>
-                <option value="-750" selected>Rapid Loss: (~750 cal/day deficit) ≈ 1.5 lb/week</option>
-                <option value="-1000">Dangerous Loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more</option>
-              </select>
-
-              <label class="inline-flex items-center">
-                <span>Body Fat Goal %:</span>
-                <a
-                  href="#"
-                  data-open-modal="fatRangeModal"
-                  class="ml-1"
-                  aria-label="More Info on Body Fat Goal"
-                >
-                  <img src="/assets/tip.png" alt="More Info" class="w-4 h-4 inline-block" />
-                </a>
-              </label>
-              <select id="fatGoalCategorySelect" name="fatGoal" class="mb-4" required>
-                <option value="" disabled selected>Select a Body Fat Goal</option>
-              </select>
-            </div>
-            <div class="wizard-buttons">
-              <p>Tap <strong>Calculate</strong> to see your results!</p>
-              <button type="button" class="btn" data-prev-step>Back</button>
-              <button type="button" class="btn" id="calculateButton">Calculate</button>
-            </div>
-          </div>
-
-          <!-- STEP 3: Single-Column Results -->
-          <div class="wizard-step" id="step3">
             <div class="max-w-4xl mx-auto space-y-6">
-              <!-- Heading & Description -->
-              <h2 class="section-title">Step 3: Review Your Personalized Plan</h2>
-              <p class="text-gray-600 mb-6">
-                Below is your comprehensive body composition projection, projected timelines, and population comparisons.
-              </p>
-
-              <!-- Body Composition Card -->
-              <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
-                <h3 class="text-xl font-semibold mb-4">Body Composition Changes</h3>
-
-                <!-- Current Status -->
-                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                  <div class="text-sm text-gray-600 uppercase tracking-wide mb-2">Current Status</div>
-                  <div class="grid grid-cols-2 gap-x-6 gap-y-2">
-                    <div>
-                      <div class="text-2xl font-bold text-gray-900" id="currentWeightSpan">--</div>
-                      <div class="text-sm text-gray-600">Total Weight</div>
-                    </div>
-                    <div>
-                      <div class="text-2xl font-bold text-gray-900" id="currentBFpctSpan">--</div>
-                      <div class="text-sm text-gray-600">Body Fat</div>
-                    </div>
-                    <div>
-                      <div class="text-lg font-medium text-gray-800" id="currentLeanSpan">--</div>
-                      <div class="text-sm text-gray-600">Lean Mass</div>
-                    </div>
-                    <div>
-                      <div class="text-lg font-medium text-gray-800" id="currentFatSpan">--</div>
-                      <div class="text-sm text-gray-600">Fat Mass</div>
-                    </div>
-                  </div>
+              <!-- Card Container with Gradient Background -->
+              <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-6">
+                <!-- Welcome Card -->
+                <div class="bg-white shadow rounded-lg p-6 border border-gray-200 mb-6">
+                  <h2 class="section-title">Step 1: Build Your Profile</h2>
+                  <h3 class="text-lg font-semibold mb-2">Welcome!</h3>
+                  <p class="text-gray-600">
+                    Enter your age, gender, weight, body fat percentage, and height.
+                    This is your starting point.
+                  </p>
                 </div>
-
-                <!-- Total Changes -->
-                <div class="mb-6 p-4 bg-orange-50 rounded-lg">
-                  <div class="text-sm text-orange-600 uppercase tracking-wide mb-2">Projected Weight Loss Range</div>
-                  <div class="grid grid-cols-1 gap-2">
-                    <div class="text-2xl font-bold text-orange-700" id="totalWeightLossSpan">--</div>
-                    <div class="text-sm text-orange-600">
-                      Based on a 
-                      <span id="calorieDeficitSpan">--</span> calorie daily deficit
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Final Range -->
-                <div class="p-4 bg-teal-50 rounded-lg">
-                  <div class="text-sm text-teal-600 uppercase tracking-wide mb-2">Goal Range</div>
-                  <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+                <!-- About You Card -->
+                <div class="bg-white shadow rounded-lg p-6 border border-gray-200 mb-6">
+                  <h3 class="text-lg font-semibold mb-2">About You</h3>
+                  <div class="space-y-4">
                     <div>
-                      <div class="text-2xl font-bold text-teal-700" id="goalWeightSpan">--</div>
-                      <div class="text-sm text-teal-600">Total Weight</div>
-                    </div>
-                    <div>
-                      <div class="text-2xl font-bold text-teal-700" id="goalBFpctSpan">--</div>
-                      <div class="text-sm text-teal-600">Body Fat</div>
-                    </div>
-                    <div>
-                      <div class="text-lg font-medium text-teal-700" id="goalLeanSpan">--</div>
-                      <div class="text-sm text-teal-600">Lean Mass</div>
-                    </div>
-                    <div>
-                      <div class="text-lg font-medium text-teal-700" id="goalFatSpan">--</div>
-                      <div class="text-sm text-teal-600">Fat Mass</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Timeline Card -->
-              <div class="bg-gradient-to-r from-blue-50 to-blue-100 shadow rounded-lg p-6 border border-blue-200">
-                <h3 class="text-xl font-semibold mb-4 text-blue-900">Timeline to Goal</h3>
-                <div class="space-y-4">
-                  <div class="grid grid-cols-1 gap-4">
-                    <!-- High Range Goal -->
-                    <div class="bg-white rounded-lg p-4">
-                      <div class="text-sm text-blue-600 uppercase tracking-wide mb-1">Higher Range Weight Goal</div>
-                      <div class="text-2xl font-bold text-blue-900" id="timelineHighWeight">--</div>
-                      <div class="text-base text-blue-600 mt-1" id="timelineHighWeeks">-- weeks</div>
-                      <div class="text-sm text-blue-600" id="timelineHighDate">--</div>
-                    </div>
-                    <!-- Low Range Goal -->
-                    <div class="bg-white rounded-lg p-4">
-                      <div class="text-sm text-blue-600 uppercase tracking-wide mb-1">Lower Range Weight Goal</div>
-                      <div class="text-2xl font-bold text-blue-900" id="timelineLowWeight">--</div>
-                      <div class="text-base text-blue-600 mt-1" id="timelineLowWeeks">-- weeks</div>
-                      <div class="text-sm text-blue-600" id="timelineLowDate">--</div>
-                    </div>
-                  </div>
-                  <div class="bg-white rounded-lg p-4">
-                    <div class="text-sm text-blue-600">
-                      Based on your selected deficit of 
-                      <span class="font-semibold" id="timelineDeficitSpan">--</span> calories per day, 
-                      you should lose approximately 
-                      <span class="font-semibold" id="weeklyWeightLossSpan">--</span> lbs per week initially.
-                    </div>
-                  </div>
-                  <div class="bg-white rounded-lg p-4">
-                    <div class="text-sm text-blue-600">
-                      Start Date: <span id="startDate">--</span> <br/>
-                      End Date: <span id="endDate">--</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Population Comparison Card -->
-              <div class="bg-gradient-to-r from-purple-50 to-pink-50 shadow rounded-lg p-6 border border-purple-200">
-                <h3 class="text-xl font-semibold mb-4 text-purple-900">U.S. Population Comparison</h3>
-                <div class="space-y-4">
-                  <!-- Basic distribution info -->
-                  <div class="bg-white rounded-lg p-4">
-                    <div class="text-sm text-purple-600 uppercase tracking-wide mb-2">Men Ages 60-69</div>
-                    <div class="grid grid-cols-2 gap-4">
-                      <div>
-                        <div class="text-sm text-purple-600">Average Body Fat</div>
-                        <div class="text-lg font-semibold text-purple-900" id="demoAverageBF">--</div>
-                      </div>
-                      <div>
-                        <div class="text-sm text-purple-600">Fitness Category Body Fat</div>
-                        <div class="text-lg font-semibold text-purple-900" id="demoFitnessBF">--</div>
+                      <label for="radioMale" class="block mb-1">Gender (assigned at birth):</label>
+                      <div class="radio-group">
+                        <label class="radio-label">
+                          <input type="radio" name="gender" value="male" id="radioMale" checked />
+                          <span>Male</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="gender" value="female" id="radioFemale" />
+                          <span>Female</span>
+                        </label>
                       </div>
                     </div>
-                  </div>
-
-                  <!-- Current vs Goal -->
-                  <div class="bg-white rounded-lg p-4">
-                    <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Your Progress Path</h4>
-                    <div class="space-y-2">
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-purple-600">Current:</span>
-                        <span class="text-sm font-semibold text-purple-900" id="demoCurrentBF">--</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-purple-600">Goal:</span>
-                        <span class="text-sm font-semibold text-purple-900" id="demoGoalBF">--</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-purple-600">Current Category:</span>
-                        <span class="text-sm font-semibold text-purple-900" id="demoCurrentPercentile">--</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-purple-600">Goal Category:</span>
-                        <span class="text-sm font-semibold text-purple-900" id="demoGoalPercentile">--</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-purple-600">Range:</span>
-                        <span class="text-sm font-semibold text-purple-900" id="demoGoalBFRange">--</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-purple-600">Percentile Range:</span>
-                        <span class="text-sm font-semibold text-purple-900" id="demoGoalPercentileRange">--</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Health Risks -->
-                  <div class="bg-white rounded-lg p-4">
-                    <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Health Risks</h4>
-                    <!-- A table to compare Current Risk vs. Potential Improvement -->
-                    <table class="w-full text-sm text-purple-700" id="healthRisksTable">
-                      <thead>
-                        <tr>
-                          <th class="p-2 text-left">Condition</th>
-                          <th class="p-2 text-left">Current Risk</th>
-                          <th class="p-2 text-left">Goal Risk</th>
-                        </tr>
-                      </thead>
-                      <tbody id="demoCurrentHealthRisks">
-                        <!-- Populated by calc.js -->
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Data Sources -->
-                  <div class="bg-white rounded-lg p-4">
-                    <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Data Sources</h4>
-                    <ul class="text-sm text-purple-700 list-disc list-inside" id="demoSourceStudies">
-                      <!-- Populated via JS -->
-                    </ul>
-                  </div>
-
-                  <!-- Summary -->
-                  <div class="bg-white rounded-lg p-4">
-                    <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Summary</h4>
-                    <p class="text-sm text-purple-700" id="demoGoalDescription">--</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Charts Section -->
-              <div class="bg-white shadow rounded-lg p-5 border border-gray-100">
-                <h3 class="text-xl font-semibold mb-4">Your Personalized Charts</h3>
-                <div id="chartTabsContainer">
-                  <!-- Chart tabs generated by JS -->
-                </div>
-                <div id="chartsDisplay" class="chart-container">
-                  <!-- Charts will be added here -->
-                </div>
-              </div>
-
-              <!-- Export Controls -->
-              <div class="flex flex-wrap gap-3 mt-4 items-center justify-between">
-                <div>
-                  <button
-                    type="button"
-                    class="btn px-4 py-2 bg-gray-700 text-white mr-2"
-                    id="newScenarioBtn"
-                    data-prev-step
-                  >
-                    Start Over
-                  </button>
-                  <button
-                    type="button"
-                    class="btn px-4 py-2 bg-gray-500 text-white"
-                    id="disclaimerLink"
-                  >
-                    Disclaimer
-                  </button>
-                </div>
-                <div class="flex flex-wrap gap-3">
-                  <button
-                    class="px-4 py-2 bg-white border border-gray-300 rounded flex items-center text-sm hover:bg-gray-50"
-                    id="printResultsBtn"
-                    aria-label="Print Results"
-                  >
-                    <!-- Print Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17 17h2a2 2 0 
-                        002-2v-4a2 2 0 
-                        00-2-2H5a2 2 0 
-                        00-2 2v4a2 2 0 
-                        002 2h2m2 4h6a2 2 0 
-                        002-2v-4a2 2 0 
-                        00-2-2H9a2 2 0 
-                        00-2 2v4a2 2 0 
-                        002 2zm8-12V5a2 2 
-                        0 00-2-2H9a2 2 
-                        0 00-2 2v4h10z"
+                    <div>
+                      <label for="ageInput" class="block mb-1">Age (18 to 75):</label>
+                      <input
+                        type="number"
+                        id="ageInput"
+                        name="age"
+                        min="18"
+                        max="75"
+                        required
+                        placeholder="e.g., 18 to 75"
+                        class="input-field"
                       />
-                    </svg>
-                    Print Results
-                  </button>
-                  <button
-                    class="px-4 py-2 bg-white border border-gray-300 rounded flex items-center text-sm hover:bg-gray-50"
-                    id="saveAsPdfBtn"
-                    aria-label="Save as PDF"
-                  >
-                    <!-- PDF Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 16v1a3 3 0 
-                        003 3h10a3 3 0 
-                        003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    </div>
+                  </div>
+                </div>
+                <!-- Your Body Card -->
+                <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+                  <h3 class="text-lg font-semibold mb-2">Your Body</h3>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block mb-1">Select Units:</label>
+                      <div class="radio-group">
+                        <label class="radio-label">
+                          <input type="radio" name="unit" value="lbs" id="radioLbs" checked />
+                          <span>lbs/inches</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="unit" value="kg" id="radioKg" />
+                          <span>kg/cm</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="heightInput" class="block mb-1">Height:</label>
+                      <input
+                        type="number"
+                        id="heightInput"
+                        name="height"
+                        required
+                        placeholder="e.g., 70 in or 178 cm"
+                        class="input-field"
                       />
-                    </svg>
-                    Save as PDF
-                  </button>
+                    </div>
+                    <div>
+                      <label for="totalWeightInput" class="block mb-1">Total Weight:</label>
+                      <input
+                        type="number"
+                        id="totalWeightInput"
+                        name="weight"
+                        required
+                        placeholder="Enter your weight"
+                        class="input-field"
+                      />
+                    </div>
+                    <div>
+                      <label for="bodyFatPctInput" class="block mb-1">Body Fat (%):</label>
+                      <input
+                        type="number"
+                        id="bodyFatPctInput"
+                        name="bodyFat"
+                        step="0.1"
+                        required
+                        placeholder="Enter your body fat %"
+                        class="input-field"
+                      />
+                    </div>
+                    <div class="wizard-buttons">
+                      <p class="text-gray-600 mb-2">
+                        Tap <strong>Next</strong> to enter your goals!
+                      </p>
+                      <button type="button" class="btn" data-next-step>Next</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </form>
-      </div>
-    </section>
 
-    <!-- Example Modal -->
-    <div
-      class="modal-overlay"
-      id="bodyCompModal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="bodyCompModalTitle"
-    >
-      <div class="modal-content">
-        <h3 id="bodyCompModalTitle" class="text-2xl font-bold mb-2">Body Composition Details</h3>
-        <div class="modal-body">
-          <p>
-            Your body composition is more than just numbers—it's a snapshot of your current status.
-            Here you can see your weight, fat mass, lean mass, and body fat percentage.
-          </p>
+          <!-- STEP 2: Tailor Your Weight Loss Strategy -->
+          <div class="wizard-step" id="step2">
+            <div class="max-w-4xl mx-auto space-y-6">
+              <!-- Card Container with Gradient Background -->
+              <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-6">
+                <h2 class="section-title">Step 2: Tailor Your Weight Loss Strategy</h2>
+                <!-- Strategy Card -->
+                <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+                  <h3 class="text-lg font-semibold mb-2">Nutrition &amp; Fitness Goals</h3>
+                  <div class="space-y-6">
+                    <div>
+                      <div class="flex items-center mb-2">
+                        <label class="block">Dietary Approach:</label>
+                        <button
+                          type="button"
+                          data-open-modal="dietaryApproachModal"
+                          class="info-button"
+                        >
+                          <img
+                            src="/assets/tip.png"
+                            alt="More Info"
+                            class="w-4 h-4"
+                          />
+                        </button>
+                      </div>
+                      <div class="radio-group">
+                        <label class="radio-label">
+                          <input
+                            type="radio"
+                            name="dietaryApproach"
+                            value="low-carb"
+                            id="lowCarb"
+                            checked
+                          />
+                          <span>Low-Carb</span>
+                        </label>
+                        <label class="radio-label">
+                          <input
+                            type="radio"
+                            name="dietaryApproach"
+                            value="high-protein"
+                            id="highProtein"
+                          />
+                          <span>High-Protein</span>
+                        </label>
+                        <label class="radio-label">
+                          <input
+                            type="radio"
+                            name="dietaryApproach"
+                            value="balanced"
+                            id="balancedMacros"
+                          />
+                          <span>Balanced</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex items-center mb-2">
+                        <label class="block">Daily Activity Level:</label>
+                        <button
+                          type="button"
+                          data-open-modal="activityLevelModal"
+                          class="info-button"
+                        >
+                          <img
+                            src="/assets/tip.png"
+                            alt="More Info"
+                            class="w-4 h-4"
+                          />
+                        </button>
+                      </div>
+                      <select
+                        id="activityLevelSelect"
+                        name="activity"
+                        class="select-field"
+                        required
+                      >
+                        <option value="1.2">Sedentary (1.2 x RMR ≈ TDEE)</option>
+                        <option value="1.375">Light (1.375 x RMR ≈ TDEE)</option>
+                        <option value="1.55" selected>
+                          Moderate (1.55 x RMR ≈ TDEE)
+                        </option>
+                        <option value="1.725">Very Active (1.725 x RMR ≈ TDEE)</option>
+                        <option value="1.9">
+                          Extremely Active (1.9 x RMR ≈ TDEE)
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <div class="flex items-center mb-2">
+                        <label class="block">Daily Calorie Deficit:</label>
+                        <button
+                          type="button"
+                          data-open-modal="calorieDeficitModal"
+                          class="info-button"
+                        >
+                          <img
+                            src="/assets/tip.png"
+                            alt="More Info"
+                            class="w-4 h-4"
+                          />
+                        </button>
+                      </div>
+                      <select
+                        id="dailyAdjustmentSelect"
+                        name="deficit"
+                        class="select-field"
+                        required
+                      >
+                        <option value="-250">
+                          Slow Loss: (~250 cal/day deficit) ≈ 0.5 lb/week
+                        </option>
+                        <option value="-500">
+                          Moderate Loss: (~500 cal/day deficit) ≈ 1 lb/week
+                        </option>
+                        <option value="-750" selected>
+                          Rapid Loss: (~750 cal/day deficit) ≈ 1.5 lb/week
+                        </option>
+                        <option value="-1000">
+                          Dangerous Loss: (~1,000+ cal/day deficit) ≈ 2 lb/week or more
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <div class="flex items-center mb-2">
+                        <label class="block">Body Fat Goal %:</label>
+                        <button
+                          type="button"
+                          data-open-modal="fatRangeModal"
+                          class="info-button"
+                        >
+                          <img
+                            src="/assets/tip.png"
+                            alt="More Info"
+                            class="w-4 h-4"
+                          />
+                        </button>
+                      </div>
+                      <select
+                        id="fatGoalCategorySelect"
+                        name="fatGoal"
+                        class="select-field"
+                        required
+                      >
+                        <option value="" disabled selected>
+                          Select a Body Fat Goal
+                        </option>
+                      </select>
+                      <p class="mt-2 text-sm text-gray-600">
+                        Recommended BF% for your profile:
+                        <span id="recommendedBFRange">--</span>
+                      </p>
+                    </div>
+                    <div class="wizard-buttons">
+                      <p class="text-gray-600 mb-2">
+                        Tap <strong>Calculate</strong> to see your results!
+                      </p>
+                      <button type="button" class="btn" data-prev-step>Back</button>
+                      <button type="button" class="btn" id="calculateButton">
+                        Calculate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+<!-- STEP 3: Single-Column Results -->
+<div class="wizard-step" id="step3">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Heading & Description -->
+    <h2 class="section-title">Step 3: Review Your Personalized Plan</h2>
+    <p class="text-gray-600 mb-6">
+      Below is your comprehensive body composition projection, projected timelines, and population comparisons.
+    </p>
+
+    <!-- Body Composition Card -->
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+      <h3 class="text-xl font-semibold mb-4">Body Composition Changes</h3>
+      <!-- Current Status -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+        <div class="text-sm text-gray-600 uppercase tracking-wide mb-2">Current Status</div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div>
+            <div class="text-2xl font-bold text-gray-900" id="currentWeightSpan">--</div>
+            <div class="text-sm text-gray-600">Total Weight</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900" id="currentBFpctSpan">--</div>
+            <div class="text-sm text-gray-600">Body Fat</div>
+          </div>
+          <div>
+            <div class="text-lg font-medium text-gray-800" id="currentLeanSpan">--</div>
+            <div class="text-sm text-gray-600">Lean Mass</div>
+          </div>
+          <div>
+            <div class="text-lg font-medium text-gray-800" id="currentFatSpan">--</div>
+            <div class="text-sm text-gray-600">Fat Mass</div>
+          </div>
         </div>
-        <button class="btn close-modal-btn" data-close-modal="bodyCompModal">Close</button>
+      </div>
+      <!-- Total Changes -->
+      <div class="mb-6 p-4 bg-orange-50 rounded-lg">
+        <div class="text-sm text-orange-600 uppercase tracking-wide mb-2">Projected Weight Loss Range</div>
+        <div class="grid grid-cols-1 gap-2">
+          <div class="text-2xl font-bold text-orange-700" id="totalWeightLossSpan">--</div>
+          <div class="text-sm text-orange-600">
+            Based on a <span id="calorieDeficitSpan">--</span> calorie daily deficit
+          </div>
+        </div>
+      </div>
+      <!-- Final Range -->
+      <div class="p-4 bg-teal-50 rounded-lg">
+        <div class="text-sm text-teal-600 uppercase tracking-wide mb-2">Goal Range</div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div>
+            <div class="text-2xl font-bold text-teal-700" id="goalWeightSpan">--</div>
+            <div class="text-sm text-teal-600">Total Weight</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-teal-700" id="goalBFpctSpan">--</div>
+            <div class="text-sm text-teal-600">Body Fat</div>
+          </div>
+          <div>
+            <div class="text-lg font-medium text-teal-700" id="goalLeanSpan">--</div>
+            <div class="text-sm text-teal-600">Lean Mass</div>
+          </div>
+          <div>
+            <div class="text-lg font-medium text-teal-700" id="goalFatSpan">--</div>
+            <div class="text-sm text-teal-600">Fat Mass</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer-section mt-10">
-      <div class="container">
-        <div class="footer-content text-center text-sm text-gray-600">
-          <a href="/legal/privacy.html" class="text-orange-600">Privacy Policy</a> |
-          <a href="/legal/terms.html" class="text-orange-600">Terms of Service</a>
-          <br />
-          <p class="mt-2">&copy; 2025 Yutori Labs, LLC</p>
+    <!-- Summary Section -->
+    <div class="bg-white shadow rounded-lg p-4 border border-gray-200" id="summarySection">
+      <h3 class="text-xl font-semibold mb-4">Summary of Your Profile</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <strong>Gender:</strong> <span id="summaryGender">--</span>
+        </div>
+        <div>
+          <strong>Age:</strong> <span id="summaryAge">--</span>
+        </div>
+        <div>
+          <strong>Units:</strong> <span id="summaryUnits">--</span>
+        </div>
+        <div>
+          <strong>Height:</strong> <span id="summaryHeight">--</span>
+        </div>
+        <div>
+          <strong>Total Weight:</strong> <span id="summaryTotalWeight">--</span>
+        </div>
+        <div>
+          <strong>Body Fat %:</strong> <span id="summaryBodyFatPct">--</span>
+        </div>
+        <div>
+          <strong>Dietary Approach:</strong> <span id="summaryDietary">--</span>
+        </div>
+        <div>
+          <strong>Activity Level:</strong> <span id="summaryActivity">--</span>
+        </div>
+        <div>
+          <strong>Calorie Deficit:</strong> <span id="summaryCalorieDeficit">--</span>
+        </div>
+        <div>
+          <strong>Body Fat Goal:</strong> <span id="summaryFatGoal">--</span>
         </div>
       </div>
-    </footer>
+      <div class="mt-4">
+        <strong>Current BF Category:</strong> <span id="goalBFcatSpan">--</span>
+      </div>
+      <div class="mt-4 grid grid-cols-2 gap-4">
+        <div>
+          <strong>Current Weight Input:</strong> <span id="currentWeightInputSpan">--</span>
+        </div>
+        <div>
+          <strong>Body Fat % Input:</strong> <span id="bodyFatPctInputSpan">--</span>
+        </div>
+        <div>
+          <strong>Lean Mass Loss:</strong> <span id="leanMassLossSpan">--</span>
+        </div>
+        <div>
+          <strong>Fat Loss:</strong> <span id="fatLossSpan">--</span>
+        </div>
+      </div>
+    </div>
 
-    <!-- Script References -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="/calc/population-data.js" type="module"></script>
-    <script src="/calc/charts.js" type="module"></script>
-    <script src="/calc/calc.js" type="module"></script>
-  </body>
+    <!-- Timeline Card -->
+    <div class="bg-gradient-to-r from-blue-50 to-blue-100 shadow rounded-lg p-6 border border-blue-200">
+      <h3 class="text-xl font-semibold mb-4 text-blue-900">Timeline to Goal</h3>
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 gap-4">
+          <!-- High Range Goal -->
+          <div class="bg-white rounded-lg p-4">
+            <div class="text-sm text-blue-600 uppercase tracking-wide mb-1">Higher Range Weight Goal</div>
+            <div class="text-2xl font-bold text-blue-900" id="timelineHighWeight">--</div>
+            <div class="text-base text-blue-600 mt-1" id="timelineHighWeeks">-- weeks</div>
+            <div class="text-sm text-blue-600" id="timelineHighDate">--</div>
+          </div>
+          <!-- Low Range Goal -->
+          <div class="bg-white rounded-lg p-4">
+            <div class="text-sm text-blue-600 uppercase tracking-wide mb-1">Lower Range Weight Goal</div>
+            <div class="text-2xl font-bold text-blue-900" id="timelineLowWeight">--</div>
+            <div class="text-base text-blue-600 mt-1" id="timelineLowWeeks">-- weeks</div>
+            <div class="text-sm text-blue-600" id="timelineLowDate">--</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg p-4">
+          <div class="text-sm text-blue-600">
+            Based on your selected deficit of 
+            <span class="font-semibold" id="timelineDeficitSpan">--</span>
+            calories per day, you should lose approximately 
+            <span class="font-semibold" id="weeklyWeightLossSpan">--</span>
+            lbs per week initially.
+          </div>
+        </div>
+        <div class="bg-white rounded-lg p-4">
+          <div class="text-sm text-blue-600">
+            Start Date: <span id="startDate">--</span> <br/>
+            End Date: <span id="endDate">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Population Comparison Card -->
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 shadow rounded-lg p-6 border border-purple-200">
+      <h3 class="text-xl font-semibold mb-4 text-purple-900">U.S. Population Comparison</h3>
+      <div class="space-y-4">
+        <!-- Basic distribution info -->
+        <div class="bg-white rounded-lg p-4">
+          <div class="text-sm text-purple-600 uppercase tracking-wide mb-2">Men Ages 60-69</div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm text-purple-600">Average Body Fat</div>
+              <div class="text-lg font-semibold text-purple-900" id="demoAverageBF">--</div>
+            </div>
+            <div>
+              <div class="text-sm text-purple-600">Fitness Category Body Fat</div>
+              <div class="text-lg font-semibold text-purple-900" id="demoFitnessBF">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current vs Projected & Health Risks -->
+        <div class="bg-white rounded-lg p-4">
+          <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Your Progress Path</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-purple-600">Current:</span>
+              <span class="text-sm font-semibold text-purple-900" id="demoCurrentBF">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-purple-600">Goal:</span>
+              <span class="text-sm font-semibold text-purple-900" id="demoGoalBF">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-purple-600">Current Category:</span>
+              <span class="text-sm font-semibold text-purple-900" id="demoCurrentPercentile">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-purple-600">Goal Category:</span>
+              <span class="text-sm font-semibold text-purple-900" id="demoGoalPercentile">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-purple-600">Range:</span>
+              <span class="text-sm font-semibold text-purple-900" id="demoGoalBFRange">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-purple-600">Percentile Range:</span>
+              <span class="text-sm font-semibold text-purple-900" id="demoGoalPercentileRange">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Redesigned Health Risks Card -->
+        <div class="bg-white rounded-lg p-4 shadow border border-gray-200">
+          <h4 class="text-lg font-semibold text-purple-600 uppercase mb-4">Health Risks Comparison</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h5 class="text-md font-semibold text-purple-800">Current Health Risks</h5>
+              <ul id="currentHealthRisksList" class="mt-2 list-disc list-inside text-sm text-purple-700">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+            <div>
+              <h5 class="text-md font-semibold text-purple-800">Projected Health Risks</h5>
+              <ul id="projectedHealthRisksList" class="mt-2 list-disc list-inside text-sm text-purple-700">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+          </div>
+          <div id="healthRisksError" class="text-red-500 text-sm mt-2 hidden">
+            <!-- Error message if health risk data is missing -->
+          </div>
+        </div>
+
+        <!-- Data Sources -->
+        <div class="bg-white rounded-lg p-4">
+          <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Data Sources</h4>
+          <ul class="text-sm text-purple-700 list-disc list-inside" id="demoSourceStudies">
+            <!-- Populated via JS -->
+          </ul>
+        </div>
+
+        <!-- Summary Description -->
+        <div class="bg-white rounded-lg p-4">
+          <h4 class="text-sm text-purple-600 uppercase tracking-wide mb-2">Summary</h4>
+          <p class="text-sm text-purple-700" id="demoGoalDescription">--</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="bg-white shadow rounded-lg p-5 border border-gray-100">
+      <h3 class="text-xl font-semibold mb-4">Your Personalized Charts</h3>
+      <div id="chartTabsContainer">
+        <!-- Chart tabs generated by JS -->
+      </div>
+      <div id="chartsDisplay" class="chart-container">
+        <!-- Charts will be added here -->
+      </div>
+    </div>
+
+    <!-- Export Controls as a Section -->
+    <section class="export-controls flex flex-wrap gap-3 mt-4 items-center justify-between">
+      <div>
+        <button type="button" class="btn px-4 py-2 bg-gray-700 text-white mr-2" id="newScenarioBtn" data-prev-step>
+          Start Over
+        </button>
+        <button type="button" class="btn px-4 py-2 bg-gray-500 text-white" id="disclaimerLink">
+          Disclaimer
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button class="px-4 py-2 bg-white border border-gray-300 rounded flex items-center text-sm hover:bg-gray-50" id="printResultsBtn" aria-label="Print Results">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+          </svg>
+          Print Results
+        </button>
+        <button class="px-4 py-2 bg-white border border-gray-300 rounded flex items-center text-sm hover:bg-gray-50" id="saveAsPdfBtn" aria-label="Save as PDF">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Save as PDF
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Example Modal -->
+<div class="modal-overlay" id="bodyCompModal" role="dialog" aria-modal="true" aria-labelledby="bodyCompModalTitle">
+  <div class="modal-content">
+    <h3 id="bodyCompModalTitle" class="text-2xl font-bold mb-2">Body Composition Details</h3>
+    <div class="modal-body">
+      <p>
+        Your body composition is more than just numbers—it's a snapshot of your current status.
+        Here you can see your weight, fat mass, lean mass, and body fat percentage.
+      </p>
+    </div>
+    <button class="btn close-modal-btn" data-close-modal="bodyCompModal">Close</button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer-section mt-10">
+  <div class="container">
+    <div class="footer-content text-center text-sm text-gray-600">
+      <a href="/legal/privacy.html" class="text-orange-600">Privacy Policy</a> |
+      <a href="/legal/terms.html" class="text-orange-600">Terms of Service</a>
+      <br />
+      <p class="mt-2">&copy; 2025 Yutori Labs, LLC</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Script References -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<script src="/calc/js/calc.js" type="module"></script>
+<script src="/calc/js/charts.js" type="module"></script>
+<script src="/calc/js/population-data.js" type="module"></script>
+</body>
 </html>
