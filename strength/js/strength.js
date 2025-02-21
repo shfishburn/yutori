@@ -478,11 +478,11 @@ function generateMuscleTags(muscles, isPrimary = true) {
         } else if (coreMuscles.some(m => muscle.includes(m))) {
             dotColor = 'bg-blue-400'; // Core & Trunk
         } else if (lowerBodyMuscles.some(m => muscle.includes(m))) {
-            dotColor = 'bg-amber-500'; // Lower Body
+            dotColor = 'bg-green-500'; // Lower Body
         }
 
         return `
-            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs ${isPrimary ? 'font-semibold' : 'font-medium'} bg-white text-gray-800 border border-gray-300">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs ${isPrimary ? 'font-semibold' : 'font-bold'} bg-white text-gray-800 border border-gray-300">
                 <span class="mr-1 w-2 h-2 rounded-full ${dotColor}"></span>
                 ${muscle}
             </span>
@@ -558,28 +558,28 @@ return `
         <h4 class="text-lg font-semibold text-gray-800 mb-4">${item.name}</h4>
         
         <!-- Movement Classification -->
-        <div class="bg-gray-50 rounded-lg p-4 mb-4">
-            <h5 class="text-sm font-bold text-gray-700 mb-2">Movement Classification</h5>
+        <div class="bg-gray-50 rounded-lg p-4 mb-">
+            <h5 class="text-sm font-bold text-gray-700 mb-4">Movement Classification</h5>
             <div class="space-y-1 text-sm">
-                <p class="text-gray-600"><span class="font-medium">Anatomy Trains:</span> ${(d.anatomy_trains || []).join(', ') || 'N/A'}</p>
-                <p class="text-gray-600"><span class="font-medium">NASM Category:</span> ${d.nasm_category || 'N/A'}</p>
-                <p class="text-gray-600"><span class="font-medium">Movement Type:</span> ${d.movement_type || 'N/A'}</p>
-                <p class="text-gray-600"><span class="font-medium">Equipment:</span> ${d.equipment_type || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-bold">Anatomy Trains &mdash;</span> ${(d.anatomy_trains || []).join(', ') || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-bold">NASM Category &mdash; </span> ${d.nasm_category || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-bold">Movement Type &mdash; </span> ${d.movement_type || 'N/A'}</p>
+                <p class="text-gray-600"><span class="font-bold">Equipment &mdash; </span> ${d.equipment_type || 'N/A'}</p>
             </div>
         </div>
 
         <!-- Muscle Engagement with Legend -->
         <div class="bg-gray-50 rounded-lg p-4 mb-4">
-            <h5 class="text-sm font-bold text-gray-700 mb-2">Muscle Engagement</h5>
+            <h5 class="text-sm font-bold text-gray-700 mb-4">Muscle Engagement</h5>
             <div class="space-y-2">
                 <div>
-                    <p class="text-xs font-medium text-gray-600 mb-1">Primary Muscles:</p>
+                    <p class="text-xs font-bold text-gray-600 mb-1">Primary Muscles:</p>
                     <div class="flex flex-wrap gap-1">
                         ${generateMuscleTags(d.muscles?.primary || '', true)}
                     </div>
                 </div>
                 <div class="border-t border-gray-200 pt-2">
-                    <p class="text-xs font-medium text-gray-600 mb-1">Secondary Muscles:</p>
+                    <p class="text-xs font-bold text-gray-600 mb-1">Secondary Muscles:</p>
                     <div class="flex flex-wrap gap-1">
                         ${generateMuscleTags(d.muscles?.secondary || '', false)}
                     </div>
@@ -587,7 +587,7 @@ return `
                 
                 <!-- Color legend/key with improved visibility -->
                 <div class="border-t border-gray-200 pt-2 mt-1">
-                    <p class="text-xs font-medium text-gray-600 mb-1">Muscle Regions:</p>
+                    <p class="text-xs font-bold text-gray-600 mb-1">Muscle Regions:</p>
                     <div class="flex flex-wrap gap-2 text-xs">
                         <span class="flex items-center mr-2">
                             <span class="inline-block w-3 h-3 mr-1 rounded-full bg-red-400"></span>
@@ -598,7 +598,7 @@ return `
                             Trunk & Core
                         </span>
                         <span class="flex items-center">
-                            <span class="inline-block w-3 h-3 mr-1 rounded-full bg-amber-500"></span>
+                            <span class="inline-block w-3 h-3 mr-1 rounded-full bg-green-500"></span>
                             Lower Body
                         </span>
                     </div>
@@ -608,7 +608,7 @@ return `
 
         <!-- Instructions -->
         <div class="bg-gray-50 rounded-lg p-4 mb-4">
-            <h5 class="text-sm font-bold text-gray-700 mb-2">Instructions</h5>
+            <h5 class="text-sm font-bold text-gray-700 mb-4">Instructions</h5>
             ${instructionsHtml}
         </div>
 
