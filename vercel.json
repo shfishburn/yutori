@@ -42,6 +42,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "sam/**/*",
+      "use": "@vercel/static"
+    },
+    {
       "src": "*.{html,css,js,json}",
       "use": "@vercel/static"
     }
@@ -76,6 +80,18 @@
         "Content-Type": "application/javascript",
         "X-Content-Type-Options": "nosniff"
       }
+    },
+    {
+      "src": "/sam/menu\\.html$",
+      "dest": "/sam/menu.html"
+    },
+    {
+      "src": "/sam/menu$",
+      "dest": "/sam/menu.html"
+    },
+    {
+      "src": "/sam/(.*)",
+      "dest": "/sam/$1"
     },
     {
       "src": "/assets/(.*)",
