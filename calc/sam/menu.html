@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chef's Prep Guide | Prix Fixe Menu</title>
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #9c8c63;
+            --light-color: #f5f5f5;
+            --accent-color: #5d4c3c;
+            --spacing: 1.5rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            color: var(--primary-color);
+            line-height: 1.6;
+            background-color: var(--light-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing);
+        }
+        
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--secondary-color);
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .tagline {
+            font-style: italic;
+            color: var(--secondary-color);
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 400;
+        }
+        
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: var(--secondary-color);
+            font-weight: 400;
+            border-bottom: 1px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+            background-color: white;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        ol li {
+            margin-bottom: 0.7rem;
+        }
+        
+        strong {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .note {
+            background-color: rgba(156, 140, 99, 0.1);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 3px solid var(--secondary-color);
+            font-style: italic;
+        }
+        
+        .footer {
+            text-align: center;
+            margin: 3rem 0;
+            color: var(--accent-color);
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 0 1rem;
+            }
+            
+            .two-column {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Burnt</div>
+        <div class="tagline">Culinary Excellence</div>
+    </header>
+
+    <h1>Prix Fixe Menu Preparation Guide</h1>
+    
+    <div class="section">
+        <h2>Menu Structure</h2>
+        <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <tr style="border-bottom: 1px solid var(--secondary-color);">
+                <th style="text-align: left; padding: 0.5rem; width: 30%;">Course</th>
+                <th style="text-align: left; padding: 0.5rem;">Dish</th>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.5rem;"><em>Stuzzichini</em></td>
+                <td style="padding: 0.5rem;">Fig and Speck</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.5rem;"><em>Insalata</em></td>
+                <td style="padding: 0.5rem;">Roasted Cold Beet Salad</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.5rem;"><em>Antipasto</em></td>
+                <td style="padding: 0.5rem;">Pickle and Cured Meat Sampler</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.5rem;"><em>Palate Cleanser</em></td>
+                <td style="padding: 0.5rem;">Whiskey Bone Broth Shot</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.5rem;"><em>Entrée</em></td>
+                <td style="padding: 0.5rem;">Pistachio Crusted Black Cod with Beurre Blanc Sauce</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.5rem;"><em>Mignardises</em></td>
+                <td style="padding: 0.5rem;">Fermented Pepper Honey Gnocco Fritto</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem;"><em>Dessert</em></td>
+                <td style="padding: 0.5rem;">Blackberry Sage Sorbetto</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Time Management</h2>
+        <ul>
+            <li><strong>2+ Days Before:</strong> Start fermented garlic honey</li>
+            <li><strong>Day Before:</strong> Prepare gnocco fritto dough, blackberry sorbetto</li>
+            <li><strong>Morning Of:</strong> Make stocks, prep vegetables, portion cheese</li>
+            <li><strong>Service:</strong> Finish cooking proteins, make beurre blanc to order</li>
+        </ul>
+    </div>
+
+    <div class="two-column">
+        <div class="column section">
+            <h2>Advance Prep (1+ Week Before)</h2>
+            <ul>
+                <li><strong>Fermented Garlic Honey:</strong> Cover clean garlic cloves in raw honey, let sit in flip top jar, cover loosely.</li>
+            </ul>
+        </div>
+
+        <div class="column section">
+            <h2>Day Before Prep</h2>
+            <ul>
+                <li><strong>Gnocco Fritto:</strong> Prep dough day before using Italian 00 flour, sugar, instant yeast, salt, whole milk, and lard. Store in freezer, fry to order.</li>
+                <li>
+                    <strong>Blackberry Sorbetto:</strong>
+                    <ol>
+                        <li>In a blender, purée blackberries until smooth</li>
+                        <li>Strain blackberry mixture through a fine mesh strainer and push it through with a rubber spatula</li>
+                        <li>Discard the remaining seeds and solids</li>
+                        <li>Combine water, sugar, and sage</li>
+                        <li>Heat mixture until it just begins to simmer, stirring until sugar is dissolved</li>
+                        <li>Remove from heat and let steep, uncovered, for 30 minutes</li>
+                        <li>Strain sugar syrup into a large bowl</li>
+                        <li>Stir blackberry puree and lemon juice until evenly mixed</li>
+                        <li>Freeze overnight</li>
+                    </ol>
+                </li>
+                <li><strong>Fried Sage:</strong> Pick leaves and fry prior to service, set aside on paper towel.</li>
+                <li><strong>Prepare Pea Vines:</strong> Clean and trim for garnishing the cured meat platter.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Stocks &amp; Broths (Morning Prep)</h2>
+        <ul>
+            <li><strong>Beef Broth:</strong> Hard sear short rib and top round chunks, simmer with mirepoix, star anise, cinnamon, and cardamom for at least 2 hours.</li>
+            <li><strong>Sticky Chicken Stock:</strong> Roast chicken carcass and feet until deeply browned, simmer in water and skim the scum off the top until completely clear. Add mirepoix and simmer for 45 min.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Proteins</h2>
+        <ul>
+            <li><strong>Cod:</strong> Salt in advance to pull as much moisture as possible and pat dry. Par-cook on parchment paper. Pull and flip fish, add pistachio crumb and finish until the crumb is hot and fish is cooked. Meanwhile prepare Beurre Blanc.</li>
+            <li><strong>Cured Meats:</strong> Slice thinly on deli slicer:
+                <ul>
+                    <li>Levoni Speck (slice extra for figs and gnocco fritto)</li>
+                    <li>Bresaola</li>
+                    <li>Fermin Jamon Serrano</li>
+                </ul>
+            </li>
+            <li><strong>Beef for Broth:</strong> Hard sear short rib and top round chunks, simmer with mirepoix, star anise, cinnamon, and cardamom for at least 2 hours.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Sauces &amp; Dressings</h2>
+        <ul>
+            <li><strong>Beurre Blanc sauce:</strong> Make to order with:
+                <ul>
+                    <li>Charred lemon (grilled half lemon juiced)</li>
+                    <li>Quality butter (cut into pads)</li>
+                    <li>White wine (squeeze bottle)</li>
+                    <li>Shallot (brunoise)</li>
+                </ul>
+            </li>
+            <li><strong>Fermented Pepper Honey:</strong> Use as glue to wrap figs.</li>
+            <li><strong>Dressing:</strong> Combine lime leaf, lime juice, condensed milk, extra virgin olive oil, salt, sugar, MSG and blend.</li>
+            <li><strong>Pickle Brine:</strong> 1:1:0.75 Vinegar Water Sugar</li>
+        </ul>
+    </div>
+
+    <div class="two-column">
+        <div class="column section">
+            <h2>Vegetables &amp; Garnishes</h2>
+            <ul>
+                <li><strong>Figs:</strong> Cut in half, toss with salt, pepper and EVOO, roast in oven 400 degrees for 5 min, let sit at room temperature.</li>
+                <li><strong>Beets:</strong>
+                    <ol>
+                        <li>Boil beets until al dente, pull from water, pat dry and toss with salt, pepper and EVOO</li>
+                        <li>Finish cooking in 500 degree oven, cool down</li>
+                        <li>Cut into wedges</li>
+                    </ol>
+                </li>
+                <li><strong>Broccolini:</strong> Toss in salt & pepper and EVOO. Cook in 500 degree oven until al dente. Torch or grill for char and to fully cook. Toss in butter and yuzu kosho.</li>
+                <li><strong>Kumquat:</strong> Slice thinly lengthwise.</li>
+                <li><strong>Red Thai Chili:</strong> Slice thinly on a bias.</li>
+                <li><strong>Chrysanthemum/Celery Leaf:</strong> Pick nice leaves for service.</li>
+                <li><strong>Carrots:</strong> Cut into spears.</li>
+                <li><strong>Daikon:</strong> Cut into batons.</li>
+                <li><strong>Jalapeño:</strong> Thinly slice.</li>
+                <li><strong>Fried Sage:</strong> Pick leaves and fry prior to service set aside on paper towel.</li>
+            </ul>
+        </div>
+
+        <div class="column section">
+            <h2>Components &amp; Mixtures</h2>
+            <ul>
+                <li><strong>La Tur:</strong> Portion into 1.5 oz.</li>
+                <li><strong>Levoni Speck:</strong> Portion to wrap figs.</li>
+                <li><strong>Pistachio Crumb:</strong> Crush whole pistachios in a Robot Coupe, combine with toasted bread crumb, fresh basil (chiffonade), fresh thyme (chiffonade), fresh parsley (chiffonade), grated Parmigiano Reggiano, garlic.</li>
+            </ul>
+            
+            <h2>Equipment Needed</h2>
+            <ul>
+                <li>Oven (capable of 500°F)</li>
+                <li>Deli slicer</li>
+                <li>Grill or torch</li>
+                <li>Robot Coupe food processor</li>
+                <li>Blender</li>
+                <li>Fine mesh strainer</li>
+                <li>Stock pots</li>
+                <li>Squeeze bottles</li>
+                <li>Deep fryer</li>
+                <li>Freezer</li>
+            </ul>
+            
+            <h2>Bar Prep</h2>
+            <ul>
+                <li><strong>Whiskey:</strong> Buffalo Trace, Woodford Reserve, Four Roses.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Ordering Guide</h2>
+        <div class="two-column">
+            <div class="column">
+                <ul>
+                    <li>La Tur cheese</li>
+                    <li>Levoni Speck</li>
+                    <li>Bresaola</li>
+                    <li>Fermin Jamon Serrano</li>
+                    <li>Fresh figs (seasonal)</li>
+                    <li>Beets</li>
+                    <li>Broccolini</li>
+                    <li>Kumquats</li>
+                    <li>Red Thai chilis</li>
+                </ul>
+            </div>
+            <div class="column">
+                <ul>
+                    <li>Chrysanthemum/celery leaves</li>
+                    <li>Carrots</li>
+                    <li>Daikon</li>
+                    <li>Jalapeños</li>
+                    <li>Fresh sage</li>
+                    <li>Cod (fresh, portioned)</li>
+                    <li>Pistachios</li>
+                    <li>Quality butter</li>
+                    <li>Buffalo Trace, Woodford Reserve, Four Roses whiskey</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-column">
+        <div class="column section">
+            <h2>Final Quality Checks</h2>
+            <ul>
+                <li>Taste all sauces before service</li>
+                <li>Check temperature of all hot items before serving</li>
+                <li>Ensure fish is properly cooked to 145°F internal temperature</li>
+                <li>Verify seasoning on all components</li>
+                <li>Check plating consistency with chef before service begins</li>
+            </ul>
+        </div>
+
+        <div class="column section">
+            <h2>Allergen Information</h2>
+            <ul>
+                <li>La Tur cheese: Contains dairy</li>
+                <li>Gnocco fritto: Contains gluten, dairy</li>
+                <li>Pistachio crumb: Contains nuts, dairy, gluten</li>
+                <li>Dressing: Contains dairy (condensed milk)</li>
+                <li>Cod: Fish allergen</li>
+                <li>Beurre blanc: Contains dairy</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Mise en Place Organization</h2>
+        <ul>
+            <li>Set up dedicated stations for each course</li>
+            <li>Prep containers labeled with contents and date</li>
+            <li>Keep hot items separate from cold</li>
+            <li>Organize garnishes in reach-in cooler for easy access</li>
+            <li>Pre-portion cheese, cured meats for efficiency during service</li>
+            <li>Organize plating vessels by course order</li>
+            <li>Prepare separate stations for cold and hot items</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>Required Plating Vessels</h2>
+        <ul>
+            <li><strong>Fig and Speck:</strong> Small wood platter</li>
+            <li><strong>Roasted Cold Beet Salad:</strong> Small bowl plate with shallow walls</li>
+            <li><strong>Pickle and Cured Meat Sampler:</strong> Long plate</li>
+            <li><strong>Whiskey Bone Broth Shot:</strong> Small ceramic tea cup</li>
+            <li><strong>Pistachio Crusted Black Cod:</strong> UFO plate</li>
+            <li><strong>Fermented Pepper Honey Gnocco Fritto:</strong> Wood platter</li>
+            <li><strong>Blackberry Sage Sorbetto:</strong> Small bowl</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Complete Ingredient List by Course</h2>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Stuzzichini: Fig and Speck</h3>
+        <ul>
+            <li>Figs (roasted)</li>
+            <li>La Tur cheese</li>
+            <li>Levoni Speck</li>
+            <li>Fermented Pepper Honey</li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Insalata: Roasted Cold Beet Salad</h3>
+        <ul>
+            <li>Red Beets</li>
+            <li>Kumquat</li>
+            <li>Red Thai Chilis</li>
+            <li>Kefir Lime Leaves</li>
+            <li>Mint</li>
+            <li>Fresh Lime Juice</li>
+            <li>Condensed Milk</li>
+            <li>Salt, Sugar, MSG</li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Antipasto: Pickle and Cured Meat Sampler</h3>
+        <ul>
+            <li>Distilled Vinegar</li>
+            <li>Sugar</li>
+            <li>Carrots</li>
+            <li>Daikon</li>
+            <li>Beets</li>
+            <li>Jalapeño</li>
+            <li>Levoni Speck</li>
+            <li>Bresaola</li>
+            <li>Fermin Jamon Serrano</li>
+            <li>Pea Vines (garnish)</li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Palate Cleanser: Whiskey Bone Broth Shot</h3>
+        <ul>
+            <li>Homemade Beef Broth</li>
+            <li>Whiskey (Buffalo Trace, Woodford Reserve, or Four Roses)</li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Entrée: Pistachio Crusted Black Cod with Beurre Blanc</h3>
+        <ul>
+            <li>Black Cod</li>
+            <li>Pistachio Crust:
+                <ul>
+                    <li>Raw Pistachios</li>
+                    <li>Bread crumb</li>
+                    <li>Fresh Basil</li>
+                    <li>Fresh Thyme</li>
+                    <li>Fresh Parsley</li>
+                    <li>Parmigiano Reggiano</li>
+                    <li>Garlic</li>
+                </ul>
+            </li>
+            <li>Beurre Blanc:
+                <ul>
+                    <li>Charred Lemon</li>
+                    <li>Quality Butter</li>
+                    <li>White Wine</li>
+                    <li>Shallot</li>
+                    <li>Sticky Chicken Stock</li>
+                </ul>
+            </li>
+            <li>Charred Broccolini:
+                <ul>
+                    <li>Fleur de sel</li>
+                    <li>Yuzu kosho</li>
+                    <li>Shallot</li>
+                    <li>Garlic</li>
+                    <li>Salt, pepper</li>
+                    <li>EVOO</li>
+                </ul>
+            </li>
+            <li>Garnish:
+                <ul>
+                    <li>Fried Leeks</li>
+                    <li>Chrysanthemum or Celery Leaf</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Mignardises: Fermented Garlic Honey Gnocco Fritto</h3>
+        <ul>
+            <li>Dough:
+                <ul>
+                    <li>Italian 00 flour</li>
+                    <li>Sugar</li>
+                    <li>Instant yeast</li>
+                    <li>Salt</li>
+                    <li>Whole milk</li>
+                    <li>Lard</li>
+                </ul>
+            </li>
+            <li>Fermented Honey:
+                <ul>
+                    <li>Pepper</li>
+                    <li>Honey</li>
+                    <li>Garlic</li>
+                    <li>Aleppo pepper</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Dessert: Blackberry Sage Sorbetto</h3>
+        <ul>
+            <li>Ripe blackberries (fresh or frozen)</li>
+            <li>Sugar</li>
+            <li>Fresh sage</li>
+            <li>Fresh lemon juice</li>
+            <li>Fried sage leaves (garnish)</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>Plating Instructions</h2>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Fig and Speck</h3>
+        <p>Small wood platter. Wrap roasted fig in speck with cheese on the inside. Seal with honey (1 per person).</p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Roasted Cold Beet Salad</h3>
+        <p>Small bowl plate with shallow walls. Toss cooked beets in dressing with chiffonade of mint and chilis. Plate so that sauce is runny, garnish with kumquat half.</p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Pickle and Cured Meat Sampler</h3>
+        <p>Long plate. Arrange on plate like a garden, garnish with pea vines.</p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Whiskey Bone Broth Shot</h3>
+        <p>Small ceramic tea cup. 2 oz broth, 1 oz whiskey.</p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Pistachio Crusted Black Cod</h3>
+        <p>UFO plate. 1 piece broccoli and fish on top. Pour sauce around edge of plate. Break with green oil. Garnish with Chrysanthemum.</p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Fermented Pepper Honey Gnocco Fritto</h3>
+        <p>Wood platter. 1 per person, drizzle with honey.</p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Blackberry Sage Sorbetto</h3>
+        <p>Small bowl. Large quenelle and garnish with fried sage.</p>
+    </div>
+
+    <div class="note">
+        All ingredients must be prepared exactly as described. Timing is critical for optimal results. For questions, consult the Executive Chef.
+    </div>
+
+    <div class="footer">
+        Internal document — Not for guest distribution
+    </div>
+</body>
+</html>
