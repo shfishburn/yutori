@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chef's Prep Guide | Prix Fixe Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1a1a1a;
-            --secondary-color: #9c8c63;
-            --light-color: #f5f5f5;
-            --accent-color: #5d4c3c;
+            --primary-color: #2c3e50;
+            --secondary-color: #d35400;
+            --light-color: #f9f9f9;
+            --accent-color: #7D5A50;
+            --french-blue: #337ab7;
+            --italian-green: #568203;
+            --vietnamese-red: #c0392b;
             --spacing: 1.5rem;
+            --border-radius: 8px;
         }
         
         * {
@@ -20,28 +25,43 @@
         }
         
         body {
-            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-family: 'Lora', serif;
             color: var(--primary-color);
             line-height: 1.6;
             background-color: var(--light-color);
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 var(--spacing);
+            font-size: 16px;
         }
         
         header {
             text-align: center;
-            padding: 3rem 0;
-            border-bottom: 1px solid var(--secondary-color);
+            padding: 3rem 0 2rem;
+            border-bottom: 2px solid #eee;
             margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        header:after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(to right, var(--italian-green), var(--french-blue), var(--vietnamese-red));
         }
         
         .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            letter-spacing: 3px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8rem;
+            letter-spacing: 4px;
             margin-bottom: 1rem;
             color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
         }
         
         .tagline {
@@ -49,32 +69,57 @@
             color: var(--secondary-color);
             letter-spacing: 1px;
             font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .intro-text {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            text-align: center;
+            color: #555;
         }
         
         h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 2.5rem;
             margin-bottom: 2rem;
             text-align: center;
             color: var(--primary-color);
-            font-weight: 400;
+            font-weight: 600;
         }
         
         h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.8rem;
             margin: 2rem 0 1rem;
             color: var(--secondary-color);
-            font-weight: 400;
-            border-bottom: 1px solid var(--secondary-color);
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
             padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 svg {
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.75rem;
+            font-weight: 600;
         }
         
         .section {
             margin-bottom: 3rem;
             background-color: white;
             padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border-radius: var(--border-radius);
         }
         
         ul, ol {
@@ -107,11 +152,12 @@
         }
         
         .note {
-            background-color: rgba(156, 140, 99, 0.1);
+            background-color: rgba(211, 84, 0, 0.05);
             padding: 1rem;
             margin: 1rem 0;
             border-left: 3px solid var(--secondary-color);
             font-style: italic;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
         }
         
         .footer {
@@ -119,67 +165,477 @@
             margin: 3rem 0;
             color: var(--accent-color);
             font-style: italic;
+            padding-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            border-bottom: 2px solid var(--secondary-color);
+            font-weight: 600;
+            color: var(--accent-color);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .cuisine-indicators {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .cuisine-indicator {
+            display: flex;
+            align-items: center;
+            margin: 0 1rem;
+        }
+        
+        .cuisine-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .cuisine-dot.italian {
+            background-color: var(--italian-green);
+        }
+        
+        .cuisine-dot.french {
+            background-color: var(--french-blue);
+        }
+        
+        .cuisine-dot.vietnamese {
+            background-color: var(--vietnamese-red);
+        }
+        
+        .cuisine-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            margin: 0 10px;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        button.secondary {
+            background-color: var(--accent-color);
+        }
+        
+        button.tertiary {
+            background-color: #777;
+        }
+        
+        .checklist {
+            list-style: none;
+            margin-left: 0.5rem;
+        }
+        
+        .checklist li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .checklist label {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 0.3rem 0;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+        }
+        
+        .checklist label:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .checklist input[type="checkbox"] {
+            margin-right: 0.5rem;
+            margin-top: 0.3rem;
+            flex-shrink: 0;
+        }
+        
+        .sub-checklist {
+            list-style: none;
+            margin-left: 1.5rem;
+            margin-top: 0.3rem;
+        }
+        
+        .parent-item > label {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+        
+        /* Subtle animation when items are checked */
+        .checklist input[type="checkbox"]:checked + span {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .count {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            font-weight: normal;
+            margin-left: 1rem;
         }
         
         @media (max-width: 768px) {
             body {
                 padding: 0 1rem;
+                font-size: 15px;
             }
             
             .two-column {
                 flex-direction: column;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .cuisine-indicators {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cuisine-indicator {
+                margin: 0.5rem 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            ul, ol {
+                margin-left: 1.5rem;
+            }
+            
+            .checklist, .sub-checklist {
+                margin-left: 0.5rem;
+            }
+        }
+        
+        @media print {
+            .checklist input[type="checkbox"] {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 1em;
+                height: 1em;
+                border: 1px solid black;
+                vertical-align: middle;
+                position: relative;
+                margin-right: 0.5rem;
+            }
+            
+            body {
+                font-size: 12px;
+                background-color: white;
+            }
+            
+            .section {
+                box-shadow: none;
+                border: 1px solid #eee;
+                page-break-inside: avoid;
+            }
+            
+            h2, h3 {
+                page-break-after: avoid;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .tagline, .footer, #print-controls, .cuisine-indicators {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">Burnt</div>
-        <div class="tagline">Sam Fishburn</div>
+        <div class="logo">CONFLUENCE</div>
+        <div class="tagline">Where Traditions Merge</div>
+        <div class="cuisine-indicators">
+            <div class="cuisine-indicator">
+                <div class="cuisine-dot italian"></div>
+                <div class="cuisine-name">Italian</div>
+            </div>
+            <div class="cuisine-indicator">
+                <div class="cuisine-dot french"></div>
+                <div class="cuisine-name">French</div>
+            </div>
+            <div class="cuisine-indicator">
+                <div class="cuisine-dot vietnamese"></div>
+                <div class="cuisine-name">Vietnamese</div>
+            </div>
+        </div>
+        <p class="intro-text">
+            This menu represents a personal culinary journey, combining elements from Italian, French, and Vietnamese cuisines. Each dish reflects techniques and ingredients gathered throughout my career in fine dining kitchens in Seattle. <br><br>From the precision of French technique to the soul of Italian tradition and the vibrant flavors of Vietnam, this prix fixe experience brings together the best of these distinct culinary worlds.
+        </p>
     </header>
 
     <h1>Prix Fixe Menu Preparation Guide</h1>
     
     <div class="section">
-        <h2>Menu Structure</h2>
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 8h14M5 12h14M5 16h14"></path>
+            </svg>
+            Prix Fixe Menu
+        </h2>
         <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
-            <tr style="border-bottom: 1px solid var(--secondary-color);">
-                <th style="text-align: left; padding: 0.5rem; width: 30%;">Course</th>
-                <th style="text-align: left; padding: 0.5rem;">Dish</th>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.5rem;"><em>Stuzzichini</em></td>
-                <td style="padding: 0.5rem;">Fig and Speck</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.5rem;"><em>Insalata</em></td>
-                <td style="padding: 0.5rem;">Roasted Cold Beet Salad</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.5rem;"><em>Antipasto</em></td>
-                <td style="padding: 0.5rem;">Pickle and Cured Meat Sampler</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.5rem;"><em>Palate Cleanser</em></td>
-                <td style="padding: 0.5rem;">Whiskey Bone Broth Shot</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.5rem;"><em>Entrée</em></td>
-                <td style="padding: 0.5rem;">Pistachio Crusted Black Cod with Beurre Blanc Sauce</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.5rem;"><em>Mignardises</em></td>
-                <td style="padding: 0.5rem;">Fermented Pepper Honey Gnocco Fritto</td>
-            </tr>
-            <tr>
-                <td style="padding: 0.5rem;"><em>Dessert</em></td>
-                <td style="padding: 0.5rem;">Blackberry Sage Sorbetto</td>
-            </tr>
+            <thead>
+                <tr style="border-bottom: 1px solid var(--secondary-color);">
+                    <th style="text-align: left; padding: 0.75rem; width: 20%;">Course</th>
+                    <th style="text-align: left; padding: 0.75rem; width: 30%;">Dish</th>
+                    <th style="text-align: left; padding: 0.75rem; width: 50%;">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.75rem;"><em>Stuzzichini</em></td>
+                    <td style="padding: 0.75rem;">Fig and Speck</td>
+                    <td style="padding: 0.75rem;">Roasted figs wrapped in thin slices of Levoni speck, accompanied by creamy La Tur cheese and finished with a fermented pepper honey glaze. A perfect balance of sweet, salty, and creamy.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.75rem;"><em>Insalata</em></td>
+                    <td style="padding: 0.75rem;">Roasted Cold Beet Salad</td>
+                    <td style="padding: 0.75rem;">Tender roasted beets dressed with a vibrant lime leaf, condensed milk, and Thai chili dressing. Garnished with fresh kumquat and herbaceous mint for brightness and acidity.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.75rem;"><em>Antipasto</em></td>
+                    <td style="padding: 0.75rem;">Pickle and Cured Meat Sampler</td>
+                    <td style="padding: 0.75rem;">A selection of house-pickled vegetables including carrots, daikon, beets, and jalapeños, served alongside premium cured meats: Levoni Speck, Bresaola, and Fermin Jamon Serrano. Presented with fresh pea vines.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.75rem;"><em>Palate Cleanser</em></td>
+                    <td style="padding: 0.75rem;">Whiskey Bone Broth Shot</td>
+                    <td style="padding: 0.75rem;">House-made rich beef bone broth fortified with quality whiskey (Buffalo Trace, Woodford Reserve, or Four Roses). Served warm in a ceramic cup, this savory interlude prepares the palate for the main course.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.75rem;"><em>Entrée</em></td>
+                    <td style="padding: 0.75rem;">Pistachio Crusted Black Cod with Beurre Blanc</td>
+                    <td style="padding: 0.75rem;">Delicate black cod with a crisp herb-pistachio crust, served with a classic French beurre blanc sauce enhanced with charred lemon and sticky chicken stock. Accompanied by broccolini finished with yuzu kosho for an umami accent.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.75rem;"><em>Mignardises</em></td>
+                    <td style="padding: 0.75rem;">Fermented Pepper Honey Gnocco Fritto</td>
+                    <td style="padding: 0.75rem;">Traditional Italian fried dough pillows, light and airy, drizzled with a complex fermented garlic-pepper honey. An addictive sweet-savory bite that bridges the gap between savory and sweet courses.</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.75rem;"><em>Dessert</em></td>
+                    <td style="padding: 0.75rem;">Blackberry Sage Sorbetto</td>
+                    <td style="padding: 0.75rem;">Intensely flavored blackberry sorbetto infused with fresh sage. The smooth, dairy-free frozen dessert is garnished with crispy fried sage leaves, creating a sophisticated but refreshing finale to the meal.</td>
+                </tr>
+            </tbody>
         </table>
     </div>
+    
+    <div class="section">
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 11a9 9 0 0 1 9 9"></path>
+                <path d="M4 4a16 16 0 0 1 16 16"></path>
+                <circle cx="5" cy="19" r="2"></circle>
+            </svg>
+            Complete Ingredient List by Course
+        </h2>
+        <p><strong>Total Menu Costs:</strong> <br>$484.94 for 10 persons ($48.49 per person)</p>
+        <br><p><strong>Pricing Options:</strong> <br>Conservative ($138.50/person)<br>Standard ($161.60/person) <br>Luxury ($194.00/person)</p>
+        <br><p><strong>Check off items as they're prepped or acquired:</strong></p>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Stuzzichini: Fig and Speck <span class="count" id="count-stuzzichini">0 of 4</span> <br><small>($62.50 total, $6.25/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-stuzzichini">
+            <li><label><input type="checkbox"> <span>Figs (roasted) - 2 lbs × $0.75/lb = $1.50</span></label></li>
+            <li><label><input type="checkbox"> <span>La Tur cheese - 1 lb × $22/lb = $22.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Levoni Speck - 1.5 lbs × $18/lb = $27.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Fermented Pepper Honey - 16 oz jar × $12/jar = $12.00</span></label></li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Insalata: Roasted Cold Beet Salad <span class="count" id="count-insalata">0 of 8</span> <br><small>($31.75 total, $3.18/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-insalata">
+            <li><label><input type="checkbox"> <span>Red Beets - 3 lbs × $0.50/lb = $1.50</span></label></li>
+            <li><label><input type="checkbox"> <span>Kumquat - 1 lb × $3.50/lb = $3.50</span></label></li>
+            <li><label><input type="checkbox"> <span>Red Thai Chilis - 0.25 lb × $4/lb = $1.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Kefir Lime Leaves - 2 oz × $8/oz = $16.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Mint - 2 bunches × $2/bunch = $4.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Fresh Lime Juice - 16 oz × $2/16oz = $2.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Condensed Milk - 14 oz can × $3/can = $3.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Salt, Sugar, MSG - 0.5 lb × $1.50/lb = $0.75</span></label></li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Antipasto: Pickle and Cured Meat Sampler <span class="count" id="count-antipasto">0 of 10</span> <br><small>($153.68 total, $15.37/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-antipasto">
+            <li><label><input type="checkbox"> <span>Distilled Vinegar - 32 oz × $3/gallon = $0.75</span></label></li>
+            <li><label><input type="checkbox"> <span>Sugar - 1 lb × $0.50/lb = $0.50</span></label></li>
+            <li><label><input type="checkbox"> <span>Carrots - 2 lbs × $0.40/lb = $0.80</span></label></li>
+            <li><label><input type="checkbox"> <span>Daikon - 1.5 lbs × $0.75/lb = $1.13</span></label></li>
+            <li><label><input type="checkbox"> <span>Beets - 1.5 lbs × $0.50/lb = $0.75</span></label></li>
+            <li><label><input type="checkbox"> <span>Jalapeño - 0.5 lb × $1.50/lb = $0.75</span></label></li>
+            <li><label><input type="checkbox"> <span>Levoni Speck - 1.5 lbs × $18/lb = $27.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Bresaola - 2 lbs × $25/lb = $50.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Fermin Jamon Serrano - 2 lbs × $35/lb = $70.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Pea Vines (garnish) - 0.5 lb × $4/lb = $2.00</span></label></li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Palate Cleanser: Whiskey Bone Broth Shot <span class="count" id="count-palate-cleanser">0 of 2</span> <br><small>($19.00 total, $1.90/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-palate-cleanser">
+            <li><label><input type="checkbox"> <span>Homemade Beef Broth - 2 quarts × $2/quart = $4.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Whiskey (Buffalo Trace) - 750ml bottle × $15/bottle = $15.00</span></label></li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Entrée: Pistachio Crusted Black Cod with Beurre Blanc <span class="count" id="count-entree">0 of 19</span> <br><small>($173.38 total, $17.34/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-entree">
+            <li><label><input type="checkbox"> <span>Black Cod - 5 lbs × $15/lb = $75.00</span></label></li>
+            <li class="parent-item"><label><input type="checkbox"> <span>Pistachio Crust:</span></label>
+                <ul class="sub-checklist">
+                    <li><label><input type="checkbox"> <span>Raw Pistachios - 1.5 lbs × $12/lb = $18.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Bread crumb - 1 lb × $2/lb = $2.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Fresh Basil - 2 bunches × $2/bunch = $4.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Fresh Thyme - 2 bunches × $2/bunch = $4.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Fresh Parsley - 2 bunches × $1.50/bunch = $3.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Parmigiano Reggiano - 1.5 lbs × $18/lb = $27.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Garlic - 0.5 lb × $1.50/lb = $0.75</span></label></li>
+                </ul>
+            </li>
+            <li class="parent-item"><label><input type="checkbox"> <span>Beurre Blanc:</span></label>
+                <ul class="sub-checklist">
+                    <li><label><input type="checkbox"> <span>Charred Lemon - 5 lemons × $0.50/each = $2.50</span></label></li>
+                    <li><label><input type="checkbox"> <span>Quality Butter - 2 lbs × $4/lb = $8.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>White Wine - 750ml bottle × $8/bottle = $8.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Shallot - 0.5 lb × $2/lb = $1.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Sticky Chicken Stock - 2 quarts × $3/quart = $6.00</span></label></li>
+                </ul>
+            </li>
+            <li class="parent-item"><label><input type="checkbox"> <span>Charred Broccolini:</span></label>
+                <ul class="sub-checklist">
+                    <li><label><input type="checkbox"> <span>Fleur de sel - 0.25 lb × $8/lb = $2.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Yuzu kosho - 4 oz × $12/8oz = $6.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Shallot - 0.5 lb × $2/lb = $1.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Garlic - 0.5 lb × $1.50/lb = $0.75</span></label></li>
+                    <li><label><input type="checkbox"> <span>Salt, pepper - 0.25 lb × $1.50/lb = $0.38</span></label></li>
+                    <li><label><input type="checkbox"> <span>EVOO - 500 ml × $10/liter = $5.00</span></label></li>
+                </ul>
+            </li>
+            <li class="parent-item"><label><input type="checkbox"> <span>Garnish:</span></label>
+                <ul class="sub-checklist">
+                    <li><label><input type="checkbox"> <span>Fried Leeks - 1 lb × $3/lb = $3.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Chrysanthemum or Celery Leaf - 0.5 lb × $4/lb = $2.00</span></label></li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Mignardises: Fermented Garlic Honey Gnocco Fritto <span class="count" id="count-mignardises">0 of 10</span> <br><small>($23.13 total, $2.31/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-mignardises">
+            <li class="parent-item"><label><input type="checkbox"> <span>Dough:</span></label>
+                <ul class="sub-checklist">
+                    <li><label><input type="checkbox"> <span>Italian 00 flour - 3 lbs × $2/lb = $6.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Sugar - 0.5 lb × $0.50/lb = $0.25</span></label></li>
+                    <li><label><input type="checkbox"> <span>Instant yeast - 0.25 lb × $4/lb = $1.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Salt - 0.25 lb × $0.50/lb = $0.13</span></label></li>
+                    <li><label><input type="checkbox"> <span>Whole milk - 1 gallon × $3/gallon = $3.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Lard - 1 lb × $3/lb = $3.00</span></label></li>
+                </ul>
+            </li>
+            <li class="parent-item"><label><input type="checkbox"> <span>Fermented Honey:</span></label>
+                <ul class="sub-checklist">
+                    <li><label><input type="checkbox"> <span>Pepper - 0.25 lb × $4/lb = $1.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Honey - 1 lb × $6/lb = $6.00</span></label></li>
+                    <li><label><input type="checkbox"> <span>Garlic - 0.5 lb × $1.50/lb = $0.75</span></label></li>
+                    <li><label><input type="checkbox"> <span>Aleppo pepper - 0.25 lb × $8/lb = $2.00</span></label></li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Dessert: Blackberry Sage Sorbetto <span class="count" id="count-dessert">0 of 5</span> <br><small>($20.50 total, $2.05/serving)</small></h3>
+        <ul class="checklist" data-count-id="count-dessert">
+            <li><label><input type="checkbox"> <span>Ripe blackberries (fresh or frozen) - 3 lbs × $4/lb = $12.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Sugar - 1 lb × $0.50/lb = $0.50</span></label></li>
+            <li><label><input type="checkbox"> <span>Fresh sage - 2 bunches × $2/bunch = $4.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Fresh lemon juice - 16 oz × $2/16oz = $2.00</span></label></li>
+            <li><label><input type="checkbox"> <span>Fried sage leaves (garnish) - 1 bunch × $2/bunch = $2.00</span></label></li>
+        </ul>
+    </div>
+
 
     <div class="section">
-        <h2>Time Management</h2>
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="6" x2="12" y2="12"></line>
+                <line x1="12" y1="12" x2="16" y2="16"></line>
+            </svg>
+            Timeline for Prep
+        </h2>
         <ul>
             <li><strong>2+ Days Before:</strong> Start fermented garlic honey</li>
             <li><strong>Day Before:</strong> Prepare gnocco fritto dough, blackberry sorbetto</li>
@@ -187,49 +643,75 @@
             <li><strong>Service:</strong> Finish cooking proteins, make beurre blanc to order</li>
         </ul>
     </div>
-
-    <div class="two-column">
-        <div class="column section">
-            <h2>Advance Prep (1+ Week Before)</h2>
-            <ul>
-                <li><strong>Fermented Garlic Honey:</strong> Cover clean garlic cloves in raw honey, let sit in flip top jar, cover loosely.</li>
-            </ul>
-        </div>
-
-        <div class="column section">
-            <h2>Day Before Prep</h2>
-            <ul>
-                <li><strong>Gnocco Fritto:</strong> Prep dough day before using Italian 00 flour, sugar, instant yeast, salt, whole milk, and lard. Store in freezer, fry to order.</li>
-                <li>
-                    <strong>Blackberry Sorbetto:</strong>
-                    <ol>
-                        <li>In a blender, purée blackberries until smooth</li>
-                        <li>Strain blackberry mixture through a fine mesh strainer and push it through with a rubber spatula</li>
-                        <li>Discard the remaining seeds and solids</li>
-                        <li>Combine water, sugar, and sage</li>
-                        <li>Heat mixture until it just begins to simmer, stirring until sugar is dissolved</li>
-                        <li>Remove from heat and let steep, uncovered, for 30 minutes</li>
-                        <li>Strain sugar syrup into a large bowl</li>
-                        <li>Stir blackberry puree and lemon juice until evenly mixed</li>
-                        <li>Freeze overnight</li>
-                    </ol>
-                </li>
-                <li><strong>Fried Sage:</strong> Pick leaves and fry prior to service, set aside on paper towel.</li>
-                <li><strong>Prepare Pea Vines:</strong> Clean and trim for garnishing the cured meat platter.</li>
-            </ul>
-        </div>
-    </div>
-
+    
     <div class="section">
-        <h2>Stocks &amp; Broths (Morning Prep)</h2>
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                <line x1="16" y1="8" x2="2" y2="22"></line>
+                <line x1="17.5" y1="15" x2="9" y2="15"></line>
+            </svg>
+             Fermentation<br>
+            <small>1+ Week Before</small>
+        </h3>
         <ul>
-            <li><strong>Beef Broth:</strong> Hard sear short rib and top round chunks, simmer with mirepoix, star anise, cinnamon, and cardamom for at least 2 hours.</li>
+            <li><strong>Fermented Garlic Honey:</strong> Cover clean garlic cloves in raw honey, let sit in flip top jar, cover loosely.</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            The Day Before <br>
+            <small>1+ Day Before</small></h3>
+        <ul>
+            <li><strong>Beef for Broth:</strong> Hard sear short rib and top round chunks, simmer with mirepoix, star anise, cinnamon, and cardamom for at least 2 hours.</li>
+            <li><strong>Gnocco Fritto:</strong> Prep dough day before using Italian 00 flour, sugar, instant yeast, salt, whole milk, and lard. Store in freezer, fry to order.</li>
+            <li>
+                <strong>Blackberry Sorbetto:</strong>
+                <ol>
+                    <li>In a blender, purée blackberries until smooth</li>
+                    <li>Strain blackberry mixture through a fine mesh strainer and push it through with a rubber spatula</li>
+                    <li>Discard the remaining seeds and solids</li>
+                    <li>Combine water, sugar, and sage</li>
+                    <li>Heat mixture until it just begins to simmer, stirring until sugar is dissolved</li>
+                    <li>Remove from heat and let steep, uncovered, for 30 minutes</li>
+                    <li>Strain sugar syrup into a large bowl</li>
+                    <li>Stir blackberry puree and lemon juice until evenly mixed</li>
+                    <li>Freeze overnight</li>
+                </ol>
+            </li>
+        
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 12h.01M12 12h.01M18 12h.01M7 19l-4-4 4-4M17 5l4 4-4 4"></path>
+            </svg>
+            Stocks &amp; Broths<br>
+            <small>Morning of Service</small>
+        </h3>
+        <ul>
             <li><strong>Sticky Chicken Stock:</strong> Roast chicken carcass and feet until deeply browned, simmer in water and skim the scum off the top until completely clear. Add mirepoix and simmer for 45 min.</li>
         </ul>
     </div>
-
+    
     <div class="section">
-        <h2>Proteins</h2>
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15.5 2H8.5L3 8l8 14 8-14-4.5-6z"></path>
+                <path d="M15.5 2L12 6 8.5 2"></path>
+            </svg>
+            Proteins & Garnish<br>
+            <small>Morning of Service</small>
+        </h3>
         <ul>
             <li><strong>Cod:</strong> Salt in advance to pull as much moisture as possible and pat dry. Par-cook on parchment paper. Pull and flip fish, add pistachio crumb and finish until the crumb is hot and fish is cooked. Meanwhile prepare Beurre Blanc.</li>
             <li><strong>Cured Meats:</strong> Slice thinly on deli slicer:
@@ -239,12 +721,21 @@
                     <li>Fermin Jamon Serrano</li>
                 </ul>
             </li>
-            <li><strong>Beef for Broth:</strong> Hard sear short rib and top round chunks, simmer with mirepoix, star anise, cinnamon, and cardamom for at least 2 hours.</li>
+            <li><strong>Fried Sage:</strong> Pick leaves and fry prior to service, set aside on paper towel.</li>
+            <li><strong>Prepare Pea Vines:</strong> Clean and trim for garnishing the cured meat platter.</li>
         </ul>
     </div>
-
+    
     <div class="section">
-        <h2>Sauces &amp; Dressings</h2>
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M16 8c0 2-4 4-4 4s-4-2-4-4 1.78-4 4-4 4 2 4 4z"></path>
+                <path d="M8 16s2-1 4-1 4 1 4 1"></path>
+            </svg>
+            Sauces &amp; Dressings<br>
+            <small>Morning of Service</small>
+        </h3>
         <ul>
             <li><strong>Beurre Blanc sauce:</strong> Make to order with:
                 <ul>
@@ -259,289 +750,146 @@
             <li><strong>Pickle Brine:</strong> 1:1:0.75 Vinegar Water Sugar</li>
         </ul>
     </div>
-
-    <div class="two-column">
-        <div class="column section">
-            <h2>Vegetables &amp; Garnishes</h2>
-            <ul>
-                <li><strong>Figs:</strong> Cut in half, toss with salt, pepper and EVOO, roast in oven 400 degrees for 5 min, let sit at room temperature.</li>
-                <li><strong>Beets:</strong>
-                    <ol>
-                        <li>Boil beets until al dente, pull from water, pat dry and toss with salt, pepper and EVOO</li>
-                        <li>Finish cooking in 500 degree oven, cool down</li>
-                        <li>Cut into wedges</li>
-                    </ol>
-                </li>
-                <li><strong>Broccolini:</strong> Toss in salt & pepper and EVOO. Cook in 500 degree oven until al dente. Torch or grill for char and to fully cook. Toss in butter and yuzu kosho.</li>
-                <li><strong>Kumquat:</strong> Slice thinly lengthwise.</li>
-                <li><strong>Red Thai Chili:</strong> Slice thinly on a bias.</li>
-                <li><strong>Chrysanthemum/Celery Leaf:</strong> Pick nice leaves for service.</li>
-                <li><strong>Carrots:</strong> Cut into spears.</li>
-                <li><strong>Daikon:</strong> Cut into batons.</li>
-                <li><strong>Jalapeño:</strong> Thinly slice.</li>
-                <li><strong>Fried Sage:</strong> Pick leaves and fry prior to service set aside on paper towel.</li>
-            </ul>
-        </div>
-
-        <div class="column section">
-            <h2>Components &amp; Mixtures</h2>
-            <ul>
-                <li><strong>La Tur:</strong> Portion into 1.5 oz.</li>
-                <li><strong>Levoni Speck:</strong> Portion to wrap figs.</li>
-                <li><strong>Pistachio Crumb:</strong> Crush whole pistachios in a Robot Coupe, combine with toasted bread crumb, fresh basil (chiffonade), fresh thyme (chiffonade), fresh parsley (chiffonade), grated Parmigiano Reggiano, garlic.</li>
-            </ul>
-            
-            <h2>Equipment Needed</h2>
-            <ul>
-                <li>Oven (capable of 500°F)</li>
-                <li>Deli slicer</li>
-                <li>Grill or torch</li>
-                <li>Robot Coupe food processor</li>
-                <li>Blender</li>
-                <li>Fine mesh strainer</li>
-                <li>Stock pots</li>
-                <li>Squeeze bottles</li>
-                <li>Deep fryer</li>
-                <li>Freezer</li>
-            </ul>
-            
-            <h2>Bar Prep</h2>
-            <ul>
-                <li><strong>Whiskey:</strong> Buffalo Trace, Woodford Reserve, Four Roses.</li>
-            </ul>
-        </div>
-    </div>
-
+    
     <div class="section">
-        <h2>Ordering Guide</h2>
-        <div class="two-column">
-            <div class="column">
-                <ul>
-                    <li>La Tur cheese</li>
-                    <li>Levoni Speck</li>
-                    <li>Bresaola</li>
-                    <li>Fermin Jamon Serrano</li>
-                    <li>Fresh figs (seasonal)</li>
-                    <li>Beets</li>
-                    <li>Broccolini</li>
-                    <li>Kumquats</li>
-                    <li>Red Thai chilis</li>
-                </ul>
-            </div>
-            <div class="column">
-                <ul>
-                    <li>Chrysanthemum/celery leaves</li>
-                    <li>Carrots</li>
-                    <li>Daikon</li>
-                    <li>Jalapeños</li>
-                    <li>Fresh sage</li>
-                    <li>Cod (fresh, portioned)</li>
-                    <li>Pistachios</li>
-                    <li>Quality butter</li>
-                    <li>Buffalo Trace, Woodford Reserve, Four Roses whiskey</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="two-column">
-        <div class="column section">
-            <h2>Final Quality Checks</h2>
-            <ul>
-                <li>Taste all sauces before service</li>
-                <li>Check temperature of all hot items before serving</li>
-                <li>Ensure fish is properly cooked to 145°F internal temperature</li>
-                <li>Verify seasoning on all components</li>
-                <li>Check plating consistency with chef before service begins</li>
-            </ul>
-        </div>
-
-        <div class="column section">
-            <h2>Allergen Information</h2>
-            <ul>
-                <li>La Tur cheese: Contains dairy</li>
-                <li>Gnocco fritto: Contains gluten, dairy</li>
-                <li>Pistachio crumb: Contains nuts, dairy, gluten</li>
-                <li>Dressing: Contains dairy (condensed milk)</li>
-                <li>Cod: Fish allergen</li>
-                <li>Beurre blanc: Contains dairy</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>Mise en Place Organization</h2>
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12h2m16 0h2M6 6l2 2m8-2l-2 2m-6 8l2-2m4 2l2-2M12 2v2m0 16v2"></path>
+                <circle cx="12" cy="12" r="5"></circle>
+            </svg>
+            Vegetables &amp; Garnishes
+            <br>
+            <small>Morning of Service</small>
+        </h3>
         <ul>
-            <li>Set up dedicated stations for each course</li>
-            <li>Prep containers labeled with contents and date</li>
-            <li>Keep hot items separate from cold</li>
-            <li>Organize garnishes in reach-in cooler for easy access</li>
-            <li>Pre-portion cheese, cured meats for efficiency during service</li>
-            <li>Organize plating vessels by course order</li>
-            <li>Prepare separate stations for cold and hot items</li>
+            <li><strong>Figs:</strong> Cut in half, toss with salt, pepper and EVOO, roast in oven 400 degrees for 5 min, let sit at room temperature.</li>
+            <li><strong>Beets:</strong>
+                <ol>
+                    <li>Boil beets until al dente, pull from water, pat dry and toss with salt, pepper and EVOO</li>
+                    <li>Finish cooking in 500 degree oven, cool down</li>
+                    <li>Cut into wedges</li>
+                </ol>
+            </li>
+            <li><strong>Broccolini:</strong> Toss in salt &amp; pepper and EVOO. Cook in 500 degree oven until al dente. Torch or grill for char and to fully cook. Toss in butter and yuzu kosho.</li>
+            <li><strong>Kumquat:</strong> Slice thinly lengthwise.</li>
+            <li><strong>Red Thai Chili:</strong> Slice thinly on a bias.</li>
+            <li><strong>Chrysanthemum/Celery Leaf:</strong> Pick nice leaves for service.</li>
+            <li><strong>Carrots:</strong> Cut into spears.</li>
+            <li><strong>Daikon:</strong> Cut into batons.</li>
+            <li><strong>Jalapeño:</strong> Thinly slice.</li>
+            <li><strong>Fried Sage:</strong> Pick leaves and fry prior to service; set aside on paper towel.</li>
         </ul>
     </div>
     
     <div class="section">
-        <h2>Required Plating Vessels</h2>
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+            </svg>
+            Components &amp; Mixtures<br>
+            <small>Before Service</small>
+        </h3>
         <ul>
-            <li><strong>Fig and Speck:</strong> Small wood platter</li>
-            <li><strong>Roasted Cold Beet Salad:</strong> Small bowl plate with shallow walls</li>
-            <li><strong>Pickle and Cured Meat Sampler:</strong> Long plate</li>
-            <li><strong>Whiskey Bone Broth Shot:</strong> Small ceramic tea cup</li>
-            <li><strong>Pistachio Crusted Black Cod:</strong> UFO plate</li>
-            <li><strong>Fermented Pepper Honey Gnocco Fritto:</strong> Wood platter</li>
-            <li><strong>Blackberry Sage Sorbetto:</strong> Small bowl</li>
+            <li><strong>La Tur:</strong> Portion into 1.5 oz.</li>
+            <li><strong>Levoni Speck:</strong> Portion to wrap figs.</li>
+            <li><strong>Pistachio Crumb:</strong> Crush whole pistachios in a Robot Coupe, combine with toasted bread crumb, fresh basil (chiffonade), fresh thyme (chiffonade), fresh parsley (chiffonade), grated Parmigiano Reggiano, garlic.</li>
+        </ul>
+    </div>
+    <div class="section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+            Bar Prep<br>
+            <small>Before Service</small>
+        </h3>
+        <ul>
+            <li><strong>Whiskey:</strong> Buffalo Trace, Woodford Reserve, Four Roses.</li>
         </ul>
     </div>
 
     <div class="section">
-        <h2>Complete Ingredient List by Course</h2>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Stuzzichini: Fig and Speck</h3>
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 11a9 9 0 0 1 9 9"></path>
+                <path d="M4 4a16 16 0 0 1 16 16"></path>
+                <circle cx="5" cy="19" r="2"></circle>
+            </svg>
+            Equipment Needed
+        </h2>
         <ul>
-            <li>Figs (roasted)</li>
-            <li>La Tur cheese</li>
-            <li>Levoni Speck</li>
-            <li>Fermented Pepper Honey</li>
-        </ul>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Insalata: Roasted Cold Beet Salad</h3>
-        <ul>
-            <li>Red Beets</li>
-            <li>Kumquat</li>
-            <li>Red Thai Chilis</li>
-            <li>Kefir Lime Leaves</li>
-            <li>Mint</li>
-            <li>Fresh Lime Juice</li>
-            <li>Condensed Milk</li>
-            <li>Salt, Sugar, MSG</li>
-        </ul>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Antipasto: Pickle and Cured Meat Sampler</h3>
-        <ul>
-            <li>Distilled Vinegar</li>
-            <li>Sugar</li>
-            <li>Carrots</li>
-            <li>Daikon</li>
-            <li>Beets</li>
-            <li>Jalapeño</li>
-            <li>Levoni Speck</li>
-            <li>Bresaola</li>
-            <li>Fermin Jamon Serrano</li>
-            <li>Pea Vines (garnish)</li>
-        </ul>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Palate Cleanser: Whiskey Bone Broth Shot</h3>
-        <ul>
-            <li>Homemade Beef Broth</li>
-            <li>Whiskey (Buffalo Trace, Woodford Reserve, or Four Roses)</li>
-        </ul>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Entrée: Pistachio Crusted Black Cod with Beurre Blanc</h3>
-        <ul>
-            <li>Black Cod</li>
-            <li>Pistachio Crust:
-                <ul>
-                    <li>Raw Pistachios</li>
-                    <li>Bread crumb</li>
-                    <li>Fresh Basil</li>
-                    <li>Fresh Thyme</li>
-                    <li>Fresh Parsley</li>
-                    <li>Parmigiano Reggiano</li>
-                    <li>Garlic</li>
-                </ul>
-            </li>
-            <li>Beurre Blanc:
-                <ul>
-                    <li>Charred Lemon</li>
-                    <li>Quality Butter</li>
-                    <li>White Wine</li>
-                    <li>Shallot</li>
-                    <li>Sticky Chicken Stock</li>
-                </ul>
-            </li>
-            <li>Charred Broccolini:
-                <ul>
-                    <li>Fleur de sel</li>
-                    <li>Yuzu kosho</li>
-                    <li>Shallot</li>
-                    <li>Garlic</li>
-                    <li>Salt, pepper</li>
-                    <li>EVOO</li>
-                </ul>
-            </li>
-            <li>Garnish:
-                <ul>
-                    <li>Fried Leeks</li>
-                    <li>Chrysanthemum or Celery Leaf</li>
-                </ul>
-            </li>
-        </ul>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Mignardises: Fermented Garlic Honey Gnocco Fritto</h3>
-        <ul>
-            <li>Dough:
-                <ul>
-                    <li>Italian 00 flour</li>
-                    <li>Sugar</li>
-                    <li>Instant yeast</li>
-                    <li>Salt</li>
-                    <li>Whole milk</li>
-                    <li>Lard</li>
-                </ul>
-            </li>
-            <li>Fermented Honey:
-                <ul>
-                    <li>Pepper</li>
-                    <li>Honey</li>
-                    <li>Garlic</li>
-                    <li>Aleppo pepper</li>
-                </ul>
-            </li>
-        </ul>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Dessert: Blackberry Sage Sorbetto</h3>
-        <ul>
-            <li>Ripe blackberries (fresh or frozen)</li>
-            <li>Sugar</li>
-            <li>Fresh sage</li>
-            <li>Fresh lemon juice</li>
-            <li>Fried sage leaves (garnish)</li>
+            <li>Oven (capable of 500°F)</li>
+            <li>Deli slicer</li>
+            <li>Grill or torch</li>
+            <li>Robot Coupe food processor</li>
+            <li>Blender</li>
+            <li>Fine mesh strainer</li>
+            <li>Stock pots</li>
+            <li>Squeeze bottles</li>
+            <li>Deep fryer</li>
+            <li>Freezer</li>
         </ul>
     </div>
+
     
-    <div class="section">
-        <h2>Plating Instructions</h2>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Fig and Speck</h3>
-        <p>Small wood platter. Wrap roasted fig in speck with cheese on the inside. Seal with honey (1 per person).</p>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Roasted Cold Beet Salad</h3>
-        <p>Small bowl plate with shallow walls. Toss cooked beets in dressing with chiffonade of mint and chilis. Plate so that sauce is runny, garnish with kumquat half.</p>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Pickle and Cured Meat Sampler</h3>
-        <p>Long plate. Arrange on plate like a garden, garnish with pea vines.</p>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Whiskey Bone Broth Shot</h3>
-        <p>Small ceramic tea cup. 2 oz broth, 1 oz whiskey.</p>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Pistachio Crusted Black Cod</h3>
-        <p>UFO plate. 1 piece broccoli and fish on top. Pour sauce around edge of plate. Break with green oil. Garnish with Chrysanthemum.</p>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Fermented Pepper Honey Gnocco Fritto</h3>
-        <p>Wood platter. 1 per person, drizzle with honey.</p>
-        
-        <h3 style="color: var(--accent-color); margin-top: 1.5rem;">Blackberry Sage Sorbetto</h3>
-        <p>Small bowl. Large quenelle and garnish with fried sage.</p>
-    </div>
+    
+    
+    <script>
+        function checkAll(checked) {
+            const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = checked;
+                updateCount(checkbox.closest('.checklist'));
+            });
+        }
 
-    <div class="note">
-        All ingredients must be prepared exactly as described. Timing is critical for optimal results. For questions, consult the Executive Chef.
-    </div>
+        function updateCount(checklist) {
+            if (!checklist) return;
+            
+            const countId = checklist.getAttribute('data-count-id');
+            if (!countId) return;
+            
+            const countElement = document.getElementById(countId);
+            if (!countElement) return;
+            
+            const checkboxes = checklist.querySelectorAll('input[type="checkbox"]');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const totalCount = checkboxes.length;
+            
+            countElement.textContent = `${checkedCount} of ${totalCount}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all counters
+            const checklists = document.querySelectorAll('.checklist[data-count-id]');
+            checklists.forEach(checklist => {
+                updateCount(checklist);
+            });
+
+            // Load saved states and add event listeners
+            const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+            checkboxes.forEach((checkbox, index) => {
+                // Load from localStorage
+                const savedState = localStorage.getItem('ingredient-' + index);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                    updateCount(checkbox.closest('.checklist'));
+                }
+                
+                // Add change event listener
+                checkbox.addEventListener('change', function() {
+                    localStorage.setItem('ingredient-' + index, this.checked);
+                    updateCount(this.closest('.checklist'));
+                });
+            });
+        });
+    </script>
 
     <div class="footer">
-        Internal document — Not for guest distribution
+        Internal document — Not for Guest Distribution
     </div>
 </body>
 </html>
